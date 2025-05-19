@@ -83,6 +83,27 @@
   transform: scale(1.05);
 }
 
+/* Define Custom Color Variables */
+:root {
+  --luxury-pink-50: #fdf2f6;
+  --luxury-pink-100: #fce7ef;
+  --luxury-pink-200: #fbd0de;
+  --luxury-pink-300: #f9a8c2;
+  --luxury-pink-400: #f47da3;
+  --luxury-pink-500: #ee5785;
+  --luxury-pink-600: #d8385e;
+  --luxury-pink-700: #b52c4e;
+  --luxury-pink-800: #962845;
+  --luxury-pink-900: #7d2640;
+  
+  --luxury-gold: #d4af37;
+  --luxury-gold-light: #e7d190;
+  --luxury-gold-dark: #a78b2c;
+  
+  --luxury-bg-dark: #18151a;
+  --luxury-bg-light: #f9f5f6;
+}
+
 /* Luxury animations and effects */
 @keyframes scroll {
   0% {
@@ -110,6 +131,15 @@
   }
 }
 
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
 @keyframes slowSpin {
   0% {
     transform: rotate(0deg);
@@ -128,12 +158,54 @@
   }
 }
 
+@keyframes float {
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.6;
+  }
+}
+
 .animate-fadeInUp {
   animation: fadeInUp 0.8s ease-out forwards;
 }
 
+.animate-fadeIn {
+  animation: fadeIn 1s ease-out forwards;
+}
+
 .animate-slowSpin {
   animation: slowSpin 25s linear infinite;
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+.animate-pulse-slow {
+  animation: pulse 3s ease-in-out infinite;
+}
+
+.pink-shine {
+  background: linear-gradient(90deg, transparent, rgba(244, 125, 163, 0.2), transparent);
+  background-size: 200% 100%;
+  animation: shine 3s infinite;
 }
 
 .gold-shine {
@@ -142,20 +214,28 @@
   animation: shine 3s infinite;
 }
 
+/* Glassmorphism effect */
+.glass-effect {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
 /* Custom scrollbar */
 ::-webkit-scrollbar {
   width: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #f5f5f5;
+  background: var(--luxury-pink-50);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #888;
+  background: var(--luxury-pink-200);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #555;
+  background: var(--luxury-pink-300);
 }

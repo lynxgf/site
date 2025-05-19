@@ -18,68 +18,72 @@ export default function Home() {
 
   return (
     <div>
-      {/* Hero Section - Luxury Edition */}
-      <section className="relative h-screen min-h-[700px] bg-[#1a1a1a] overflow-hidden">
+      {/* Hero Section - Luxury Pink Edition */}
+      <section className="relative h-screen min-h-[700px] bg-[var(--luxury-bg-light)] overflow-hidden">
         {/* Background image with overlay */}
         <div className="absolute inset-0 z-10">
           <img 
-            src="https://images.unsplash.com/photo-1618219944342-824e40a13285?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=85" 
-            alt="Роскошная кровать в изысканном интерьере" 
-            className="w-full h-full object-cover object-center"
-            style={{ objectPosition: '50% 32%' }}
+            src="https://images.unsplash.com/photo-1615874959474-d609969a20ed?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=85" 
+            alt="Роскошная спальня в нежно-розовых тонах" 
+            className="w-full h-full object-cover object-center opacity-90"
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/70 to-black/10"></div>
+          <div className="absolute inset-0 bg-gradient-to-r from-[var(--luxury-pink-100)]/90 via-[var(--luxury-pink-100)]/70 to-transparent"></div>
           
-          {/* Golden accent elements */}
-          <div className="absolute top-32 right-32 w-20 h-20 border border-[#d4af37]/30 hidden lg:block"></div>
-          <div className="absolute top-40 right-40 w-20 h-20 border border-[#d4af37]/20 hidden lg:block"></div>
-          <div className="absolute bottom-32 left-40 w-24 h-24 border border-[#d4af37]/30 hidden lg:block"></div>
-          <div className="absolute bottom-40 left-32 w-24 h-24 border border-[#d4af37]/20 hidden lg:block"></div>
+          {/* Pink accent elements */}
+          <div className="absolute top-32 right-32 w-24 h-24 border border-[var(--luxury-pink-400)]/20 rounded-full animate-pulse-slow hidden lg:block"></div>
+          <div className="absolute top-40 right-40 w-32 h-32 border border-[var(--luxury-pink-300)]/15 rounded-full animate-pulse-slow hidden lg:block"></div>
+          <div className="absolute bottom-40 left-40 w-28 h-28 border border-[var(--luxury-pink-400)]/20 rounded-full animate-pulse-slow hidden lg:block"></div>
+          <div className="absolute bottom-48 left-48 w-36 h-36 border border-[var(--luxury-pink-300)]/15 rounded-full animate-pulse-slow hidden lg:block"></div>
+          
+          {/* Floating elements */}
+          <div className="absolute top-1/4 right-1/4 w-3 h-3 bg-[var(--luxury-pink-300)]/50 rounded-full animate-float"></div>
+          <div className="absolute bottom-1/3 left-1/3 w-2 h-2 bg-[var(--luxury-pink-400)]/50 rounded-full" style={{animationDelay: '1s', animationDuration: '7s'}}></div>
+          <div className="absolute top-2/3 right-1/3 w-4 h-4 bg-[var(--luxury-pink-200)]/50 rounded-full" style={{animationDelay: '2s', animationDuration: '8s'}}></div>
         </div>
         
         {/* Content */}
         <div className="relative z-20 max-w-[1400px] mx-auto px-6 h-full flex items-center">
-          <div className="max-w-2xl">
+          <div className="max-w-2xl backdrop-blur-sm bg-white/5 p-12 border border-white/10 animate-fadeIn">
             {/* Luxury badge */}
-            <div className="inline-flex items-center mb-6 border-b border-[#d4af37]/60 pb-2">
-              <span className="text-[#d4af37] tracking-widest text-xs font-light uppercase">Luxury Collection 2025</span>
+            <div className="inline-flex items-center mb-6 border-b border-[var(--luxury-pink-400)]/60 pb-2">
+              <span className="text-[var(--luxury-pink-500)] tracking-widest text-xs font-light uppercase">Премиум коллекция 2025</span>
             </div>
             
-            <h1 className="text-4xl md:text-5xl lg:text-7xl font-light text-white mb-6 leading-tight tracking-tighter">
-              Идеальная 
-              <span className="font-medium italic relative inline-block ml-3">
-                роскошь
-                <span className="absolute -bottom-1 left-0 w-full h-px bg-gradient-to-r from-[#d4af37] to-transparent"></span>
+            <h1 className="text-4xl md:text-5xl lg:text-7xl font-light text-[#20132b] mb-8 leading-tight tracking-tighter">
+              Бесконечная
+              <span className="font-medium italic relative inline-block ml-3 text-[var(--luxury-pink-700)]">
+                элегантность
+                <span className="absolute -bottom-1 left-0 w-full h-px bg-gradient-to-r from-[var(--luxury-pink-500)] to-transparent"></span>
               </span>
               <br />
-              <span className="text-white/80">для вашей спальни</span>
+              <span className="text-[#20132b]/80">для вашей спальни</span>
             </h1>
             
-            <p className="text-lg md:text-xl text-white/70 mb-12 leading-relaxed max-w-xl font-light">
-              Создайте спальню вашей мечты с нашей коллекцией премиальных 
-              кроватей и матрасов, разработанных с непревзойденным вниманием к деталям.
+            <p className="text-lg md:text-xl text-[#20132b]/70 mb-12 leading-relaxed max-w-xl font-light">
+              Создайте пространство мечты с нашей коллекцией премиальных 
+              кроватей и матрасов, где утонченность встречается с непревзойденным комфортом.
             </p>
             
             <div className="flex flex-wrap items-center gap-6">
               <Button 
                 size="lg" 
-                className="bg-white text-black hover:bg-[#d4af37] hover:text-black transition-colors duration-300 py-7 px-10 text-base font-light rounded-none" 
+                className="bg-[var(--luxury-pink-600)] text-white hover:bg-[var(--luxury-pink-700)] transition-colors duration-300 py-7 px-10 text-base font-light rounded-none shadow-lg shadow-[var(--luxury-pink-400)]/20" 
                 asChild
               >
-                <Link href="/products/bed">Каталог кроватей</Link>
+                <Link href="/products/bed">Коллекция кроватей</Link>
               </Button>
               
               <Button 
                 size="lg" 
                 variant="outline" 
-                className="text-white border-white/60 hover:border-[#d4af37] hover:text-[#d4af37] py-7 px-10 text-base font-light rounded-none transition-colors duration-300" 
+                className="text-[var(--luxury-pink-600)] border-[var(--luxury-pink-200)] hover:border-[var(--luxury-pink-400)] hover:bg-[var(--luxury-pink-50)] py-7 px-10 text-base font-light rounded-none transition-all duration-300" 
                 asChild
               >
-                <Link href="/products/mattress">Каталог матрасов</Link>
+                <Link href="/products/mattress">Премиум матрасы</Link>
               </Button>
               
-              <Link href="#explore" className="text-white/80 hover:text-white transition-colors duration-300 flex items-center gap-2 group">
-                <span className="border-b border-transparent group-hover:border-white/40 pb-1">Узнать больше</span>
+              <Link href="#explore" className="text-[var(--luxury-pink-700)]/80 hover:text-[var(--luxury-pink-600)] transition-colors duration-300 flex items-center gap-2 group">
+                <span className="border-b border-transparent group-hover:border-[var(--luxury-pink-400)]/40 pb-1">Узнать больше</span>
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-5 h-5 transform group-hover:translate-x-1 transition-transform duration-300">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
                 </svg>
@@ -88,14 +92,14 @@ export default function Home() {
           </div>
         </div>
         
-        {/* Decorative bottom border */}
-        <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-[#1a1a1a] to-transparent z-20"></div>
+        {/* Decorative bottom elements */}
+        <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-[var(--luxury-bg-light)] to-transparent z-20"></div>
         
         {/* Scroll indicator */}
         <div className="absolute bottom-10 left-1/2 transform -translate-x-1/2 z-20 flex flex-col items-center">
-          <span className="text-white/50 text-xs mb-2 tracking-widest uppercase">Прокрутите вниз</span>
-          <div className="w-5 h-9 border border-white/40 rounded-full flex justify-center pt-1">
-            <div className="w-1 h-2 bg-white rounded-full animate-[scroll_1.5s_ease-in-out_infinite]"></div>
+          <span className="text-[var(--luxury-pink-800)]/50 text-xs mb-2 tracking-widest uppercase">Прокрутите вниз</span>
+          <div className="w-6 h-10 border border-[var(--luxury-pink-300)]/40 rounded-full flex justify-center pt-1">
+            <div className="w-1.5 h-3 bg-[var(--luxury-pink-400)] rounded-full animate-[scroll_1.5s_ease-in-out_infinite]"></div>
           </div>
         </div>
       </section>
