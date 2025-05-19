@@ -21,7 +21,7 @@ export default function ProductCardModern({ product }: ProductCardProps) {
 
   return (
     <div className="bg-white group hover:shadow-lg transition-shadow duration-300">
-      <Link href={`/products/${product.id}`} className="block relative overflow-hidden">
+      <Link href={`/product/${product.id}`} className="block relative overflow-hidden">
         <div className="relative">
           <div className={`absolute top-2 left-2 ${badge.bgColor} text-white text-xs font-medium py-1 px-2 z-10 uppercase`}>
             {badge.text}

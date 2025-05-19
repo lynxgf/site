@@ -193,7 +193,7 @@ export default function Home() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {mattresses.map((product) => (
               <div key={product.id} className="bg-white group hover:shadow-lg transition-shadow duration-300">
-                <Link href={`/products/${product.id}`} className="block relative overflow-hidden">
+                <Link href={`/product/${product.id}`} className="block relative overflow-hidden">
                   <div className="relative">
                     {product.discount && product.discount > 0 && (
                       <div className="absolute top-2 left-2 bg-red-500 text-white text-xs font-medium py-1 px-2 z-10 uppercase">
@@ -286,7 +286,7 @@ export default function Home() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {beds.map((product) => (
               <div key={product.id} className="bg-white group hover:shadow-lg transition-shadow duration-300 border border-gray-100">
-                <Link href={`/products/${product.id}`} className="block relative overflow-hidden">
+                <Link href={`/product/${product.id}`} className="block relative overflow-hidden">
                   <div className="relative">
                     {product.discount && product.discount > 0 && (
                       <div className="absolute top-2 left-2 bg-red-500 text-white text-xs font-medium py-1 px-2 z-10 uppercase">
@@ -459,7 +459,7 @@ export default function Home() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {beds.slice(0, 3).map((product) => (
               <div key={product.id} className="bg-white group">
-                <Link href={`/products/${product.id}`} className="block relative overflow-hidden">
+                <Link href={`/product/${product.id}`} className="block relative overflow-hidden">
                   <div className="relative">
                     <img 
                       src={product.images?.[0] || 'https://via.placeholder.com/600x400?text=Нет+изображения'} 

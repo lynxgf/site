@@ -203,14 +203,14 @@ export default function ProductsPage() {
                       max={priceRange.max}
                       value={maxPrice}
                       onChange={(e) => setMaxPrice(Number(e.target.value))}
-                      className="w-full h-1 appearance-none rounded-md bg-gray-200 accent-[#8e2b85] focus:outline-none"
+                      className="w-full h-2 appearance-none rounded-md bg-gray-200 accent-[#8e2b85] focus:outline-none"
                     />
-                    <div className="flex justify-between text-xs text-gray-500 mt-2">
+                    <div className="flex justify-between text-xs font-medium text-black mt-2">
                       <span>{priceRange.min} ₽</span>
                       <span>{priceRange.max} ₽</span>
                     </div>
                     <div 
-                      className="absolute -mt-3 text-xs bg-[#8e2b85] text-white px-1 py-0.5 rounded transform -translate-x-1/2 opacity-80"
+                      className="absolute -mt-3 text-xs bg-[#8e2b85] text-white px-1 py-0.5 rounded transform -translate-x-1/2"
                       style={{ left: `${((maxPrice - priceRange.min) / (priceRange.max - priceRange.min)) * 100}%` }}
                     >
                       {maxPrice} ₽
