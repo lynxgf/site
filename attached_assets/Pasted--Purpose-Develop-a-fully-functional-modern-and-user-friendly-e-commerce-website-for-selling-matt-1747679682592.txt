@@ -1,0 +1,103 @@
+🎯 Purpose
+Develop a fully functional, modern, and user-friendly e-commerce website for selling mattresses and beds with various customization options (sizes, fabric categories, lifting mechanisms, etc.), where each option dynamically affects the price.
+
+🧱 Key Features
+1. Product Card (Frontend)
+Each product page must include:
+
+📸 Product image(s)
+
+📝 Description
+
+💵 Base price (for default configuration: standard size, lowest fabric category)
+
+📐 Size selection (dropdown or radio buttons with price updates)
+
+✂️ Option for custom size input (with custom pricing logic)
+
+🛏 For beds: Checkbox/option to add lifting mechanism (adds to price)
+
+🎨 Fabric selector:
+
+By category (e.g., Economy, Premium)
+
+Within each category, color options (with preview if possible)
+
+Each category changes the price
+
+📋 Technical characteristics/specs
+
+💰 Final price updates dynamically as options change
+
+2. Admin Panel (Backend CMS)
+Should allow for easy product management:
+
+➕ Add/edit/delete products
+
+⚙ Add/edit available options:
+
+Sizes (standard and custom range)
+
+Fabric categories and colors
+
+Lifting mechanism toggle
+
+📊 Set base price, and incremental prices per:
+
+Size
+
+Fabric category
+
+Lifting mechanism
+
+🖼 Upload images
+
+🧾 Add detailed description and characteristics
+
+🏷️ Set product tags, category (mattress/bed), availability, and visibility
+
+💡 Functional Requirements
+⚡ Dynamic pricing calculation on the product page
+
+📱 Responsive design for mobile/tablet
+
+🌐 Localized for Russian language (UTF-8 support, Cyrillic fonts)
+
+🔎 Product filtering by category, size, fabric, etc.
+
+🛒 Cart and checkout system
+
+🔐 Secure customer accounts and admin panel
+
+🔄 Optional: Integration with CRM or delivery services
+
+🧑‍🎨 Design Expectations
+Clean and modern UI
+
+Focus on usability for both users and admin
+
+Clear CTA (buy, add to cart, etc.)
+
+Based on example design in uploaded screenshot
+
+🧰 Tech Stack Recommendation (Flexible)
+Frontend: React / Next.js / Tailwind CSS
+
+Backend: Node.js + Express / Strapi / Medusa.js
+
+Database: PostgreSQL / MongoDB
+
+Admin Panel: Strapi, Medusa.js, or custom CMS
+
+Hosting: Vercel, Netlify, or VPS
+
+Image Storage: Cloudinary / local server
+
+📦 Optional Enhancements
+3D preview or fabric swatch zoom
+
+Saved configurations
+
+Discount/promo code system
+
+Real-time price preview in list view
