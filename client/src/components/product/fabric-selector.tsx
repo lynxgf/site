@@ -25,31 +25,57 @@ export default function FabricSelector({
   );
 
   return (
-    <div className="mb-6">
-      <Label className="block text-gray-700 font-medium mb-2">
-        Цвет ткани
-      </Label>
-      <div className="grid grid-cols-4 sm:grid-cols-8 gap-3">
+    <div>
+      <div className="grid grid-cols-5 sm:grid-cols-8 gap-2">
         {fabricsInCategory.map((fabric) => (
           <div 
             key={fabric.id}
-            className={`fabric-swatch cursor-pointer w-12 h-12 rounded-full overflow-hidden ${
-              selectedFabric === fabric.id ? 'active' : ''
-            }`}
             onClick={() => onSelectFabric(fabric.id)}
-            title={fabric.name}
+            className="cursor-pointer relative group"
           >
-            <img 
-              src={fabric.thumbnail} 
-              alt={fabric.name} 
-              className="w-full h-full object-cover" 
-            />
+            <div
+              className={`
+                w-12 h-12 rounded-full overflow-hidden border-2 transition-all
+                ${selectedFabric === fabric.id 
+                  ? 'border-neutral-800 shadow-sm' 
+                  : 'border-neutral-200 hover:border-neutral-400'
+                }
+              `}
+              title={fabric.name}
+            >
+              <img 
+                src={fabric.thumbnail} 
+                alt={fabric.name} 
+                className="w-full h-full object-cover" 
+              />
+            </div>
+            {selectedFabric === fabric.id && (
+              <span className="absolute -top-1 -right-1 w-4 h-4 bg-neutral-800 text-white rounded-full flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-3 h-3">
+                  <path fillRule="evenodd" d="M19.916 4.626a.75.75 0 01.208 1.04l-9 13.5a.75.75 0 01-1.154.114l-6-6a.75.75 0 011.06-1.06l5.353 5.353 8.493-12.739a.75.75 0 011.04-.208z" clipRule="evenodd" />
+                </svg>
+              </span>
+            )}
           </div>
         ))}
       </div>
-      <p className="mt-2 text-sm text-gray-600">
-        {selectedFabricObject?.name || 'Выберите цвет'}
-      </p>
+      
+      {/* Selected fabric display */}
+      {selectedFabricObject && (
+        <div className="mt-4 border border-neutral-200 p-3 rounded-sm flex items-center">
+          <div className="w-16 h-16 rounded-sm overflow-hidden border border-neutral-300 mr-4">
+            <img 
+              src={selectedFabricObject.image} 
+              alt={selectedFabricObject.name} 
+              className="w-full h-full object-cover" 
+            />
+          </div>
+          <div>
+            <span className="block font-medium text-neutral-900">{selectedFabricObject.name}</span>
+            <span className="text-sm text-neutral-500">Категория: {selectedFabricCategory}</span>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -120,39 +120,82 @@ export default function ProductConfigurator({ product }: ProductConfiguratorProp
   };
 
   return (
-    <div>
-      <h1 className="text-3xl font-bold text-gray-900 mb-2">{product.name}</h1>
-      <div className="flex items-center mb-4">
-        <div className="flex text-yellow-400">
-          <i className="fas fa-star"></i>
-          <i className="fas fa-star"></i>
-          <i className="fas fa-star"></i>
-          <i className="fas fa-star"></i>
-          <i className="fas fa-star-half-alt"></i>
+    <div className="flex flex-col h-full">
+      <div className="mb-8">
+        {/* Product description section */}
+        <p className="text-neutral-600 mb-8 leading-relaxed text-[15px]">{product.description}</p>
+        
+        {/* Product price section with badges */}
+        <div className="mb-8 flex items-end justify-between">
+          <div>
+            <div className="flex items-baseline gap-3">
+              <span className="text-3xl font-medium text-neutral-900">{formatPrice(totalPrice)} ₽</span>
+              {product.discount > 0 && (
+                <span className="text-lg text-neutral-500 line-through">{formatPrice(basePrice)} ₽</span>
+              )}
+            </div>
+            
+            <div className="flex items-center gap-2 mt-2">
+              {product.discount > 0 && (
+                <span className="inline-block bg-red-500 text-white text-xs font-medium py-1 px-2">
+                  -{product.discount}%
+                </span>
+              )}
+              {product.inStock && (
+                <span className="inline-block bg-emerald-100 text-emerald-800 text-xs font-medium py-1 px-2">
+                  В наличии
+                </span>
+              )}
+              {product.featured && (
+                <span className="inline-block bg-neutral-100 text-neutral-800 text-xs font-medium py-1 px-2">
+                  Бестселлер
+                </span>
+              )}
+            </div>
+          </div>
+          
+          <div className="flex items-center gap-4">
+            <button className="text-neutral-500 hover:text-neutral-900 transition-colors">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
+                <path d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
+              </svg>
+            </button>
+            <button className="text-neutral-500 hover:text-neutral-900 transition-colors">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
+                <path d="M7.5 21L3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5" />
+              </svg>
+            </button>
+          </div>
         </div>
-        <span className="ml-2 text-sm text-gray-500">4.8 (124 отзыва)</span>
       </div>
-      <p className="text-gray-700 mb-6">{product.description}</p>
 
       {/* Configuration Options */}
-      <div className="bg-gray-50 rounded-lg p-6 mb-6">
-        <h2 className="text-xl font-semibold mb-4">Конфигурация</h2>
-        
+      <div className="mb-8">
         {/* Size selection */}
         <div className="mb-6">
-          <Label className="block text-gray-700 font-medium mb-2">Размер</Label>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          <div className="flex items-center justify-between mb-3">
+            <Label className="text-neutral-800 font-medium text-sm uppercase tracking-wide">Выберите размер</Label>
+            <button className="text-xs text-neutral-600 hover:text-neutral-900 hover:underline">Таблица размеров</button>
+          </div>
+          <div className="grid grid-cols-3 lg:grid-cols-4 gap-2">
             {product.sizes.map((size: Size) => (
               <button 
                 key={size.id}
-                className={`py-2 px-3 border rounded-md text-center transition-colors ${
+                className={`py-2 px-1 border text-sm transition-all ${
                   selectedSize === size.id 
-                    ? 'bg-primary-100 border-primary-600 text-primary-800' 
-                    : 'border-gray-300 hover:border-primary-400'
+                    ? 'border-neutral-800 bg-neutral-50 font-medium text-neutral-900' 
+                    : 'border-neutral-200 text-neutral-600 hover:border-neutral-400'
                 }`}
                 onClick={() => setSelectedSize(size.id)}
               >
-                <span>{size.label}</span>
+                <div className="flex flex-col items-center">
+                  <span>{size.label}</span>
+                  {size.price !== 0 && (
+                    <span className={`text-xs mt-1 ${size.price < 0 ? 'text-green-600' : 'text-neutral-500'}`}>
+                      {size.price > 0 ? '+' : ''}{formatPrice(size.price)} ₽
+                    </span>
+                  )}
+                </div>
               </button>
             ))}
           </div>
@@ -160,10 +203,10 @@ export default function ProductConfigurator({ product }: ProductConfiguratorProp
         
         {/* Custom size */}
         {selectedSize === 'custom' && (
-          <div className="mb-6">
+          <div className="mb-6 p-4 bg-neutral-50 border border-neutral-200">
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label className="block text-gray-700 text-sm font-medium mb-2">
+                <Label className="block text-neutral-700 text-sm font-medium mb-2">
                   Ширина (см)
                 </Label>
                 <Input 
@@ -175,11 +218,11 @@ export default function ProductConfigurator({ product }: ProductConfiguratorProp
                   )}
                   min="80" 
                   max="220"
-                  className="block w-full"
+                  className="block w-full border-neutral-300 focus:border-neutral-800 focus:ring-neutral-800"
                 />
               </div>
               <div>
-                <Label className="block text-gray-700 text-sm font-medium mb-2">
+                <Label className="block text-neutral-700 text-sm font-medium mb-2">
                   Длина (см)
                 </Label>
                 <Input 
@@ -191,7 +234,7 @@ export default function ProductConfigurator({ product }: ProductConfiguratorProp
                   )}
                   min="180" 
                   max="220"
-                  className="block w-full"
+                  className="block w-full border-neutral-300 focus:border-neutral-800 focus:ring-neutral-800"
                 />
               </div>
             </div>
@@ -200,124 +243,166 @@ export default function ProductConfigurator({ product }: ProductConfiguratorProp
         
         {/* Fabric category */}
         <div className="mb-6">
-          <Label className="block text-gray-700 font-medium mb-2">Категория ткани</Label>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <Label className="text-neutral-800 font-medium text-sm uppercase tracking-wide block mb-3">
+            Категория ткани
+          </Label>
+          <div className="grid grid-cols-3 gap-2">
             {product.fabricCategories.map((category: FabricCategory) => (
               <button 
                 key={category.id}
-                className={`py-2 px-3 border rounded-md text-center transition-colors ${
+                className={`py-3 border text-center transition-all ${
                   selectedFabricCategory === category.id 
-                    ? 'bg-primary-100 border-primary-600 text-primary-800' 
-                    : 'border-gray-300 hover:border-primary-400'
+                    ? 'border-neutral-800 bg-neutral-50 font-medium text-neutral-900' 
+                    : 'border-neutral-200 text-neutral-600 hover:border-neutral-400'
                 }`}
                 onClick={() => setSelectedFabricCategory(category.id)}
               >
-                <span>{category.name}</span>
+                <div className="flex flex-col items-center">
+                  <span>{category.name}</span>
+                  {category.priceMultiplier !== 1 && (
+                    <span className="text-xs mt-1 text-neutral-500">
+                      {category.priceMultiplier < 1 ? '-' : '+'}
+                      {Math.abs(Math.round((category.priceMultiplier - 1) * 100))}%
+                    </span>
+                  )}
+                </div>
               </button>
             ))}
           </div>
         </div>
         
         {/* Fabric swatches */}
-        <FabricSelector 
-          fabrics={product.fabrics} 
-          selectedFabricCategory={selectedFabricCategory}
-          selectedFabric={selectedFabric}
-          onSelectFabric={setSelectedFabric}
-        />
+        <div className="mb-8">
+          <Label className="text-neutral-800 font-medium text-sm uppercase tracking-wide block mb-3">
+            Выберите обивку
+          </Label>
+          <FabricSelector 
+            fabrics={product.fabrics} 
+            selectedFabricCategory={selectedFabricCategory}
+            selectedFabric={selectedFabric}
+            onSelectFabric={setSelectedFabric}
+          />
+        </div>
         
         {/* Lifting mechanism option - only for beds */}
         {product.category === 'bed' && product.hasLiftingMechanism && (
-          <div className="mb-6">
-            <div className="flex items-center">
-              <Checkbox 
-                id="lifting" 
-                checked={hasLiftingMechanism}
-                onCheckedChange={() => toggleLiftingMechanism()} 
-                className="h-4 w-4"
-              />
-              <Label htmlFor="lifting" className="ml-2 block text-gray-700">
-                Подъемный механизм
-              </Label>
+          <div className="mb-6 border border-neutral-200 p-4 rounded-sm">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center">
+                <div className="mr-3 w-10 h-10 flex items-center justify-center bg-neutral-100 rounded-full">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 text-neutral-700">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                  </svg>
+                </div>
+                <div>
+                  <Label htmlFor="lifting" className="block text-neutral-800 font-medium">
+                    Подъемный механизм
+                  </Label>
+                  <p className="text-sm text-neutral-500">
+                    Удобное хранение вещей под кроватью
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-center">
+                <span className="text-sm font-medium mr-3">+{formatPrice(liftingMechanismPrice)} ₽</span>
+                <Checkbox 
+                  id="lifting" 
+                  checked={hasLiftingMechanism}
+                  onCheckedChange={() => toggleLiftingMechanism()} 
+                  className="h-5 w-5 border-neutral-300 text-neutral-800 focus:ring-neutral-800"
+                />
+              </div>
             </div>
-            <p className="mt-1 text-sm text-gray-500">
-              Удобное хранение вещей под кроватью
-            </p>
           </div>
         )}
       </div>
       
       {/* Price and Add to Cart */}
-      <div className="bg-white border border-gray-200 rounded-lg p-6 sticky top-20">
-        <div className="flex items-baseline justify-between mb-4">
-          <div>
-            <p className="text-sm text-gray-500">Итоговая цена</p>
-            <div className="flex items-baseline">
-              <span className="text-3xl font-bold text-gray-900">
-                {formatPrice(totalPrice)}
-              </span>
-              <span className="ml-2 text-gray-500">₽</span>
-            </div>
-          </div>
-          {product.discount > 0 && (
-            <div className="text-right">
-              <p className="text-sm text-accent-500">Скидка</p>
-              <p className="font-medium text-accent-500">
-                -{formatPrice(discountAmount)} ₽
-              </p>
-            </div>
-          )}
-        </div>
+      <div className="mt-auto">
+        <Separator className="mb-6" />
         
-        <div className="space-y-3 mb-6">
-          <div className="flex justify-between text-sm">
-            <span className="text-gray-600">Базовая цена:</span>
+        <div className="space-y-5 mb-6">
+          <div className="flex items-baseline justify-between">
+            <div className="flex items-center text-sm text-neutral-600">
+              <span>Базовая цена</span>
+              <span className="inline-block ml-1 bg-neutral-100 text-neutral-500 rounded-full w-4 h-4 text-xs flex items-center justify-center cursor-help">?</span>
+            </div>
             <span className="font-medium">{formatPrice(basePrice)} ₽</span>
           </div>
+          
           {sizePriceDifference !== 0 && (
-            <div className="flex justify-between text-sm">
-              <span className="text-gray-600">Наценка за размер:</span>
-              <span className="font-medium">
+            <div className="flex items-baseline justify-between">
+              <span className="text-sm text-neutral-600">Доплата за размер</span>
+              <span className={`font-medium ${sizePriceDifference < 0 ? 'text-green-600' : ''}`}>
                 {(sizePriceDifference > 0 ? '+' : '')}{formatPrice(sizePriceDifference)} ₽
               </span>
             </div>
           )}
+          
           {fabricPriceDifference !== 0 && (
-            <div className="flex justify-between text-sm">
-              <span className="text-gray-600">Наценка за ткань:</span>
-              <span className="font-medium">
+            <div className="flex items-baseline justify-between">
+              <span className="text-sm text-neutral-600">Выбранная категория ткани</span>
+              <span className={`font-medium ${fabricPriceDifference < 0 ? 'text-green-600' : ''}`}>
                 {fabricPriceDifference > 0 ? '+' : ''}{formatPrice(fabricPriceDifference)} ₽
               </span>
             </div>
           )}
+          
           {hasLiftingMechanism && (
-            <div className="flex justify-between text-sm">
-              <span className="text-gray-600">Подъемный механизм:</span>
+            <div className="flex items-baseline justify-between">
+              <span className="text-sm text-neutral-600">Подъемный механизм</span>
               <span className="font-medium">+{formatPrice(liftingMechanismPrice)} ₽</span>
             </div>
           )}
-          {(hasLiftingMechanism || sizePriceDifference !== 0 || fabricPriceDifference !== 0) && (
-            <Separator className="my-2" />
+          
+          {product.discount > 0 && (
+            <div className="flex items-baseline justify-between">
+              <span className="text-sm text-red-600">Скидка {product.discount}%</span>
+              <span className="font-medium text-red-600">
+                -{formatPrice(discountAmount)} ₽
+              </span>
+            </div>
           )}
         </div>
         
-        <div className="space-y-4">
-          <Button 
-            className="w-full bg-primary-800 hover:bg-primary-900 text-white"
-            onClick={handleAddToCart}
-            disabled={isCartUpdating}
-          >
-            {isCartUpdating ? 'Добавление...' : 'Добавить в корзину'}
-          </Button>
-          <Button className="w-full" variant="outline">
+        <div className="flex flex-col gap-3">
+          <div className="flex items-center gap-3">
+            <Button 
+              className="flex-grow bg-neutral-900 hover:bg-black text-white font-medium py-6"
+              onClick={handleAddToCart}
+              disabled={isCartUpdating}
+            >
+              {isCartUpdating ? 'Добавление...' : 'Добавить в корзину'}
+            </Button>
+            <Button 
+              className="aspect-square p-0 border-neutral-300 hover:bg-neutral-100" 
+              size="icon" 
+              variant="outline"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
+                <path d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
+              </svg>
+            </Button>
+          </div>
+          
+          <Button className="bg-white text-neutral-900 border-neutral-300 hover:bg-neutral-100 font-medium" variant="outline">
             Купить в один клик
           </Button>
         </div>
         
-        <div className="mt-4 text-center">
-          <a href="#" className="text-primary-700 text-sm flex items-center justify-center">
-            <i className="far fa-heart mr-2"></i> Добавить в избранное
-          </a>
+        <div className="mt-6 flex items-center justify-between text-sm text-neutral-600">
+          <div className="flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 18.75a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 01-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 00-3.213-9.193 2.056 2.056 0 00-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 00-10.026 0 1.106 1.106 0 00-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12" />
+            </svg>
+            <span>Доставка от 2 дней</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M11.35 3.836c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m8.9-4.414c.376.023.75.05 1.124.08 1.131.094 1.976 1.057 1.976 2.192V16.5A2.25 2.25 0 0118 18.75h-2.25m-7.5-10.5H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V18.75m-7.5-10.5h6.375c.621 0 1.125.504 1.125 1.125v9.375m-8.25-3l1.5 1.5 3-3.75" />
+            </svg>
+            <span>Гарантия качества</span>
+          </div>
         </div>
       </div>
     </div>
