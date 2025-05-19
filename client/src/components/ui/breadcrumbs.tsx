@@ -15,7 +15,7 @@ export function Breadcrumbs({ items, className = "" }: BreadcrumbsProps) {
     <nav className={`flex text-sm ${className}`}>
       <ol className="flex items-center space-x-2">
         {items.map((item, index) => (
-          <li key={item.href} className="flex items-center">
+          <li key={`${item.href}-${index}`} className="flex items-center">
             {index > 0 && (
               <svg 
                 xmlns="http://www.w3.org/2000/svg" 

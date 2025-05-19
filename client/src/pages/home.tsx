@@ -14,13 +14,13 @@ export default function Home() {
 
   return (
     <div>
-      {/* Hero Section - Minimal Dark Style */}
+      {/* Hero Section - Focus on Mattresses */}
       <section className="relative h-screen min-h-[600px] bg-gray-900 overflow-hidden">
         {/* Background image with overlay */}
         <div className="absolute inset-0 z-10">
           <img 
-            src="https://images.unsplash.com/photo-1558882224-dda166733046?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80" 
-            alt="Дизайнерская кровать в современном интерьере" 
+            src="https://images.unsplash.com/photo-1631052667614-63c990f8b9a0?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80" 
+            alt="Премиальный ортопедический матрас в современной спальне" 
             className="w-full h-full object-cover object-center"
           />
           <div className="absolute inset-0 bg-black/40"></div>
@@ -30,18 +30,18 @@ export default function Home() {
         <div className="relative z-20 max-w-7xl mx-auto px-6 h-full flex items-center">
           <div className="max-w-2xl">
             <div className="inline-flex items-center mb-6 border-b border-[#d4af37] pb-2">
-              <span className="text-[#d4af37] tracking-widest text-xs font-medium uppercase">ПЕРСОНАЛИЗАЦИЯ</span>
+              <span className="text-[#d4af37] tracking-widest text-xs font-medium uppercase">ЗДОРОВЫЙ СОН</span>
             </div>
             
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-light text-white mb-6 leading-tight">
-              Создайте <span className="font-medium italic">идеальную</span>
+              Ортопедические <span className="font-medium italic">матрасы</span>
               <br />
-              кровать вашей мечты
+              для идеального сна
             </h1>
             
             <p className="text-lg text-white/80 mb-12 leading-relaxed max-w-xl">
-              Индивидуальное изготовление мебели по вашим параметрам. Выберите размер, материал обивки и 
-              дополнительные элементы, чтобы создать кровать, которая идеально впишется в интерьер вашей спальни.
+              Подберите матрас, который идеально подойдет для вашего здоровья и комфорта. 
+              Инновационные материалы, многозонная поддержка и технологии, улучшающие качество вашего сна.
             </p>
             
             <div className="flex flex-wrap items-center gap-6">
@@ -50,7 +50,16 @@ export default function Home() {
                 className="bg-[#d4af37] text-black hover:bg-[#e6c76a] transition-colors py-6 px-10 text-base font-normal rounded-none" 
                 asChild
               >
-                <Link href="/configurator">Создать свою кровать</Link>
+                <Link href="/products/mattress">Выбрать матрас</Link>
+              </Button>
+              
+              <Button 
+                size="lg" 
+                variant="outline" 
+                className="border border-white text-white hover:bg-white/10 transition-colors py-6 px-10 text-base font-normal rounded-none" 
+                asChild
+              >
+                <Link href="/products/bed">Каталог кроватей</Link>
               </Button>
               
               <Link href="#explore" className="text-white hover:text-[#d4af37] transition-colors flex items-center gap-2 group">
@@ -162,19 +171,19 @@ export default function Home() {
         </div>
       </section>
       
-      {/* Popular Models */}
+      {/* Популярные матрасы */}
       <section className="bg-gray-50 py-16">
         <div className="container mx-auto px-6">
           <div className="mb-12">
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-3xl font-normal text-gray-900">
-                Популярные <span className="font-medium italic">модели</span>
+                Лучшие <span className="font-medium italic">матрасы</span>
               </h2>
               <Link 
-                href="/products" 
+                href="/products/mattress" 
                 className="flex items-center text-gray-600 hover:text-[#8e2b85]"
               >
-                <span>Показать все коллекции</span>
+                <span>Все матрасы</span>
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4 ml-1">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
                 </svg>
@@ -183,7 +192,7 @@ export default function Home() {
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {beds.slice(0, 3).map((product) => (
+            {mattresses.map((product) => (
               <div key={product.id} className="bg-white group hover:shadow-lg transition-shadow duration-300">
                 <Link href={`/products/${product.id}`} className="block relative overflow-hidden">
                   <div className="relative">
@@ -255,32 +264,148 @@ export default function Home() {
         </div>
       </section>
       
-      {/* Customization Section with Image */}
+      {/* Коллекция кроватей */}
+      <section className="bg-white py-16">
+        <div className="container mx-auto px-6">
+          <div className="mb-12">
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-3xl font-normal text-gray-900">
+                Стильные <span className="font-medium italic">кровати</span>
+              </h2>
+              <Link 
+                href="/products/bed" 
+                className="flex items-center text-gray-600 hover:text-[#8e2b85]"
+              >
+                <span>Все кровати</span>
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4 ml-1">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                </svg>
+              </Link>
+            </div>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {beds.map((product) => (
+              <div key={product.id} className="bg-white group hover:shadow-lg transition-shadow duration-300 border border-gray-100">
+                <Link href={`/products/${product.id}`} className="block relative overflow-hidden">
+                  <div className="relative">
+                    {product.discount && product.discount > 0 && (
+                      <div className="absolute top-2 left-2 bg-red-500 text-white text-xs font-medium py-1 px-2 z-10 uppercase">
+                        -{product.discount}%
+                      </div>
+                    )}
+                    
+                    <div className="absolute top-2 right-2 bg-green-600 text-white text-xs font-medium py-1 px-2 z-10 uppercase">
+                      В наличии
+                    </div>
+                    
+                    <img 
+                      src={product.images?.[0] || 'https://via.placeholder.com/600x400?text=Нет+изображения'} 
+                      alt={product.name} 
+                      className="w-full aspect-square object-cover object-center group-hover:scale-105 transition-transform duration-500"
+                    />
+                  </div>
+                  
+                  <div className="p-4">
+                    <div className="uppercase text-xs tracking-wider text-gray-500 mb-1">КРОВАТИ</div>
+                    <h3 className="text-lg font-medium text-gray-900 mb-2 group-hover:text-[#8e2b85] transition-colors">{product.name}</h3>
+                    
+                    <div className="flex items-center text-yellow-400 mb-3">
+                      <span className="flex">
+                        {[...Array(5)].map((_, i) => (
+                          <svg key={i} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">
+                            <path fillRule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.007 5.404.433c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.433 2.082-5.006z" clipRule="evenodd" />
+                          </svg>
+                        ))}
+                      </span>
+                      <span className="text-xs text-gray-500 ml-1">(29)</span>
+                    </div>
+                    
+                    <div className="flex items-center justify-between">
+                      <div>
+                        {product.discount && product.discount > 0 ? (
+                          <div className="flex flex-col">
+                            <span className="text-black font-medium text-lg">
+                              {Math.round(parseFloat(product.basePrice) * (1 - product.discount / 100))} ₽
+                            </span>
+                            <span className="text-gray-500 text-sm line-through">
+                              {product.basePrice} ₽
+                            </span>
+                          </div>
+                        ) : (
+                          <span className="text-black font-medium text-lg">
+                            {product.basePrice} ₽
+                          </span>
+                        )}
+                      </div>
+                      
+                      <button className="w-8 h-8 flex items-center justify-center bg-black text-white hover:bg-[#8e2b85] transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+                </Link>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Mattress Technology Section */}
       <section className="bg-gray-900 py-20">
         <div className="container mx-auto px-6">
           <div className="flex flex-col md:flex-row items-center">
             <div className="md:w-1/2 md:pr-12 mb-10 md:mb-0">
-              <h5 className="uppercase text-[#d4af37] tracking-widest text-xs mb-3">ПЕРСОНАЛИЗАЦИЯ</h5>
+              <h5 className="uppercase text-[#d4af37] tracking-widest text-xs mb-3">ИННОВАЦИОННЫЕ ТЕХНОЛОГИИ</h5>
               <h2 className="text-4xl font-light text-white mb-6 leading-tight">
-                Создайте <span className="font-medium italic">идеальную</span><br />
-                кровать вашей мечты
+                Ортопедические <span className="font-medium italic">матрасы</span><br />
+                для здорового сна
               </h2>
               <p className="text-gray-300 leading-relaxed mb-8">
-                Индивидуальное изготовление мебели по вашим параметрам. Выберите размер, материал обивки и 
-                дополнительные элементы, чтобы создать кровать, которая идеально впишется в интерьер вашей спальни 
-                и подарит непревзойденный комфорт.
+                Наши матрасы разработаны с использованием инновационных технологий для обеспечения правильного положения позвоночника и 
+                максимального комфорта во время сна. Многозонная поддержка, натуральные материалы и различные 
+                уровни жесткости для вашего идеального сна.
               </p>
+              
+              <div className="space-y-4 mb-8">
+                <div className="flex items-start">
+                  <div className="flex-shrink-0 w-5 h-5 bg-[#d4af37] flex items-center justify-center mr-3 mt-0.5">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-3 h-3 text-black">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                    </svg>
+                  </div>
+                  <p className="text-gray-300 text-sm">7 зон поддержки для оптимального распределения нагрузки</p>
+                </div>
+                <div className="flex items-start">
+                  <div className="flex-shrink-0 w-5 h-5 bg-[#d4af37] flex items-center justify-center mr-3 mt-0.5">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-3 h-3 text-black">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                    </svg>
+                  </div>
+                  <p className="text-gray-300 text-sm">Натуральные и гипоаллергенные материалы</p>
+                </div>
+                <div className="flex items-start">
+                  <div className="flex-shrink-0 w-5 h-5 bg-[#d4af37] flex items-center justify-center mr-3 mt-0.5">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-3 h-3 text-black">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                    </svg>
+                  </div>
+                  <p className="text-gray-300 text-sm">Система «Климат-контроль» для комфортного микроклимата</p>
+                </div>
+              </div>
               
               <Button 
                 size="lg" 
                 className="bg-[#d4af37] text-black hover:bg-[#e6c76a] transition-colors py-4 px-8 text-base font-normal rounded-none" 
                 asChild
               >
-                <Link href="/configurator">Создать свою кровать</Link>
+                <Link href="/products/mattress">Каталог матрасов</Link>
               </Button>
               
               <Link href="/products/bed" className="ml-6 text-white hover:text-[#d4af37] transition-colors inline-flex items-center">
-                <span>Узнать больше</span>
+                <span>Кровати</span>
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-4 h-4 ml-1">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
                 </svg>
@@ -289,17 +414,17 @@ export default function Home() {
             
             <div className="md:w-1/2 relative">
               <img 
-                src="https://images.unsplash.com/photo-1560448204-603b3fc33ddc?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" 
-                alt="Элегантная спальня с дизайнерской кроватью" 
+                src="https://images.unsplash.com/photo-1571508601891-ca5e7a713859?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" 
+                alt="Премиальный ортопедический матрас из натуральных материалов" 
                 className="w-full"
               />
               
               <div className="absolute bottom-4 right-4 bg-black/80 p-4 max-w-xs">
-                <h4 className="text-[#d4af37] font-light text-base mb-1">Коллекция «Роял»</h4>
-                <p className="text-white/90 text-sm mb-2">Идеальное сочетание роскоши и комфорта для вашей спальни</p>
+                <h4 className="text-[#d4af37] font-light text-base mb-1">Матрас «Эргономик»</h4>
+                <p className="text-white/90 text-sm mb-2">Многозонный ортопедический матрас с эффектом памяти</p>
                 <div className="flex justify-between items-center">
                   <span className="text-white/60 text-xs">От</span>
-                  <span className="text-white font-medium text-xl">59 900 ₽</span>
+                  <span className="text-white font-medium text-xl">32 750 ₽</span>
                 </div>
               </div>
             </div>
