@@ -85,6 +85,10 @@
 
 /* Define Custom Color Variables */
 :root {
+  /* Обновление переменных для ThemeUI */
+  --primary: 142 43 133; /* #8e2b85 в формате RGB */
+  --primary-foreground: 255 255 255; /* белый текст */
+  
   /* Основные цвета бренда */
   --luxury-primary: #8e2b85; /* Основной фиолетовый цвет (из логотипа) */
   --luxury-primary-dark: #702269; /* Темный фиолетовый для ховеров */
