@@ -72,7 +72,7 @@ export default function Home() {
         </div>
         
         {/* Scroll indicator */}
-        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex flex-col items-center text-white/70 animate-bounce">
+        <div className="absolute bottom-8 left-0 right-0 mx-auto flex flex-col items-center justify-center text-white/70 animate-bounce text-center">
           <span className="text-xs mb-2 tracking-widest uppercase">Прокрутите вниз</span>
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
             <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
