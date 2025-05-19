@@ -309,7 +309,7 @@ export default function ProductConfigurator({ product }: ProductConfiguratorProp
                   id="lifting" 
                   checked={hasLiftingMechanism}
                   onCheckedChange={() => toggleLiftingMechanism()} 
-                  className="h-5 w-5 border-neutral-300 text-neutral-800 focus:ring-neutral-800"
+                  className="h-6 w-6 rounded-md border-neutral-300 bg-white text-[#8e2b85] focus:ring-[#8e2b85] focus:ring-offset-2"
                 />
               </div>
             </div>
