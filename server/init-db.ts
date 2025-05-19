@@ -234,13 +234,3 @@ async function initDb() {
 
 // Export the function for use in index.ts
 export { initDb };
-
-// Run the initialization if this script is run directly
-if (require.main === module) {
-  initDb()
-    .then(() => process.exit(0))
-    .catch(error => {
-      console.error('Database initialization failed:', error);
-      process.exit(1);
-    });
-}
