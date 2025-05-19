@@ -195,14 +195,28 @@ export default function ProductsPage() {
                     max={priceRange.max}
                   />
                 </div>
-                <input
-                  type="range"
-                  min={priceRange.min}
-                  max={priceRange.max}
-                  value={maxPrice}
-                  onChange={(e) => setMaxPrice(Number(e.target.value))}
-                  className="w-full"
-                />
+                <div className="px-1">
+                  <div className="relative pt-1">
+                    <input
+                      type="range"
+                      min={priceRange.min}
+                      max={priceRange.max}
+                      value={maxPrice}
+                      onChange={(e) => setMaxPrice(Number(e.target.value))}
+                      className="w-full h-1 appearance-none rounded-md bg-gray-200 accent-[#8e2b85] focus:outline-none"
+                    />
+                    <div className="flex justify-between text-xs text-gray-500 mt-2">
+                      <span>{priceRange.min} ₽</span>
+                      <span>{priceRange.max} ₽</span>
+                    </div>
+                    <div 
+                      className="absolute -mt-3 text-xs bg-[#8e2b85] text-white px-1 py-0.5 rounded transform -translate-x-1/2 opacity-80"
+                      style={{ left: `${((maxPrice - priceRange.min) / (priceRange.max - priceRange.min)) * 100}%` }}
+                    >
+                      {maxPrice} ₽
+                    </div>
+                  </div>
+                </div>
               </div>
               
               <div className="mb-6">
