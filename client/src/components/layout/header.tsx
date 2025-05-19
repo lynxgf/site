@@ -72,8 +72,8 @@ export default function Header() {
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-10">
             <Link href="/" className="flex items-center hover:opacity-80 transition-opacity">
-              <div className="h-10 w-auto">
-                <img src="/logo.svg" alt="Матрасовъ" className="h-full w-auto" />
+              <div className="h-12 w-auto">
+                <img src="/logo.png" alt="Матрасовъ" className="h-full w-auto" />
               </div>
             </Link>
             
