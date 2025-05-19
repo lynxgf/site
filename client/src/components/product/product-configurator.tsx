@@ -305,12 +305,19 @@ export default function ProductConfigurator({ product }: ProductConfiguratorProp
               </div>
               <div className="flex items-center">
                 <span className="text-sm font-medium mr-3">+{formatPrice(liftingMechanismPrice)} ₽</span>
-                <Checkbox 
-                  id="lifting" 
-                  checked={hasLiftingMechanism}
-                  onCheckedChange={() => toggleLiftingMechanism()} 
-                  className="h-6 w-6 rounded-md border-neutral-300 bg-white text-[#8e2b85] focus:ring-[#8e2b85] focus:ring-offset-2"
-                />
+                <div className="relative">
+                  <Checkbox 
+                    id="lifting" 
+                    checked={hasLiftingMechanism}
+                    onCheckedChange={() => toggleLiftingMechanism()} 
+                    className="h-6 w-6 rounded-md border-2 border-neutral-300 bg-white data-[state=checked]:bg-[#8e2b85] data-[state=checked]:border-[#8e2b85] focus:ring-[#8e2b85] focus:ring-offset-2"
+                  />
+                  {hasLiftingMechanism && (
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" className="w-4 h-4 absolute top-1 left-1 pointer-events-none">
+                      <path fillRule="evenodd" d="M19.916 4.626a.75.75 0 01.208 1.04l-9 13.5a.75.75 0 01-1.154.114l-6-6a.75.75 0 011.06-1.06l5.353 5.353 8.493-12.739a.75.75 0 011.04-.208z" clipRule="evenodd" />
+                    </svg>
+                  )}
+                </div>
               </div>
             </div>
           </div>
