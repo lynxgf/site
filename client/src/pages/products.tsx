@@ -174,26 +174,32 @@ export default function ProductsPage() {
               <div className="mb-6">
                 <h4 className="text-sm font-medium mb-3 text-gray-700">Цена, ₽</h4>
                 <div className="flex gap-2 mb-3">
-                  <input
-                    type="number"
-                    name="min"
-                    value={minPrice}
-                    onChange={handlePriceChange}
-                    className="w-full border border-gray-300 px-3 py-2 text-sm"
-                    placeholder="От"
-                    min={priceRange.min}
-                    max={priceRange.max}
-                  />
-                  <input
-                    type="number"
-                    name="max"
-                    value={maxPrice}
-                    onChange={handlePriceChange}
-                    className="w-full border border-gray-300 px-3 py-2 text-sm"
-                    placeholder="До"
-                    min={priceRange.min}
-                    max={priceRange.max}
-                  />
+                  <div className="w-full relative">
+                    <input
+                      type="number"
+                      name="min"
+                      value={minPrice}
+                      onChange={handlePriceChange}
+                      className="w-full bg-white border border-gray-300 px-3 py-2 text-sm font-medium text-black"
+                      placeholder="От"
+                      min={priceRange.min}
+                      max={priceRange.max}
+                    />
+                    <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-xs">₽</span>
+                  </div>
+                  <div className="w-full relative">
+                    <input
+                      type="number"
+                      name="max"
+                      value={maxPrice}
+                      onChange={handlePriceChange}
+                      className="w-full bg-white border border-gray-300 px-3 py-2 text-sm font-medium text-black"
+                      placeholder="До"
+                      min={priceRange.min}
+                      max={priceRange.max}
+                    />
+                    <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-xs">₽</span>
+                  </div>
                 </div>
                 <div className="px-1">
                   <div className="relative pt-1">
