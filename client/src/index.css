@@ -85,23 +85,36 @@
 
 /* Define Custom Color Variables */
 :root {
-  --luxury-pink-50: #fdf2f6;
-  --luxury-pink-100: #fce7ef;
-  --luxury-pink-200: #fbd0de;
-  --luxury-pink-300: #f9a8c2;
-  --luxury-pink-400: #f47da3;
-  --luxury-pink-500: #ee5785;
-  --luxury-pink-600: #d8385e;
-  --luxury-pink-700: #b52c4e;
-  --luxury-pink-800: #962845;
-  --luxury-pink-900: #7d2640;
+  /* Основные цвета бренда */
+  --luxury-primary: #8e2b85; /* Основной фиолетовый цвет (из логотипа) */
+  --luxury-primary-dark: #702269; /* Темный фиолетовый для ховеров */
+  --luxury-primary-light: #a252a3; /* Светлый фиолетовый для акцентов */
   
+  /* Золотые акценты для премиального вида */
   --luxury-gold: #d4af37;
-  --luxury-gold-light: #e7d190;
+  --luxury-gold-light: #e6c76a;
   --luxury-gold-dark: #a78b2c;
   
-  --luxury-bg-dark: #18151a;
-  --luxury-bg-light: #f9f5f6;
+  /* Нейтральные цвета */
+  --luxury-black: #1a1a1a;
+  --luxury-dark-gray: #333333;
+  --luxury-medium-gray: #666666;
+  --luxury-light-gray: #f5f5f5;
+  --luxury-white: #ffffff;
+  
+  /* Границы и разделители */
+  --luxury-border-light: #efe7ed;
+  --luxury-border-medium: #d9ccd5;
+  
+  /* Фоны */
+  --luxury-bg-dark: #1a1a1a;
+  --luxury-bg-light: #f9f9f9;
+  
+  /* Утилитарные */
+  --luxury-success: #2e7d32;
+  --luxury-error: #d32f2f;
+  --luxury-warning: #ed6c02;
+  --luxury-info: #0288d1;
 }
 
 /* Luxury animations and effects */

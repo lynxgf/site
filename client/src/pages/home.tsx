@@ -45,15 +45,15 @@ export default function Home() {
         <div className="relative z-20 max-w-[1400px] mx-auto px-6 h-full flex items-center">
           <div className="max-w-2xl">
             {/* Luxury badge */}
-            <div className="inline-flex items-center mb-6 border-b border-[#d4af37]/60 pb-2">
-              <span className="text-[#d4af37] tracking-widest text-xs font-light uppercase">Luxury Collection 2025</span>
+            <div className="inline-flex items-center mb-6 border-b border-[var(--luxury-gold)]/60 pb-2">
+              <span className="text-[var(--luxury-gold)] tracking-widest text-xs font-light uppercase">Премиальная коллекция 2025</span>
             </div>
             
             <h1 className="text-4xl md:text-5xl lg:text-7xl font-light text-white mb-6 leading-tight tracking-tighter">
               Идеальная 
               <span className="font-medium italic relative inline-block ml-3">
                 роскошь
-                <span className="absolute -bottom-1 left-0 w-full h-px bg-gradient-to-r from-[#d4af37] to-transparent"></span>
+                <span className="absolute -bottom-1 left-0 w-full h-px bg-gradient-to-r from-[var(--luxury-gold)] to-transparent"></span>
               </span>
               <br />
               <span className="text-white/80">для вашей спальни</span>
@@ -67,7 +67,7 @@ export default function Home() {
             <div className="flex flex-wrap items-center gap-6">
               <Button 
                 size="lg" 
-                className="bg-white text-black hover:bg-[#d4af37] hover:text-black transition-colors duration-300 py-7 px-10 text-base font-light rounded-none" 
+                className="bg-[var(--luxury-primary)] text-white hover:bg-[var(--luxury-gold)] hover:text-[var(--luxury-black)] transition-colors duration-300 py-7 px-10 text-base font-normal rounded-none" 
                 asChild
               >
                 <Link href="/products/bed">Каталог кроватей</Link>
@@ -76,14 +76,14 @@ export default function Home() {
               <Button 
                 size="lg" 
                 variant="outline" 
-                className="text-white border-white/60 hover:border-[#d4af37] hover:text-[#d4af37] py-7 px-10 text-base font-light rounded-none transition-colors duration-300" 
+                className="text-white border-white/60 hover:border-[var(--luxury-gold)] hover:text-[var(--luxury-gold)] py-7 px-10 text-base font-normal rounded-none transition-colors duration-300" 
                 asChild
               >
                 <Link href="/products/mattress">Каталог матрасов</Link>
               </Button>
               
               <Link href="#explore" className="text-white/80 hover:text-white transition-colors duration-300 flex items-center gap-2 group">
-                <span className="border-b border-transparent group-hover:border-white/40 pb-1">Узнать больше</span>
+                <span className="border-b border-transparent group-hover:border-[var(--luxury-gold)]/40 pb-1">Узнать больше</span>
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-5 h-5 transform group-hover:translate-x-1 transition-transform duration-300">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
                 </svg>
@@ -105,98 +105,108 @@ export default function Home() {
       </section>
 
       {/* Luxury Features Section */}
-      <section id="explore" className="py-24 relative overflow-hidden bg-white">
+      <section id="explore" className="py-24 relative overflow-hidden bg-[var(--luxury-light-gray)]">
         {/* Decorative elements */}
-        <div className="absolute top-0 right-0 w-64 h-64 bg-[#f8f5f0] opacity-70 rounded-full -translate-y-1/2 translate-x-1/2"></div>
-        <div className="absolute bottom-0 left-0 w-96 h-96 bg-[#f8f5f0] opacity-70 rounded-full translate-y-1/2 -translate-x-1/2"></div>
-        <div className="absolute top-1/4 left-1/4 w-2 h-2 bg-[#d4af37] rounded-full"></div>
-        <div className="absolute bottom-1/4 right-1/4 w-2 h-2 bg-[#d4af37] rounded-full"></div>
+        <div className="absolute top-0 right-0 w-64 h-64 bg-[var(--luxury-border-light)] opacity-70 rounded-full -translate-y-1/2 translate-x-1/2"></div>
+        <div className="absolute bottom-0 left-0 w-96 h-96 bg-[var(--luxury-border-light)] opacity-70 rounded-full translate-y-1/2 -translate-x-1/2"></div>
+        <div className="absolute top-1/4 left-1/4 w-2 h-2 bg-[var(--luxury-primary)] rounded-full"></div>
+        <div className="absolute bottom-1/4 right-1/4 w-2 h-2 bg-[var(--luxury-gold)] rounded-full"></div>
         <div className="absolute inset-0 pattern-grid-lg text-neutral-100 opacity-5"></div>
         
         <div className="max-w-[1400px] mx-auto px-6 relative z-10">
           <div className="max-w-3xl mx-auto text-center mb-20">
-            <span className="text-[#d4af37] tracking-widest text-xs font-light uppercase mb-3 inline-block">Превосходство в деталях</span>
-            <h2 className="text-3xl md:text-4xl font-light text-neutral-900 mb-6">Почему выбирают <span className="italic font-medium">наши коллекции</span></h2>
-            <div className="w-24 h-px bg-neutral-200 mx-auto mb-8"></div>
-            <p className="text-neutral-600 leading-relaxed">
+            <span className="text-[var(--luxury-primary)] tracking-widest text-xs font-medium uppercase mb-3 inline-block">Превосходство в деталях</span>
+            <h2 className="text-3xl md:text-4xl font-light text-[var(--luxury-black)] mb-6">Почему выбирают <span className="italic font-medium relative">
+              наши коллекции
+              <span className="absolute -bottom-1 left-0 w-full h-px bg-gradient-to-r from-[var(--luxury-primary)] to-transparent"></span>
+            </span></h2>
+            <div className="w-24 h-px bg-[var(--luxury-primary)]/20 mx-auto mb-8"></div>
+            <p className="text-[var(--luxury-dark-gray)] leading-relaxed text-lg">
               Мы создаем уникальные решения для сна и отдыха, сочетая изысканный стиль, 
               эргономику и передовые технологии для вашего идеального комфорта.
             </p>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-16">
-            <div className="p-8 border border-neutral-100 bg-white hover:shadow-lg transition-all duration-500 group">
-              <div className="relative">
-                <div className="w-20 h-20 flex items-center justify-center bg-neutral-50 mb-6 group-hover:bg-[#d4af37]/10 transition-colors duration-500">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-10 h-10 text-[#d4af37] group-hover:text-[#b38728] transition-colors duration-500">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-12">
+            <div className="p-8 bg-white hover:shadow-xl transition-all duration-300 group relative overflow-hidden">
+              <div className="absolute top-0 left-0 w-0 h-1 bg-[var(--luxury-primary)] transition-all duration-500 group-hover:w-full"></div>
+              <div className="relative z-10">
+                <div className="w-20 h-20 flex items-center justify-center bg-[var(--luxury-light-gray)] mb-6 group-hover:bg-[var(--luxury-primary)]/10 transition-colors duration-300">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-10 h-10 text-[var(--luxury-primary)] group-hover:text-[var(--luxury-primary-dark)] transition-colors duration-300">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456zM16.894 20.567L16.5 21.75l-.394-1.183a2.25 2.25 0 00-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 001.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 001.423 1.423l1.183.394-1.183.394a2.25 2.25 0 00-1.423 1.423z" />
                   </svg>
                 </div>
-                <span className="absolute top-0 right-0 text-4xl font-light text-neutral-100 group-hover:text-neutral-200 transition-colors duration-500">01</span>
+                <span className="absolute top-2 right-2 text-5xl font-light text-[var(--luxury-light-gray)] group-hover:text-[var(--luxury-border-light)] transition-colors duration-300">01</span>
               </div>
               
-              <h3 className="text-xl font-medium text-neutral-900 mb-4 group-hover:text-[#b38728] transition-colors duration-500">Премиум качество</h3>
-              <p className="text-neutral-600 leading-relaxed mb-6">
+              <h3 className="text-xl font-medium text-[var(--luxury-black)] mb-4 group-hover:text-[var(--luxury-primary)] transition-colors duration-300">Премиум качество</h3>
+              <p className="text-[var(--luxury-dark-gray)] leading-relaxed mb-6 text-base">
                 Мы используем только премиальные материалы для создания нашей продукции - от эксклюзивных тканей до экологически 
                 чистых наполнителей и прочных каркасов из ценных пород дерева.
               </p>
-              <div className="w-8 h-px bg-neutral-200 group-hover:bg-[#d4af37] transition-all duration-500 group-hover:w-16"></div>
+              <div className="w-8 h-px bg-[var(--luxury-border-medium)] group-hover:bg-[var(--luxury-primary)] transition-all duration-300 group-hover:w-16"></div>
             </div>
             
-            <div className="p-8 border border-neutral-100 bg-white hover:shadow-lg transition-all duration-500 group">
-              <div className="relative">
-                <div className="w-20 h-20 flex items-center justify-center bg-neutral-50 mb-6 group-hover:bg-[#d4af37]/10 transition-colors duration-500">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-10 h-10 text-[#d4af37] group-hover:text-[#b38728] transition-colors duration-500">
+            <div className="p-8 bg-white hover:shadow-xl transition-all duration-300 group relative overflow-hidden">
+              <div className="absolute top-0 left-0 w-0 h-1 bg-[var(--luxury-primary)] transition-all duration-500 group-hover:w-full"></div>
+              <div className="relative z-10">
+                <div className="w-20 h-20 flex items-center justify-center bg-[var(--luxury-light-gray)] mb-6 group-hover:bg-[var(--luxury-primary)]/10 transition-colors duration-300">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-10 h-10 text-[var(--luxury-primary)] group-hover:text-[var(--luxury-primary-dark)] transition-colors duration-300">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M9.75 3.104v5.714a2.25 2.25 0 01-.659 1.591L5 14.5M9.75 3.104c-.251.023-.501.05-.75.082m.75-.082a24.301 24.301 0 014.5 0m0 0v5.714c0 .597.237 1.17.659 1.591L19.8 15.3M14.25 3.104c.251.023.501.05.75.082M19.8 15.3l-1.57.393A9.065 9.065 0 0112 15a9.065 9.065 0 00-6.23.693L5 16.5m14.8-1.2a2.25 2.25 0 00.394-3.747l-3.105-3.105a2.25 2.25 0 00-1.591-.659H6.375a2.25 2.25 0 00-1.591.659l-3.105 3.105A2.25 2.25 0 002.073 15.3l.394.55a2.25 2.25 0 002.245.051l6.038-3.019a.75.75 0 01.754.001l6.037 3.018a2.25 2.25 0 002.245-.05l.394-.55z" />
                   </svg>
                 </div>
-                <span className="absolute top-0 right-0 text-4xl font-light text-neutral-100 group-hover:text-neutral-200 transition-colors duration-500">02</span>
+                <span className="absolute top-2 right-2 text-5xl font-light text-[var(--luxury-light-gray)] group-hover:text-[var(--luxury-border-light)] transition-colors duration-300">02</span>
               </div>
               
-              <h3 className="text-xl font-medium text-neutral-900 mb-4 group-hover:text-[#b38728] transition-colors duration-500">Индивидуальный подход</h3>
-              <p className="text-neutral-600 leading-relaxed mb-6">
+              <h3 className="text-xl font-medium text-[var(--luxury-black)] mb-4 group-hover:text-[var(--luxury-primary)] transition-colors duration-300">Индивидуальный подход</h3>
+              <p className="text-[var(--luxury-dark-gray)] leading-relaxed mb-6 text-base">
                 Создайте мебель, которая будет отражать вашу индивидуальность. Наши мастера изготовят кровать или матрас 
                 по вашим размерам, с выбранной обивкой и дополнительными элементами.
               </p>
-              <div className="w-8 h-px bg-neutral-200 group-hover:bg-[#d4af37] transition-all duration-500 group-hover:w-16"></div>
+              <div className="w-8 h-px bg-[var(--luxury-border-medium)] group-hover:bg-[var(--luxury-primary)] transition-all duration-300 group-hover:w-16"></div>
             </div>
             
-            <div className="p-8 border border-neutral-100 bg-white hover:shadow-lg transition-all duration-500 group">
-              <div className="relative">
-                <div className="w-20 h-20 flex items-center justify-center bg-neutral-50 mb-6 group-hover:bg-[#d4af37]/10 transition-colors duration-500">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-10 h-10 text-[#d4af37] group-hover:text-[#b38728] transition-colors duration-500">
+            <div className="p-8 bg-white hover:shadow-xl transition-all duration-300 group relative overflow-hidden">
+              <div className="absolute top-0 left-0 w-0 h-1 bg-[var(--luxury-primary)] transition-all duration-500 group-hover:w-full"></div>
+              <div className="relative z-10">
+                <div className="w-20 h-20 flex items-center justify-center bg-[var(--luxury-light-gray)] mb-6 group-hover:bg-[var(--luxury-primary)]/10 transition-colors duration-300">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-10 h-10 text-[var(--luxury-primary)] group-hover:text-[var(--luxury-primary-dark)] transition-colors duration-300">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 01-1.043 3.296 3.745 3.745 0 01-3.296 1.043A3.745 3.745 0 0112 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 01-3.296-1.043 3.745 3.745 0 01-1.043-3.296A3.745 3.745 0 013 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 011.043-3.296 3.746 3.746 0 013.296-1.043A3.746 3.746 0 0112 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 013.296 1.043 3.746 3.746 0 011.043 3.296A3.745 3.745 0 0121 12z" />
                   </svg>
                 </div>
-                <span className="absolute top-0 right-0 text-4xl font-light text-neutral-100 group-hover:text-neutral-200 transition-colors duration-500">03</span>
+                <span className="absolute top-2 right-2 text-5xl font-light text-[var(--luxury-light-gray)] group-hover:text-[var(--luxury-border-light)] transition-colors duration-300">03</span>
               </div>
               
-              <h3 className="text-xl font-medium text-neutral-900 mb-4 group-hover:text-[#b38728] transition-colors duration-500">Гарантия качества</h3>
-              <p className="text-neutral-600 leading-relaxed mb-6">
+              <h3 className="text-xl font-medium text-[var(--luxury-black)] mb-4 group-hover:text-[var(--luxury-primary)] transition-colors duration-300">Гарантия качества</h3>
+              <p className="text-[var(--luxury-dark-gray)] leading-relaxed mb-6 text-base">
                 Мы уверены в качестве нашей продукции и предоставляем расширенную гарантию до 4 лет на всю мебель. 
                 Наши изделия проходят строгий контроль качества на всех этапах производства.
               </p>
-              <div className="w-8 h-px bg-neutral-200 group-hover:bg-[#d4af37] transition-all duration-500 group-hover:w-16"></div>
+              <div className="w-8 h-px bg-[var(--luxury-border-medium)] group-hover:bg-[var(--luxury-primary)] transition-all duration-300 group-hover:w-16"></div>
             </div>
           </div>
           
           {/* Luxury counter stats */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 mt-24 border-t border-neutral-100 pt-16">
-            <div className="text-center">
-              <p className="text-4xl lg:text-5xl font-light text-neutral-900 mb-2">7<span className="text-[#d4af37]">+</span></p>
-              <p className="text-sm uppercase tracking-wider text-neutral-500">Лет на рынке</p>
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 mt-24 border-t border-[var(--luxury-border-light)] pt-16">
+            <div className="text-center group bg-white p-8 hover:shadow-lg transition-all duration-300">
+              <p className="text-4xl lg:text-5xl font-light text-[var(--luxury-black)] mb-3 group-hover:text-[var(--luxury-primary)] transition-colors duration-300">7<span className="text-[var(--luxury-gold)]">+</span></p>
+              <p className="text-sm uppercase tracking-wider text-[var(--luxury-medium-gray)] font-medium">Лет на рынке</p>
+              <div className="w-12 h-[2px] bg-[var(--luxury-border-medium)] mx-auto mt-4 group-hover:bg-[var(--luxury-primary)] transition-colors duration-300"></div>
             </div>
-            <div className="text-center">
-              <p className="text-4xl lg:text-5xl font-light text-neutral-900 mb-2">15<span className="text-[#d4af37]">k</span></p>
-              <p className="text-sm uppercase tracking-wider text-neutral-500">Счастливых клиентов</p>
+            <div className="text-center group bg-white p-8 hover:shadow-lg transition-all duration-300">
+              <p className="text-4xl lg:text-5xl font-light text-[var(--luxury-black)] mb-3 group-hover:text-[var(--luxury-primary)] transition-colors duration-300">15<span className="text-[var(--luxury-gold)]">k</span></p>
+              <p className="text-sm uppercase tracking-wider text-[var(--luxury-medium-gray)] font-medium">Счастливых клиентов</p>
+              <div className="w-12 h-[2px] bg-[var(--luxury-border-medium)] mx-auto mt-4 group-hover:bg-[var(--luxury-primary)] transition-colors duration-300"></div>
             </div>
-            <div className="text-center">
-              <p className="text-4xl lg:text-5xl font-light text-neutral-900 mb-2">98<span className="text-[#d4af37]">%</span></p>
-              <p className="text-sm uppercase tracking-wider text-neutral-500">Положительных отзывов</p>
+            <div className="text-center group bg-white p-8 hover:shadow-lg transition-all duration-300">
+              <p className="text-4xl lg:text-5xl font-light text-[var(--luxury-black)] mb-3 group-hover:text-[var(--luxury-primary)] transition-colors duration-300">98<span className="text-[var(--luxury-gold)]">%</span></p>
+              <p className="text-sm uppercase tracking-wider text-[var(--luxury-medium-gray)] font-medium">Положительных отзывов</p>
+              <div className="w-12 h-[2px] bg-[var(--luxury-border-medium)] mx-auto mt-4 group-hover:bg-[var(--luxury-primary)] transition-colors duration-300"></div>
             </div>
-            <div className="text-center">
-              <p className="text-4xl lg:text-5xl font-light text-neutral-900 mb-2">24<span className="text-[#d4af37]">/</span>7</p>
-              <p className="text-sm uppercase tracking-wider text-neutral-500">Клиентская поддержка</p>
+            <div className="text-center group bg-white p-8 hover:shadow-lg transition-all duration-300">
+              <p className="text-4xl lg:text-5xl font-light text-[var(--luxury-black)] mb-3 group-hover:text-[var(--luxury-primary)] transition-colors duration-300">24<span className="text-[var(--luxury-gold)]">/</span>7</p>
+              <p className="text-sm uppercase tracking-wider text-[var(--luxury-medium-gray)] font-medium">Клиентская поддержка</p>
+              <div className="w-12 h-[2px] bg-[var(--luxury-border-medium)] mx-auto mt-4 group-hover:bg-[var(--luxury-primary)] transition-colors duration-300"></div>
             </div>
           </div>
         </div>
