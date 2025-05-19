@@ -19,16 +19,16 @@ export default function Home() {
   return (
     <div>
       {/* Hero Section - Luxury Edition */}
-      <section className="relative h-screen min-h-[700px] bg-[#1a1a1a] overflow-hidden">
+      <section className="relative h-screen min-h-[700px] bg-[#1f1e1d] overflow-hidden">
         {/* Background image with overlay */}
         <div className="absolute inset-0 z-10">
           <img 
             src="https://images.unsplash.com/photo-1618219944342-824e40a13285?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=90" 
             alt="Роскошная кровать в изысканном интерьере" 
-            className="w-full h-full object-cover object-center"
-            style={{ objectPosition: '50% 32%' }}
+            className="w-full h-full object-cover object-center opacity-80"
+            style={{ objectPosition: '50% 35%' }}
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/70 to-black/10"></div>
+          <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/60 to-black/50"></div>
           
           {/* Gold accent elements */}
           <div className="absolute top-32 right-32 w-20 h-20 border border-[#d4af37]/30 hidden lg:block"></div>
@@ -45,15 +45,15 @@ export default function Home() {
         <div className="relative z-20 max-w-[1400px] mx-auto px-6 h-full flex items-center">
           <div className="max-w-2xl">
             {/* Luxury badge */}
-            <div className="inline-flex items-center mb-6 border-b border-[var(--luxury-gold)]/60 pb-2">
-              <span className="text-[var(--luxury-gold)] tracking-widest text-xs font-light uppercase">Премиальная коллекция 2025</span>
+            <div className="inline-flex items-center mb-6 border-b border-[#d4af37] pb-2">
+              <span className="text-[#d4af37] tracking-widest text-xs font-medium uppercase">ПРЕМИАЛЬНАЯ КОЛЛЕКЦИЯ 2025</span>
             </div>
             
             <h1 className="text-4xl md:text-5xl lg:text-7xl font-light text-white mb-6 leading-tight tracking-tighter">
               Идеальная 
               <span className="font-medium italic relative inline-block ml-3">
                 роскошь
-                <span className="absolute -bottom-1 left-0 w-full h-px bg-gradient-to-r from-[var(--luxury-gold)] to-transparent"></span>
+                <span className="absolute -bottom-1 left-0 w-full h-px bg-gradient-to-r from-[#d4af37] to-transparent"></span>
               </span>
               <br />
               <span className="text-white/80">для вашей спальни</span>
@@ -67,7 +67,7 @@ export default function Home() {
             <div className="flex flex-wrap items-center gap-6">
               <Button 
                 size="lg" 
-                className="bg-[var(--luxury-primary)] text-white hover:bg-[var(--luxury-gold)] hover:text-[var(--luxury-black)] transition-colors duration-300 py-7 px-10 text-base font-normal rounded-none" 
+                className="bg-[#8e2b85] text-white hover:bg-[#a252a3] transition-colors duration-300 py-7 px-10 text-base font-normal rounded-none" 
                 asChild
               >
                 <Link href="/products/bed">Каталог кроватей</Link>
@@ -76,14 +76,14 @@ export default function Home() {
               <Button 
                 size="lg" 
                 variant="outline" 
-                className="text-white border-white/60 hover:border-[var(--luxury-gold)] hover:text-[var(--luxury-gold)] py-7 px-10 text-base font-normal rounded-none transition-colors duration-300" 
+                className="bg-white text-black border-white hover:border-white hover:bg-white/90 py-7 px-10 text-base font-normal rounded-none transition-colors duration-300" 
                 asChild
               >
                 <Link href="/products/mattress">Каталог матрасов</Link>
               </Button>
               
-              <Link href="#explore" className="text-white/80 hover:text-white transition-colors duration-300 flex items-center gap-2 group">
-                <span className="border-b border-transparent group-hover:border-[var(--luxury-gold)]/40 pb-1">Узнать больше</span>
+              <Link href="#explore" className="text-white hover:text-[#d4af37] transition-colors duration-300 flex items-center gap-2 group">
+                <span className="border-b border-transparent group-hover:border-[#d4af37] pb-1">Узнать больше</span>
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-5 h-5 transform group-hover:translate-x-1 transition-transform duration-300">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
                 </svg>
