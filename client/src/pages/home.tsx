@@ -47,7 +47,7 @@ export default function Home() {
             <div className="flex flex-wrap items-center gap-6">
               <Button 
                 size="lg" 
-                className="bg-[#d4af37] text-black hover:bg-[#e6c76a] transition-colors py-6 px-10 text-base font-normal rounded-none" 
+                className="bg-[#d4af37] text-black hover:bg-[#e6c76a] transition-colors py-6 px-10 text-base font-normal rounded-none shadow-lg" 
                 asChild
               >
                 <Link href="/products/mattress">Выбрать матрас</Link>
@@ -55,8 +55,7 @@ export default function Home() {
               
               <Button 
                 size="lg" 
-                variant="outline" 
-                className="border border-white text-white hover:bg-white/10 transition-colors py-6 px-10 text-base font-normal rounded-none" 
+                className="bg-white text-black hover:bg-gray-100 transition-colors py-6 px-10 text-base font-normal rounded-none shadow-lg" 
                 asChild
               >
                 <Link href="/products/bed">Каталог кроватей</Link>
