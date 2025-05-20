@@ -137,9 +137,15 @@ export default function ProductPageModern() {
                     )}
                     
                     <img
-                      src={product.images[selectedImage]}
+                      src={product.images[selectedImage] || 'https://images.pexels.com/photos/164595/pexels-photo-164595.jpeg?auto=compress&cs=tinysrgb&w=1200'}
                       alt={product.name}
                       className="object-contain w-full h-full p-4 transition-transform duration-700 ease-in-out group-hover:scale-105"
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        if (target.src !== 'https://images.pexels.com/photos/164595/pexels-photo-164595.jpeg?auto=compress&cs=tinysrgb&w=1200') {
+                          target.src = 'https://images.pexels.com/photos/164595/pexels-photo-164595.jpeg?auto=compress&cs=tinysrgb&w=1200';
+                        }
+                      }}
                     />
                     
                     {/* Badges */}
