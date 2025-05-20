@@ -36,6 +36,9 @@ export default function ProductsPage() {
   // Filter products by category and price
   const filteredProducts = products
     ?.filter(product => {
+      // Показывать только товары в наличии
+      if (!product.inStock) return false;
+      
       // Filter by category
       if (category && product.category !== category) return false;
       

@@ -10,9 +10,9 @@ export default function Home() {
     staleTime: 5000, // Данные считаются устаревшими через 5 секунд
   });
 
-  const featuredProducts = products?.filter(product => product.featured).slice(0, 4) || [];
-  const mattresses = products?.filter(product => product.category === "mattress").slice(0, 4) || [];
-  const beds = products?.filter(product => product.category === "bed").slice(0, 4) || [];
+  const featuredProducts = products?.filter(product => product.featured && product.inStock).slice(0, 4) || [];
+  const mattresses = products?.filter(product => product.category === "mattress" && product.inStock).slice(0, 4) || [];
+  const beds = products?.filter(product => product.category === "bed" && product.inStock).slice(0, 4) || [];
 
   return (
     <div>

@@ -55,6 +55,30 @@ export default function AdminProducts() {
     refetchOnMount: true, // Обновление при монтировании компонента
   });
   
+  // Мутация для обновления товара
+  const updateProductMutation = useMutation({
+    mutationFn: async ({ productId, updates }: { productId: number, updates: Partial<Product> }) => {
+      return apiRequest('PATCH', `/api/products/${productId}`, updates);
+    },
+    onSuccess: () => {
+      toast({
+        title: 'Успех',
+        description: 'Товар успешно обновлен',
+      });
+      
+      // Немедленно обновляем кеш
+      queryClient.invalidateQueries({ queryKey: ['/api/products'] });
+      queryClient.refetchQueries({ queryKey: ['/api/products'] });
+    },
+    onError: (error) => {
+      toast({
+        title: 'Ошибка',
+        description: error instanceof Error ? error.message : 'Не удалось обновить товар',
+        variant: 'destructive',
+      });
+    },
+  });
+  
   // Delete product mutation
   const deleteProductMutation = useMutation({
     mutationFn: async (productId: number) => {
@@ -68,6 +92,7 @@ export default function AdminProducts() {
       
       // Invalidate and refetch products
       queryClient.invalidateQueries({ queryKey: ['/api/products'] });
+      queryClient.refetchQueries({ queryKey: ['/api/products'] });
       setProductToDelete(null);
     },
     onError: (error) => {
