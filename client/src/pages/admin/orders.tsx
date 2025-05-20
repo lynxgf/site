@@ -277,16 +277,16 @@ export default function AdminOrders() {
   };
   
   // Calculate totals for dashboard
-  const pendingCount = orders?.filter(o => o.status === 'pending').length || 0;
-  const processingCount = orders?.filter(o => o.status === 'processing').length || 0;
-  const completedCount = orders?.filter(o => ['completed', 'delivered'].includes(o.status)).length || 0;
-  const cancelledCount = orders?.filter(o => o.status === 'cancelled').length || 0;
-  const totalSales = orders?.reduce((sum, order) => {
+  const pendingCount = Array.isArray(orders) ? orders.filter(o => o.status === 'pending').length : 0;
+  const processingCount = Array.isArray(orders) ? orders.filter(o => o.status === 'processing').length : 0;
+  const completedCount = Array.isArray(orders) ? orders.filter(o => ['completed', 'delivered'].includes(o.status)).length : 0;
+  const cancelledCount = Array.isArray(orders) ? orders.filter(o => o.status === 'cancelled').length : 0;
+  const totalSales = Array.isArray(orders) ? orders.reduce((sum, order) => {
     if (order.status !== 'cancelled') {
       return sum + Number(order.totalAmount);
     }
     return sum;
-  }, 0) || 0;
+  }, 0) : 0;
   
   return (
     <div className="flex min-h-screen bg-gray-100">
