@@ -167,6 +167,9 @@ export default function Header() {
               <Link to="/faq" className={`${location === '/faq' ? 'text-[#8e2b85]' : 'text-black hover:text-[#8e2b85]'} transition-colors`}>
                 FAQ
               </Link>
+              <Link to="/tips" className={`${location === '/tips' ? 'text-[#8e2b85]' : 'text-black hover:text-[#8e2b85]'} transition-colors`}>
+                Полезные советы
+              </Link>
             </nav>
           </div>
           
@@ -394,6 +397,9 @@ export default function Header() {
             </Link>
             <Link href="/faq" className="block py-2 border-b border-gray-100">
               Часто задаваемые вопросы
+            </Link>
+            <Link href="/tips" className="block py-2 border-b border-gray-100">
+              Полезные советы
             </Link>
             
             {!isAuthenticated && (

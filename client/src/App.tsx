@@ -21,6 +21,7 @@ import Profile from "@/pages/profile";
 import About from "@/pages/about";
 import Contacts from "@/pages/contacts";
 import Faq from "@/pages/faq";
+import Tips from "@/pages/tips";
 import AdminLogin from "@/pages/admin/login";
 import AdminDashboard from "@/pages/admin/dashboard";
 import AdminProducts from "@/pages/admin/products";
@@ -76,6 +77,7 @@ function Router() {
       <Route path="/about" component={About} />
       <Route path="/contacts" component={Contacts} />
       <Route path="/faq" component={Faq} />
+      <Route path="/tips" component={Tips} />
       
       {/* User authentication routes */}
       <Route path="/login" component={Login} />
