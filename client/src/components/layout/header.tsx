@@ -1,13 +1,52 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'wouter';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { useCartStore } from '@/lib/store';
+import { useQuery } from "@tanstack/react-query";
+import { Product } from "@shared/schema";
 
 export default function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const [location] = useLocation();
+  const [location, setLocation] = useLocation();
   const { cartItems, fetchCart } = useCartStore();
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState<Product[]>([]);
+  const searchRef = useRef<HTMLDivElement>(null);
+
+  const { data: products } = useQuery<Product[]>({
+    queryKey: ["/api/products"],
+    enabled: isSearchOpen, // Только запрашиваем при открытии поиска
+  });
+  
+  // Обработчик поиска
+  useEffect(() => {
+    if (products && searchQuery.trim() !== '') {
+      const query = searchQuery.toLowerCase();
+      const results = products.filter(product => 
+        product.name.toLowerCase().includes(query) || 
+        product.description.toLowerCase().includes(query) ||
+        product.category.toLowerCase().includes(query)
+      ).slice(0, 5); // Ограничиваем до 5 результатов
+      setSearchResults(results);
+    } else {
+      setSearchResults([]);
+    }
+  }, [searchQuery, products]);
+  
+  // Закрытие поиска при клике вне формы
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
+        setIsSearchOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   useEffect(() => {
     fetchCart();
@@ -19,11 +58,32 @@ export default function Header() {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, [fetchCart]);
+  
+  // Обработчик отправки формы поиска
+  const handleSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      setLocation(`/search?q=${encodeURIComponent(searchQuery)}`);
+      setIsSearchOpen(false);
+      setSearchQuery('');
+    }
+  };
 
   const cartItemCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
 
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
+  };
+  
+  const toggleSearch = () => {
+    setIsSearchOpen(!isSearchOpen);
+    if (!isSearchOpen) {
+      // Фокусируемся на поле поиска при открытии
+      setTimeout(() => {
+        const searchInput = document.getElementById('search-input');
+        if (searchInput) searchInput.focus();
+      }, 100);
+    }
   };
 
   return (
@@ -99,11 +159,91 @@ export default function Header() {
           </div>
           
           <div className="flex items-center space-x-4">
-            <Link href="/search" className="p-2 text-black hover:text-[#8e2b85] transition-colors">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
-              </svg>
-            </Link>
+            {/* Поиск */}
+            <div className="relative" ref={searchRef}>
+              <button
+                onClick={toggleSearch}
+                className="p-2 text-black hover:text-[#8e2b85] transition-colors"
+                aria-label="Поиск"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+                </svg>
+              </button>
+              
+              {isSearchOpen && (
+                <div className="absolute right-0 top-full mt-2 w-80 bg-white shadow-lg rounded-md overflow-hidden border border-gray-200 z-50">
+                  <form onSubmit={handleSearchSubmit} className="p-3 border-b border-gray-100">
+                    <div className="flex items-center">
+                      <Input
+                        id="search-input"
+                        type="text"
+                        placeholder="Поиск товаров..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="border-none focus-visible:ring-0 focus-visible:ring-offset-0"
+                      />
+                      <button type="submit" className="ml-2 text-[#8e2b85] hover:text-[#722169]">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+                        </svg>
+                      </button>
+                    </div>
+                  </form>
+                  
+                  {searchQuery.trim() !== '' && (
+                    <div className="max-h-80 overflow-y-auto p-2">
+                      {searchResults.length > 0 ? (
+                        <>
+                          {searchResults.map((product) => (
+                            <Link 
+                              key={product.id} 
+                              href={`/product/${product.id}`}
+                              onClick={() => setIsSearchOpen(false)}
+                              className="flex items-center p-2 hover:bg-gray-50 rounded-md"
+                            >
+                              <div className="w-12 h-12 mr-3 flex-shrink-0 bg-gray-100 overflow-hidden rounded-sm">
+                                {product.images && product.images.length > 0 ? (
+                                  <img 
+                                    src={product.images[0]} 
+                                    alt={product.name}
+                                    className="w-full h-full object-cover"
+                                  />
+                                ) : (
+                                  <div className="w-full h-full flex items-center justify-center text-gray-400 text-xs">
+                                    Нет фото
+                                  </div>
+                                )}
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <p className="text-sm font-medium text-gray-900 truncate">{product.name}</p>
+                                <p className="text-xs text-gray-500 truncate">{product.category === 'mattress' ? 'Матрас' : product.category === 'bed' ? 'Кровать' : 'Аксессуар'}</p>
+                                <p className="text-sm font-medium text-[#8e2b85]">
+                                  {product.discount && product.discount > 0 
+                                    ? Math.round(parseFloat(product.basePrice) * (1 - product.discount / 100))
+                                    : product.basePrice} ₽
+                                </p>
+                              </div>
+                            </Link>
+                          ))}
+                          <Link 
+                            href={`/search?q=${encodeURIComponent(searchQuery)}`}
+                            onClick={() => setIsSearchOpen(false)}
+                            className="block w-full mt-2 pt-2 text-center text-sm text-[#8e2b85] border-t border-gray-100"
+                          >
+                            Показать все результаты
+                          </Link>
+                        </>
+                      ) : (
+                        <div className="py-4 text-center text-gray-500 text-sm">
+                          По запросу "{searchQuery}" ничего не найдено
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
             
             <Link href="/cart" className="p-2 text-black hover:text-[#8e2b85] transition-colors relative">
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
