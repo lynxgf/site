@@ -70,16 +70,17 @@ export default function AdminOrders() {
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
   
   // Fetch orders
-  const { data: orders, isLoading, error } = useQuery<Order[]>({
+  const { data: orders = [], isLoading, error } = useQuery<Order[]>({
     queryKey: ['/api/admin/orders'],
     queryFn: async () => {
       try {
         const response = await apiRequest('GET', '/api/admin/orders');
-        return response as Order[];
+        const data = response as Order[];
+        return data;
       } catch (error) {
         // В реальном приложении здесь будет использоваться API
         // Для демонстрации используем мок-данные
-        return [
+        const mockOrders: Order[] = [
           {
             id: 1,
             sessionId: '123',
@@ -136,6 +137,7 @@ export default function AdminOrders() {
             createdAt: new Date('2023-08-22')
           }
         ];
+        return mockOrders;
       }
     },
   });

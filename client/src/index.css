@@ -83,6 +83,22 @@
   transform: scale(1.05);
 }
 
+/* Улучшенные стили для переключателей */
+[data-state="checked"] {
+  background-color: var(--luxury-primary) !important;
+  border-color: var(--luxury-primary) !important;
+}
+
+[data-state="checked"] span {
+  transform: translateX(100%) !important;
+  background-color: white !important;
+}
+
+.switch-thumb {
+  background-color: white;
+  border: 1px solid var(--luxury-border-medium);
+}
+
 /* Define Custom Color Variables */
 :root {
   /* Обновление переменных для ThemeUI */

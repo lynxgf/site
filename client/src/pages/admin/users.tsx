@@ -80,16 +80,17 @@ export default function AdminUsers() {
   const [userEdits, setUserEdits] = useState<Partial<UserData>>({});
   
   // Fetch users
-  const { data: users, isLoading, error } = useQuery<UserData[]>({
+  const { data: users = [], isLoading, error } = useQuery<UserData[]>({
     queryKey: ['/api/admin/users'],
     queryFn: async () => {
       try {
         const response = await apiRequest('GET', '/api/admin/users');
-        return response as UserData[];
+        const data = response as UserData[];
+        return data;
       } catch (error) {
         // В реальном приложении здесь будет API
         // Для демонстрации используем мок-данные
-        return [
+        const mockUsers: UserData[] = [
           {
             id: 1,
             username: 'admin',
@@ -152,10 +153,11 @@ export default function AdminUsers() {
             address: 'г. Новосибирск, ул. Пример, д. 7, кв. 33',
             isAdmin: false,
             createdAt: new Date('2023-06-12'),
-            lastLogin: null,
+            lastLogin: undefined,
             ordersCount: 0
           }
         ];
+        return mockUsers;
       }
     },
   });
