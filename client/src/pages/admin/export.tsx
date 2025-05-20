@@ -124,13 +124,36 @@ export default function AdminExport() {
       });
     }
     
-    if (dataToExport.length === 0) {
+    // Данные для экспорта должны быть обязательно массивом и не пустыми
+    if (!Array.isArray(dataToExport) || dataToExport.length === 0) {
+      console.error('Нет данных для экспорта:', dataToExport);
       toast({
         title: 'Нет данных для экспорта',
         description: 'Пожалуйста, убедитесь, что выбранная категория содержит данные',
         variant: 'destructive',
       });
       return;
+    }
+    
+    // Создаем мок-данные для тестирования, если данных нет
+    if (dataToExport.length === 0) {
+      console.log('Используем тестовые данные для экспорта');
+      if (activeTab === 'orders') {
+        dataToExport = [
+          { id: 1, customerName: 'Тестовый заказ', status: 'completed', totalAmount: '10000', createdAt: new Date() },
+          { id: 2, customerName: 'Тестовый заказ 2', status: 'pending', totalAmount: '15000', createdAt: new Date() }
+        ];
+      } else if (activeTab === 'products') {
+        dataToExport = [
+          { id: 1, name: 'Тестовый продукт', category: 'bed', basePrice: '45000', inStock: true },
+          { id: 2, name: 'Тестовый продукт 2', category: 'mattress', basePrice: '25000', inStock: false }
+        ];
+      } else if (activeTab === 'users') {
+        dataToExport = [
+          { id: 1, username: 'test', email: 'test@example.com', isAdmin: false },
+          { id: 2, username: 'admin', email: 'admin@example.com', isAdmin: true }
+        ];
+      }
     }
     
     // Export data based on selected format
