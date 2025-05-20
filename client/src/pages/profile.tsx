@@ -518,7 +518,7 @@ export default function ProfilePage() {
                         <h3 className="text-lg font-medium text-gray-900 mb-1">У вас пока нет заказов</h3>
                         <p className="text-gray-500 mb-6">Начните делать покупки прямо сейчас!</p>
                         <Button 
-                          onClick={() => setLocation('/products')} 
+                          onClick={() => navigate('/products')} 
                           className="bg-[#8e2b85] hover:bg-[#762271] text-white"
                         >
                           Перейти в каталог
@@ -553,7 +553,7 @@ export default function ProfilePage() {
                         <h3 className="text-lg font-medium text-gray-900 mb-1">У вас пока нет избранных товаров</h3>
                         <p className="text-gray-500 mb-6">Добавляйте товары в избранное, чтобы вернуться к ним позже</p>
                         <Button 
-                          onClick={() => setLocation('/products')} 
+                          onClick={() => navigate('/products')} 
                           className="bg-[#8e2b85] hover:bg-[#762271] text-white"
                         >
                           Перейти в каталог
