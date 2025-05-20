@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useState, useRef } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiRequest } from '@/lib/queryClient';
 import AdminSidebar from '@/components/admin/sidebar';
 import { useToast } from '@/hooks/use-toast';
@@ -9,6 +9,7 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
+  CardFooter
 } from '@/components/ui/card';
 import {
   Tabs,
@@ -18,19 +19,35 @@ import {
 } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-// Удаляем импорт несуществующего компонента
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { format } from 'date-fns';
 import { DataTable } from '@/components/ui/data-table';
-import { Calendar as CalendarIcon, DownloadCloud, FileJson, FileText, Filter, Users, Package, ShoppingCart } from 'lucide-react';
+import { 
+  Calendar as CalendarIcon, 
+  DownloadCloud, 
+  FileJson, 
+  FileText, 
+  Filter, 
+  Users, 
+  Package, 
+  ShoppingCart, 
+  Upload,
+  AlertCircle
+} from 'lucide-react';
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 export default function AdminExport() {
   const { toast } = useToast();
+  const queryClient = useQueryClient();
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [activeTab, setActiveTab] = useState('orders');
   const [exportFormat, setExportFormat] = useState('csv');
+  const [importFormat, setImportFormat] = useState('csv');
+  const [importFile, setImportFile] = useState<File | null>(null);
+  const [importPreview, setImportPreview] = useState<any[]>([]);
   const [dateRange, setDateRange] = useState<{
     from: Date | undefined;
     to: Date | undefined;
@@ -258,7 +275,200 @@ export default function AdminExport() {
     }
   };
   
-  const isLoading = ordersLoading || productsLoading || usersLoading;
+  // Функция для обработки выбранного файла
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    
+    setImportFile(file);
+    const reader = new FileReader();
+    
+    reader.onload = (e) => {
+      try {
+        const content = e.target?.result as string;
+        let data: any[] = [];
+        
+        if (importFormat === 'csv') {
+          // Обработка CSV
+          const lines = content.split('\n');
+          const headers = lines[0].split(',');
+          
+          data = lines.slice(1).filter(line => line.trim()).map(line => {
+            const values = line.split(',');
+            const item: any = {};
+            
+            headers.forEach((header, index) => {
+              // Проверка на пустое значение
+              if (values[index] !== undefined) {
+                let value = values[index];
+                
+                // Обработка строк в кавычках
+                if (value.startsWith('"') && value.endsWith('"')) {
+                  value = value.substring(1, value.length - 1).replace(/""/g, '"');
+                }
+                
+                // Попытка преобразовать числа
+                const num = Number(value);
+                item[header] = !isNaN(num) && value !== '' ? num : value;
+              }
+            });
+            
+            return item;
+          });
+        } else if (importFormat === 'json') {
+          // Обработка JSON
+          data = JSON.parse(content);
+        }
+        
+        setImportPreview(data.slice(0, 5)); // Показываем только первые 5 записей для предпросмотра
+        toast({
+          title: 'Файл успешно загружен',
+          description: `Загружено ${data.length} записей`,
+        });
+      } catch (error) {
+        console.error('Ошибка при обработке файла:', error);
+        toast({
+          title: 'Ошибка при обработке файла',
+          description: 'Пожалуйста, проверьте формат файла и попробуйте снова',
+          variant: 'destructive',
+        });
+      }
+    };
+    
+    reader.onerror = () => {
+      toast({
+        title: 'Ошибка при чтении файла',
+        description: 'Не удалось прочитать файл',
+        variant: 'destructive',
+      });
+    };
+    
+    if (importFormat === 'csv') {
+      reader.readAsText(file);
+    } else if (importFormat === 'json') {
+      reader.readAsText(file);
+    }
+  };
+  
+  // Мутация для импорта данных в базу
+  const importMutation = useMutation({
+    mutationFn: async (data: any[]) => {
+      const endpoint = activeTab === 'products' ? '/api/admin/products/import'
+               : activeTab === 'orders' ? '/api/admin/orders/import'
+               : '/api/admin/users/import';
+      
+      return await apiRequest('POST', endpoint, data);
+    },
+    onSuccess: () => {
+      toast({
+        title: 'Импорт завершен успешно',
+        description: 'Данные успешно импортированы в базу данных',
+      });
+      
+      // Обновляем данные после импорта
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/orders'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/products'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/users'] });
+      
+      // Сбрасываем состояние
+      setImportFile(null);
+      setImportPreview([]);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+    },
+    onError: (error: any) => {
+      console.error('Ошибка при импорте данных:', error);
+      toast({
+        title: 'Ошибка при импорте',
+        description: error.message || 'Не удалось импортировать данные',
+        variant: 'destructive',
+      });
+    },
+  });
+  
+  // Обработка импорта
+  const handleImport = async () => {
+    if (!importFile) {
+      toast({
+        title: 'Ошибка',
+        description: 'Пожалуйста, выберите файл для импорта',
+        variant: 'destructive',
+      });
+      return;
+    }
+    
+    try {
+      const reader = new FileReader();
+      
+      reader.onload = (e) => {
+        try {
+          const content = e.target?.result as string;
+          let data: any[] = [];
+          
+          if (importFormat === 'csv') {
+            // Обработка CSV
+            const lines = content.split('\n');
+            const headers = lines[0].split(',');
+            
+            data = lines.slice(1).filter(line => line.trim()).map(line => {
+              const values = line.split(',');
+              const item: any = {};
+              
+              headers.forEach((header, index) => {
+                if (values[index] !== undefined) {
+                  let value = values[index];
+                  
+                  if (value.startsWith('"') && value.endsWith('"')) {
+                    value = value.substring(1, value.length - 1).replace(/""/g, '"');
+                  }
+                  
+                  const num = Number(value);
+                  item[header] = !isNaN(num) && value !== '' ? num : value;
+                }
+              });
+              
+              return item;
+            });
+          } else if (importFormat === 'json') {
+            // Обработка JSON
+            data = JSON.parse(content);
+          }
+          
+          // Запускаем мутацию для импорта данных
+          importMutation.mutate(data);
+        } catch (error) {
+          console.error('Ошибка при обработке файла:', error);
+          toast({
+            title: 'Ошибка при обработке файла',
+            description: 'Пожалуйста, проверьте формат файла и попробуйте снова',
+            variant: 'destructive',
+          });
+        }
+      };
+      
+      reader.onerror = () => {
+        toast({
+          title: 'Ошибка при чтении файла',
+          description: 'Не удалось прочитать файл',
+          variant: 'destructive',
+        });
+      };
+      
+      if (importFormat === 'csv' || importFormat === 'json') {
+        reader.readAsText(importFile);
+      }
+    } catch (error) {
+      console.error('Ошибка при импорте:', error);
+      toast({
+        title: 'Ошибка при импорте',
+        description: 'Пожалуйста, проверьте файл и попробуйте снова',
+        variant: 'destructive',
+      });
+    }
+  };
+  
+  const isLoading = ordersLoading || productsLoading || usersLoading || importMutation.isPending;
   
   return (
     <div className="flex min-h-screen bg-gray-100">
