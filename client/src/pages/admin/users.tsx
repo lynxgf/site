@@ -223,7 +223,7 @@ export default function AdminUsers() {
   };
   
   // Filter and sort users
-  const filteredAndSortedUsers = users 
+  const filteredAndSortedUsers = Array.isArray(users) 
     ? [...users]
         .filter(user => 
           user.username.toLowerCase().includes(searchTerm.toLowerCase()) ||

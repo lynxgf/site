@@ -178,7 +178,7 @@ export default function AdminOrders() {
   };
   
   // Status filter and search filter
-  const filteredOrders = orders 
+  const filteredOrders = Array.isArray(orders) 
     ? orders.filter(order => {
         // Status filter
         if (statusFilter !== 'all' && order.status !== statusFilter) {
