@@ -6,15 +6,47 @@ import { z } from "zod";
 export const users = pgTable("users", {
   id: serial("id").primaryKey(),
   username: text("username").notNull().unique(),
+  email: text("email").notNull().unique(),
   password: text("password").notNull(),
+  firstName: text("first_name"),
+  lastName: text("last_name"),
+  phone: text("phone"),
+  address: text("address"),
   isAdmin: boolean("is_admin").default(false).notNull(),
-  createdAt: timestamp("created_at").defaultNow().notNull()
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow()
 });
 
 export const insertUserSchema = createInsertSchema(users).pick({
   username: true,
+  email: true,
   password: true,
+  firstName: true,
+  lastName: true,
+  phone: true,
+  address: true,
   isAdmin: true,
+});
+
+// Registration schema with validation
+export const registerUserSchema = z.object({
+  username: z.string().min(3, "Имя пользователя должно быть не менее 3 символов"),
+  email: z.string().email("Пожалуйста, введите корректный email"),
+  password: z.string().min(6, "Пароль должен быть не менее 6 символов"),
+  confirmPassword: z.string(),
+  firstName: z.string().optional(),
+  lastName: z.string().optional(),
+  phone: z.string().optional(),
+  address: z.string().optional(),
+}).refine(data => data.password === data.confirmPassword, {
+  message: "Пароли не совпадают",
+  path: ["confirmPassword"],
+});
+
+// Login schema
+export const loginUserSchema = z.object({
+  username: z.string(),
+  password: z.string(),
 });
 
 // Products schema

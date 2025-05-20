@@ -3,7 +3,14 @@ import { createServer, type Server } from "http";
 import session from "express-session";
 import { z } from "zod";
 import { storage } from "./storage";
-import { insertProductSchema, insertCartItemSchema, insertOrderSchema } from "@shared/schema";
+import { 
+  insertProductSchema, 
+  insertCartItemSchema, 
+  insertOrderSchema,
+  registerUserSchema,
+  loginUserSchema
+} from "@shared/schema";
+import bcrypt from "bcryptjs";
 import { nanoid } from "nanoid";
 
 // Custom session type
@@ -44,26 +51,84 @@ export async function registerRoutes(app: Express): Promise<Server> {
   };
 
   // Authentication routes
+  app.post("/api/register", async (req, res) => {
+    try {
+      // Validate user data
+      const { confirmPassword, ...userData } = registerUserSchema.parse(req.body);
+      
+      // Check if user already exists
+      const existingUser = await storage.getUserByUsername(userData.username);
+      if (existingUser) {
+        return res.status(409).json({ message: "Пользователь с таким именем уже существует" });
+      }
+      
+      // Check if email already exists
+      const existingEmail = await storage.getUserByEmail(userData.email);
+      if (existingEmail) {
+        return res.status(409).json({ message: "Пользователь с таким email уже существует" });
+      }
+      
+      // Hash password
+      const salt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash(userData.password, salt);
+      
+      // Create user
+      const newUser = await storage.createUser({
+        ...userData,
+        password: hashedPassword,
+        isAdmin: false
+      });
+      
+      // Set session
+      req.session.userId = newUser.id;
+      req.session.isAdmin = newUser.isAdmin;
+      
+      // Return user data (without password)
+      const { password, ...userWithoutPassword } = newUser;
+      res.status(201).json(userWithoutPassword);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ 
+          message: "Ошибка валидации", 
+          errors: error.errors 
+        });
+      }
+      res.status(500).json({ message: "Произошла ошибка при регистрации" });
+    }
+  });
+  
   app.post("/api/login", async (req, res) => {
-    const { username, password } = req.body;
-    
-    if (!username || !password) {
-      return res.status(400).json({ message: "Username and password are required" });
+    try {
+      const loginData = loginUserSchema.parse(req.body);
+      
+      // Find user
+      const user = await storage.getUserByUsername(loginData.username);
+      if (!user) {
+        return res.status(401).json({ message: "Неверное имя пользователя или пароль" });
+      }
+      
+      // Verify password
+      const isPasswordValid = await bcrypt.compare(loginData.password, user.password);
+      if (!isPasswordValid) {
+        return res.status(401).json({ message: "Неверное имя пользователя или пароль" });
+      }
+      
+      // Set session
+      req.session.userId = user.id;
+      req.session.isAdmin = user.isAdmin;
+      
+      // Return user data (without password)
+      const { password, ...userWithoutPassword } = user;
+      res.json(userWithoutPassword);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ 
+          message: "Ошибка валидации", 
+          errors: error.errors 
+        });
+      }
+      res.status(500).json({ message: "Произошла ошибка при входе" });
     }
-    
-    const user = await storage.getUserByUsername(username);
-    if (!user || user.password !== password) {
-      return res.status(401).json({ message: "Invalid credentials" });
-    }
-    
-    req.session.userId = user.id;
-    req.session.isAdmin = user.isAdmin;
-    
-    res.json({ 
-      id: user.id, 
-      username: user.username, 
-      isAdmin: user.isAdmin 
-    });
   });
   
   app.get("/api/session", (req, res) => {
@@ -74,12 +139,125 @@ export async function registerRoutes(app: Express): Promise<Server> {
     });
   });
   
+  app.get("/api/user/profile", async (req, res) => {
+    if (!req.session.userId) {
+      return res.status(401).json({ message: "Необходима авторизация" });
+    }
+    
+    try {
+      const user = await storage.getUser(req.session.userId);
+      if (!user) {
+        return res.status(404).json({ message: "Пользователь не найден" });
+      }
+      
+      // Return user data (without password)
+      const { password, ...userWithoutPassword } = user;
+      res.json(userWithoutPassword);
+    } catch (error) {
+      res.status(500).json({ message: "Произошла ошибка при получении профиля" });
+    }
+  });
+  
+  app.put("/api/user/profile", async (req, res) => {
+    if (!req.session.userId) {
+      return res.status(401).json({ message: "Необходима авторизация" });
+    }
+    
+    try {
+      // Validate update data (limited fields)
+      const updateSchema = z.object({
+        firstName: z.string().optional(),
+        lastName: z.string().optional(),
+        phone: z.string().optional(),
+        address: z.string().optional(),
+        email: z.string().email("Пожалуйста, введите корректный email").optional(),
+      });
+      
+      const updateData = updateSchema.parse(req.body);
+      
+      // Check if email is being updated and already exists
+      if (updateData.email) {
+        const existingEmail = await storage.getUserByEmail(updateData.email);
+        if (existingEmail && existingEmail.id !== req.session.userId) {
+          return res.status(409).json({ message: "Пользователь с таким email уже существует" });
+        }
+      }
+      
+      // Update user
+      const updatedUser = await storage.updateUser(req.session.userId, updateData);
+      if (!updatedUser) {
+        return res.status(404).json({ message: "Пользователь не найден" });
+      }
+      
+      // Return updated user data (without password)
+      const { password, ...userWithoutPassword } = updatedUser;
+      res.json(userWithoutPassword);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ 
+          message: "Ошибка валидации", 
+          errors: error.errors 
+        });
+      }
+      res.status(500).json({ message: "Произошла ошибка при обновлении профиля" });
+    }
+  });
+  
+  app.put("/api/user/password", async (req, res) => {
+    if (!req.session.userId) {
+      return res.status(401).json({ message: "Необходима авторизация" });
+    }
+    
+    try {
+      // Validate password data
+      const passwordSchema = z.object({
+        currentPassword: z.string(),
+        newPassword: z.string().min(6, "Пароль должен быть не менее 6 символов"),
+        confirmPassword: z.string(),
+      }).refine(data => data.newPassword === data.confirmPassword, {
+        message: "Пароли не совпадают",
+        path: ["confirmPassword"],
+      });
+      
+      const passwordData = passwordSchema.parse(req.body);
+      
+      // Get user
+      const user = await storage.getUser(req.session.userId);
+      if (!user) {
+        return res.status(404).json({ message: "Пользователь не найден" });
+      }
+      
+      // Verify current password
+      const isPasswordValid = await bcrypt.compare(passwordData.currentPassword, user.password);
+      if (!isPasswordValid) {
+        return res.status(401).json({ message: "Текущий пароль неверен" });
+      }
+      
+      // Hash new password
+      const salt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash(passwordData.newPassword, salt);
+      
+      // Update password
+      await storage.updateUser(user.id, { password: hashedPassword });
+      
+      res.json({ message: "Пароль успешно обновлен" });
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ 
+          message: "Ошибка валидации", 
+          errors: error.errors 
+        });
+      }
+      res.status(500).json({ message: "Произошла ошибка при обновлении пароля" });
+    }
+  });
+  
   app.post("/api/logout", (req, res) => {
     req.session.destroy((err) => {
       if (err) {
-        return res.status(500).json({ message: "Error logging out" });
+        return res.status(500).json({ message: "Ошибка при выходе из системы" });
       }
-      res.json({ message: "Logged out successfully" });
+      res.json({ message: "Выход выполнен успешно" });
     });
   });
 
