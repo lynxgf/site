@@ -89,29 +89,39 @@ export default function ProductConfigurator({ product }: ProductConfiguratorProp
       const selectedFabricObj = getSelectedFabricObject();
       
       if (!selectedFabricObj) {
-        throw new Error('Please select a fabric');
+        throw new Error('Пожалуйста, выберите ткань');
       }
       
       // Данные для корзины
-      const cartItem: any = {
-        productId: product.id,
+      const cartData = {
+        productId: Number(product.id),
         quantity: 1,
-        selectedSize,
-        customWidth: selectedSize === 'custom' ? Number(customWidth) : null,
-        customLength: selectedSize === 'custom' ? Number(customLength) : null,
-        selectedFabricCategory,
-        selectedFabric,
-        hasLiftingMechanism,
-        price: Number(totalPrice)
+        selectedSize: String(selectedSize),
+        selectedFabricCategory: String(selectedFabricCategory),
+        selectedFabric: String(selectedFabric),
+        hasLiftingMechanism: Boolean(hasLiftingMechanism),
+        price: String(totalPrice) // Отправляем цену как строку
       };
       
-      await addToCart(cartItem);
+      // Добавляем опциональные размеры только если выбран соответствующий размер
+      if (selectedSize === 'custom') {
+        // @ts-ignore
+        cartData.customWidth = Number(customWidth);
+        // @ts-ignore
+        cartData.customLength = Number(customLength);
+      }
+      
+      console.log('Отправляем товар в корзину:', cartData);
+      
+      // @ts-ignore
+      await addToCart(cartData);
       
       toast({
         title: 'Товар добавлен в корзину',
         description: `${product.name} успешно добавлен в корзину`,
       });
     } catch (error) {
+      console.error('Ошибка добавления в корзину:', error);
       toast({
         title: 'Ошибка',
         description: error instanceof Error ? error.message : 'Не удалось добавить товар в корзину',

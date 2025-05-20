@@ -193,8 +193,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Missing product ID" });
       }
       
-      // Создаем правильный объект для валидации
-      const cartData = {
+      // Проверим существование продукта перед добавлением в корзину
+      const product = await storage.getProductById(Number(req.body.productId));
+      if (!product) {
+        return res.status(404).json({ message: "Product not found" });
+      }
+      
+      // Создаем правильную структуру данных корзины
+      const cartItem = {
         sessionId: sessionId,
         productId: Number(req.body.productId),
         quantity: Number(req.body.quantity || 1),
@@ -202,34 +208,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
         selectedFabricCategory: String(req.body.selectedFabricCategory || "standard"),
         selectedFabric: String(req.body.selectedFabric || "cotton"),
         hasLiftingMechanism: Boolean(req.body.hasLiftingMechanism),
-        price: Number(req.body.price),
+        price: String(req.body.price), // Преобразуем в строку, т.к. в схеме price - это string
       };
       
-      // Добавляем опционные поля только если они не null и не undefined
+      // Проверяем, нужно ли добавить пользовательские размеры
       if (req.body.customWidth) {
-        cartData.customWidth = Number(req.body.customWidth);
+        // @ts-ignore
+        cartItem.customWidth = Number(req.body.customWidth);
       }
       
       if (req.body.customLength) {
-        cartData.customLength = Number(req.body.customLength);
+        // @ts-ignore
+        cartItem.customLength = Number(req.body.customLength);
       }
       
-      console.log("Processed cart data:", JSON.stringify(cartData));
+      console.log("Данные корзины для отправки:", cartItem);
       
-      // Verify that the product exists
-      const product = await storage.getProductById(cartData.productId);
-      if (!product) {
-        return res.status(404).json({ message: "Product not found" });
-      }
+      // Добавляем в корзину, пропуская валидацию Zod напрямую
+      const result = await storage.addToCart(cartItem);
+      console.log("Товар добавлен в корзину:", result);
       
-      const cartItem = await storage.addToCart(cartData);
-      console.log("Added cart item:", JSON.stringify(cartItem));
-      
-      res.status(201).json(cartItem);
+      res.status(201).json(result);
     } catch (error) {
-      console.error("Cart error:", error);
+      console.error("Ошибка корзины:", error);
       res.status(400).json({ 
-        message: "Invalid cart item data", 
+        message: "Не удалось добавить товар в корзину", 
         error: error instanceof Error ? error.message : String(error) 
       });
     }
