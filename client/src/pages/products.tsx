@@ -16,6 +16,8 @@ export default function ProductsPage() {
 
   const { data: products, isLoading } = useQuery<Product[]>({
     queryKey: ["/api/products"],
+    refetchInterval: 15000, // Обновление каждые 15 секунд
+    staleTime: 5000, // Данные считаются устаревшими через 5 секунд
   });
 
   // Set category based on location

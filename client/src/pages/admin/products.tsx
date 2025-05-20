@@ -50,6 +50,9 @@ export default function AdminProducts() {
   // Fetch products
   const { data: products, isLoading, error } = useQuery<Product[]>({
     queryKey: ['/api/products'],
+    refetchInterval: 10000, // Обновление данных каждые 10 секунд
+    staleTime: 2000, // Данные считаются устаревшими через 2 секунды
+    refetchOnMount: true, // Обновление при монтировании компонента
   });
   
   // Delete product mutation

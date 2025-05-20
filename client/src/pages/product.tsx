@@ -15,10 +15,14 @@ export default function ProductPageModern() {
   
   const { data: product, isLoading } = useQuery<Product>({
     queryKey: [`/api/products/${productId}`],
+    refetchInterval: 15000, // Обновление каждые 15 секунд
+    staleTime: 5000, // Данные считаются устаревшими через 5 секунд
   });
   
   const { data: allProducts } = useQuery<Product[]>({
     queryKey: ["/api/products"],
+    refetchInterval: 15000, // Обновление каждые 15 секунд
+    staleTime: 5000, // Данные считаются устаревшими через 5 секунд
   });
   
   const relatedProducts = allProducts
