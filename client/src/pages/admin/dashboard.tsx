@@ -114,14 +114,16 @@ export default function AdminDashboard() {
   
   // Update stats when data is loaded
   useEffect(() => {
-    if (products && orders) {
-      setStats({
-        totalSales: orders.reduce((sum, order) => sum + Number(order.totalAmount), 0),
-        totalOrders: orders.length,
-        totalProducts: products.length,
-        totalCustomers: new Set(orders.map(order => order.sessionId)).size,
-      });
-    }
+    // Проверяем, что данные являются массивами
+    const validProducts = Array.isArray(products) ? products : [];
+    const validOrders = Array.isArray(orders) ? orders : [];
+
+    setStats({
+      totalSales: validOrders.reduce((sum, order) => sum + Number(order.totalAmount), 0),
+      totalOrders: validOrders.length,
+      totalProducts: validProducts.length,
+      totalCustomers: new Set(validOrders.map(order => order.sessionId)).size,
+    });
   }, [products, orders]);
   
   // Prepare data for category distribution chart
@@ -131,8 +133,8 @@ export default function AdminDashboard() {
       {
         label: 'Количество товаров',
         data: [
-          products?.filter(p => p.category === 'bed').length || 0,
-          products?.filter(p => p.category === 'mattress').length || 0,
+          Array.isArray(products) ? products.filter(p => p.category === 'bed').length : 0,
+          Array.isArray(products) ? products.filter(p => p.category === 'mattress').length : 0,
         ],
         backgroundColor: [
           'hsl(var(--chart-1))',
@@ -154,9 +156,9 @@ export default function AdminDashboard() {
       {
         label: 'Статус заказов',
         data: [
-          orders?.filter(o => o.status === 'pending').length || 0,
-          orders?.filter(o => o.status === 'processing').length || 0,
-          orders?.filter(o => o.status === 'completed').length || 0,
+          Array.isArray(orders) ? orders.filter(o => o.status === 'pending').length : 0,
+          Array.isArray(orders) ? orders.filter(o => o.status === 'processing').length : 0,
+          Array.isArray(orders) ? orders.filter(o => o.status === 'completed').length : 0,
         ],
         backgroundColor: [
           'hsl(var(--chart-3))',
@@ -301,27 +303,27 @@ export default function AdminDashboard() {
                   </tr>
                 </thead>
                 <tbody className="divide-y">
-                  {orders?.slice(0, 5).map((order) => (
-                    <tr key={order.id}>
-                      <td className="px-4 py-3">#{order.id}</td>
-                      <td className="px-4 py-3">{order.customerName}</td>
-                      <td className="px-4 py-3">{new Date(order.createdAt).toLocaleDateString('ru-RU')}</td>
-                      <td className="px-4 py-3">{formatPrice(Number(order.totalAmount))} ₽</td>
-                      <td className="px-4 py-3">
-                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                          order.status === 'completed' ? 'bg-green-100 text-green-800' :
-                          order.status === 'processing' ? 'bg-blue-100 text-blue-800' :
-                          'bg-yellow-100 text-yellow-800'
-                        }`}>
-                          {order.status === 'completed' ? 'Выполнен' :
-                           order.status === 'processing' ? 'В обработке' :
-                           'Ожидает'}
-                        </span>
-                      </td>
-                    </tr>
-                  ))}
-                  
-                  {(!orders || orders.length === 0) && (
+                  {Array.isArray(orders) && orders.length > 0 ? 
+                    orders.slice(0, 5).map((order) => (
+                      <tr key={order.id}>
+                        <td className="px-4 py-3">#{order.id}</td>
+                        <td className="px-4 py-3">{order.customerName}</td>
+                        <td className="px-4 py-3">{new Date(order.createdAt).toLocaleDateString('ru-RU')}</td>
+                        <td className="px-4 py-3">{formatPrice(Number(order.totalAmount))} ₽</td>
+                        <td className="px-4 py-3">
+                          <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                            order.status === 'completed' ? 'bg-green-100 text-green-800' :
+                            order.status === 'processing' ? 'bg-blue-100 text-blue-800' :
+                            'bg-yellow-100 text-yellow-800'
+                          }`}>
+                            {order.status === 'completed' ? 'Выполнен' :
+                             order.status === 'processing' ? 'В обработке' :
+                             'Ожидает'}
+                          </span>
+                        </td>
+                      </tr>
+                    ))
+                  : (
                     <tr>
                       <td colSpan={5} className="px-4 py-6 text-center text-gray-500">
                         Заказы отсутствуют
