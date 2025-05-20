@@ -102,8 +102,8 @@ export default function ProductPageModern() {
           <div className="container mx-auto py-10 px-6">
             {/* Product Main Info */}
             <div className="grid md:grid-cols-2 gap-16 mb-16">
-              {/* Product Gallery */}
-              <div className="sticky top-8 self-start">
+              {/* Product Gallery - оптимизировано для мобильных устройств */}
+              <div className="md:sticky md:top-8 self-start">
                 {product.images && product.images.length > 0 ? (
                   <div className="relative aspect-square bg-white border border-gray-200 overflow-hidden rounded-sm">
                     <img
