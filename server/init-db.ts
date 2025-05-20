@@ -161,7 +161,7 @@ async function initDb() {
         description: 'Анатомический матрас средней жесткости с независимыми пружинами и натуральными наполнителями. Обеспечивает комфортный сон и поддержку позвоночника.',
         category: 'mattress',
         basePrice: "28900",
-        images: ['https://images.unsplash.com/photo-1631049035182-249067d7618e?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&h=800'],
+        images: ['https://images.pexels.com/photos/164595/pexels-photo-164595.jpeg?auto=compress&cs=tinysrgb&w=1200'],
         sizes: bedSizes,
         fabricCategories: [
           { id: 'standard', name: 'Стандарт', priceMultiplier: 1 },
@@ -192,7 +192,7 @@ async function initDb() {
         description: 'Инновационный беспружинный матрас с эффектом памяти. Адаптируется к форме тела и снимает напряжение с позвоночника и суставов.',
         category: 'mattress',
         basePrice: "32750",
-        images: ['https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&h=800'],
+        images: ['https://images.pexels.com/photos/7061788/pexels-photo-7061788.jpeg?auto=compress&cs=tinysrgb&w=1200'],
         sizes: bedSizes,
         fabricCategories: [
           { id: 'standard', name: 'Стандарт', priceMultiplier: 1 },
