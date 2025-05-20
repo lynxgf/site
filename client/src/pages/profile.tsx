@@ -178,36 +178,35 @@ export default function ProfilePage() {
   }
   
   return (
-    <div className="bg-gray-50 min-h-screen py-12">
+    <div className="bg-gray-50 min-h-screen">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
-        {/* Профиль хедер - улучшенный дизайн */}
-        <div className="bg-white rounded-lg shadow-sm mb-8 border border-gray-100 overflow-hidden">
-          <div className="relative h-40 bg-[#8B2A82]">
-            {/* Мы убрали градиент, сделав фон более однородным, как на скриншоте */}
-          </div>
-          
-          <div className="relative px-8 pb-6">
-            <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
-              <div className="flex flex-col sm:flex-row items-center gap-6 -mt-12 z-10">
-                <div className="rounded-full w-24 h-24 bg-[#8B2A82] text-white flex items-center justify-center text-5xl border-4 border-white shadow-md">
-                  <span className="font-medium">
-                    {user?.firstName ? user.firstName.charAt(0).toUpperCase() : 
-                     user?.username ? user.username.charAt(0).toUpperCase() : 'Л'}
-                  </span>
-                </div>
-                <div className="text-center sm:text-left mt-2 sm:mt-0">
-                  <h1 className="text-2xl sm:text-3xl font-semibold text-gray-900">
-                    {user?.firstName && user?.lastName 
-                      ? `${user.firstName} ${user.lastName}` 
-                      : user?.username}
-                  </h1>
-                  <p className="text-gray-500 text-sm mt-1">{user?.email}</p>
-                </div>
+        {/* Профиль хедер - точно как на вашем скриншоте */}
+        <div className="bg-white rounded-lg shadow-sm mb-8 overflow-hidden">
+          {/* Верхняя часть хедера - фиолетовый фон */}
+          <div className="bg-[#8B2A82] h-32 relative">
+            {/* Аватар и данные пользователя с абсолютным позиционированием */}
+            <div className="absolute bottom-0 left-8 transform translate-y-1/2 flex items-center">
+              <div className="rounded-full w-20 h-20 bg-[#8B2A82] text-white flex items-center justify-center text-4xl border-4 border-white shadow-sm">
+                <span className="font-medium">
+                  {user?.firstName ? user.firstName.charAt(0).toUpperCase() : 
+                   user?.username ? user.username.charAt(0).toUpperCase() : 'Л'}
+                </span>
               </div>
-              
+              <div className="ml-4 pb-10">
+                <h1 className="text-xl font-bold text-white">
+                  {user?.firstName && user?.lastName 
+                    ? `${user.firstName} ${user.lastName}` 
+                    : user?.username}
+                </h1>
+                <p className="text-white/80 text-sm">{user?.email}</p>
+              </div>
+            </div>
+            
+            {/* Кнопка выхода */}
+            <div className="absolute top-4 right-4">
               <Button 
                 variant="outline" 
-                className="border border-red-300 text-red-600 hover:bg-red-50 rounded-sm"
+                className="bg-transparent border border-white/20 text-white hover:bg-white/10 rounded-sm text-sm"
                 onClick={handleLogout}
               >
                 <LogOut className="h-4 w-4 mr-2" />
@@ -215,6 +214,9 @@ export default function ProfilePage() {
               </Button>
             </div>
           </div>
+          
+          {/* Нижняя часть хедера - белый фон для наполнения пространства */}
+          <div className="h-10 bg-white"></div>
         </div>
         
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
