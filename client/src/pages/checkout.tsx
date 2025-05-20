@@ -91,12 +91,12 @@ export default function CheckoutPage() {
         productId: item.productId,
         quantity: item.quantity,
         selectedSize: item.selectedSize,
-        customWidth: item.customWidth,
-        customLength: item.customLength,
+        customWidth: item.customWidth === undefined ? null : item.customWidth,
+        customLength: item.customLength === undefined ? null : item.customLength,
         selectedFabricCategory: item.selectedFabricCategory,
         selectedFabric: item.selectedFabric,
         fabricName: item.selectedFabric, // Упрощаем, используем ID ткани как название
-        hasLiftingMechanism: item.hasLiftingMechanism,
+        hasLiftingMechanism: !!item.hasLiftingMechanism, // Убедимся, что это булево значение
         price: item.price
       }));
       

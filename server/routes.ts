@@ -520,7 +520,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           customLength: z.number().nullable().optional(),
           selectedFabricCategory: z.string(),
           selectedFabric: z.string(),
-          fabricName: z.string(),
+          fabricName: z.string().optional().default(""), // Делаем необязательным
           hasLiftingMechanism: z.boolean().default(false),
           price: z.union([z.number(), z.string()]) // Поддержка как числового, так и строкового формата цены
         }))
@@ -538,16 +538,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Cart is empty" });
       }
       
+      // Сначала получим данные о продуктах
+      const productPromises = orderData.items.map(item => 
+        storage.getProductById(item.productId)
+      );
+      const products = await Promise.all(productPromises);
+      
       // Create order items
-      const orderItems = orderData.items.map(item => {
-        // Получаем информацию о продукте для добавления названия продукта
-        const productInfo = req.session.cartProducts?.find(p => p.id === item.productId);
+      const orderItems = orderData.items.map((item, index) => {
+        // Получаем информацию о продукте
+        const productInfo = products[index];
         
         return {
           orderId: 0, // Will be set after order creation
           ...item,
           // Необходимые поля для соответствия схеме
           productName: productInfo?.name || "Неизвестный товар",
+          fabricName: item.fabricName || item.selectedFabric || "",
           // Убедимся, что цена всегда преобразуется в строку правильно
           price: typeof item.price === 'number' ? item.price.toString() : item.price
         };
