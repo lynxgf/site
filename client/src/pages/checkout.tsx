@@ -95,7 +95,7 @@ export default function CheckoutPage() {
         customLength: item.customLength,
         selectedFabricCategory: item.selectedFabricCategory,
         selectedFabric: item.selectedFabric,
-        fabricName: item.product?.fabrics?.find(f => f.id === item.selectedFabric)?.name || item.selectedFabric,
+        fabricName: item.selectedFabric, // Упрощаем, используем ID ткани как название
         hasLiftingMechanism: item.hasLiftingMechanism,
         price: item.price
       }));
@@ -420,10 +420,11 @@ export default function CheckoutPage() {
                                           </FormLabel>
                                           <p className="text-sm text-gray-500 mt-1">
                                             Оплата курьеру или в пункте выдачи
-                                        </p>
+                                          </p>
+                                        </div>
                                       </div>
-                                    </div>
-                                  </Card>
+                                    </Card>
+                                  </div>
                                 </RadioGroup>
                               </FormControl>
                               <FormMessage />
