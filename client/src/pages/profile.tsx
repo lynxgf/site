@@ -15,10 +15,10 @@ import {
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { User, Mail, Phone, MapPin, Save, KeyRound, LogOut } from "lucide-react";
+import { User, Mail, Phone, MapPin, Save, KeyRound, LogOut, Heart, ShoppingBag, Lock } from "lucide-react";
 import { useAuthStore, UserProfile } from "@/lib/store";
 import { Separator } from "@/components/ui/separator";
+import { useQuery } from "@tanstack/react-query";
 
 // Валидационная схема для формы данных профиля
 const profileFormSchema = z.object({
@@ -45,6 +45,7 @@ export default function ProfilePage() {
   const { isAuthenticated, isLoading, user, getUserProfile, updateUserProfile, updatePassword, logout } = useAuthStore();
   const [isUpdatingProfile, setIsUpdatingProfile] = useState(false);
   const [isUpdatingPassword, setIsUpdatingPassword] = useState(false);
+  const [activeTab, setActiveTab] = useState("profile");
   
   // Убедимся, что пользователь авторизован
   useEffect(() => {
@@ -150,6 +151,18 @@ export default function ProfilePage() {
     await logout();
     navigate("/login");
   };
+
+  // Получаем данные о заказах
+  const { data: orders = [] } = useQuery({
+    queryKey: ["/api/orders"],
+    enabled: activeTab === "orders", // Загружаем только когда нужно
+  });
+  
+  // Получаем избранное
+  const { data: favorites = [] } = useQuery({
+    queryKey: ["/api/favorites"],
+    enabled: activeTab === "favorites", // Загружаем только когда нужно
+  });
   
   if (isLoading || !user) {
     return (
@@ -169,16 +182,16 @@ export default function ProfilePage() {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
         {/* Профиль хедер */}
         <div className="bg-white rounded-lg shadow-sm mb-8 border border-gray-100 overflow-hidden">
-          <div className="relative h-48 bg-gradient-to-r from-[#8e2b85] to-[#762271]">
+          <div className="relative h-48 bg-gradient-to-r from-[#8B2A82] to-[#7A2573]">
             <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-black/30 to-transparent"></div>
           </div>
           
           <div className="relative px-8 pb-6">
             <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
               <div className="flex flex-col sm:flex-row items-center gap-4 -mt-12 z-10">
-                <div className="rounded-full w-24 h-24 bg-[#8e2b85] text-white flex items-center justify-center text-4xl border-4 border-white shadow-md">
+                <div className="rounded-full w-24 h-24 bg-[#8B2A82] text-white flex items-center justify-center text-4xl border-4 border-white shadow-md">
                   <span className="font-medium">
-                    {user?.username ? user.username.charAt(0).toUpperCase() : 'U'}
+                    {user?.username ? user.username.charAt(0).toUpperCase() : 'У'}
                   </span>
                 </div>
                 <div className="text-center sm:text-left mt-2 sm:mt-0">
@@ -206,149 +219,92 @@ export default function ProfilePage() {
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           {/* Боковое меню */}
           <div className="lg:col-span-1">
-            <Card className="border border-gray-100 shadow-sm sticky top-24">
+            <Card className="border border-gray-100 shadow-sm">
               <CardContent className="p-0">
-                <div className="py-4">
-                  <Tabs defaultValue="profile" orientation="vertical" className="w-full">
-                    <TabsList className="bg-white border-r border-gray-100 flex flex-col h-auto w-full rounded-none justify-start p-0">
-                      <TabsTrigger 
-                        value="profile" 
-                        className="rounded-none border-l-2 border-transparent data-[state=active]:border-[#8e2b85] justify-start pl-4 py-4 w-full"
-                      >
-                        <User className="h-5 w-5 mr-2" />
-                        Личная информация
-                      </TabsTrigger>
-                      <TabsTrigger 
-                        value="security" 
-                        className="rounded-none border-l-2 border-transparent data-[state=active]:border-[#8e2b85] justify-start pl-4 py-4 w-full"
-                      >
-                        <KeyRound className="h-5 w-5 mr-2" />
-                        Безопасность
-                      </TabsTrigger>
-                      <TabsTrigger 
-                        value="orders" 
-                        className="rounded-none border-l-2 border-transparent data-[state=active]:border-[#8e2b85] justify-start pl-4 py-4 w-full"
-                      >
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-5 w-5 mr-2">
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007zM8.625 10.5a.375.375 0 11-.75 0 .375.375 0 01.75 0zm7.5 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
-                        </svg>
-                        Мои заказы
-                      </TabsTrigger>
-                      <TabsTrigger 
-                        value="favorites" 
-                        className="rounded-none border-l-2 border-transparent data-[state=active]:border-[#8e2b85] justify-start pl-4 py-4 w-full"
-                      >
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-5 w-5 mr-2">
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
-                        </svg>
-                        Избранное
-                      </TabsTrigger>
-                    </TabsList>
-                  </Tabs>
-                </div>
+                <nav className="flex flex-col">
+                  <button
+                    onClick={() => setActiveTab("profile")}
+                    className={`flex items-center text-left px-4 py-4 border-l-2 hover:bg-gray-50 transition-colors ${
+                      activeTab === "profile" 
+                        ? "border-[#8B2A82] text-[#8B2A82] font-medium bg-gray-50" 
+                        : "border-transparent text-gray-700"
+                    }`}
+                  >
+                    <User className="h-5 w-5 mr-3" />
+                    <span>Личная информация</span>
+                  </button>
+
+                  <button
+                    onClick={() => setActiveTab("security")}
+                    className={`flex items-center text-left px-4 py-4 border-l-2 hover:bg-gray-50 transition-colors ${
+                      activeTab === "security" 
+                        ? "border-[#8B2A82] text-[#8B2A82] font-medium bg-gray-50" 
+                        : "border-transparent text-gray-700"
+                    }`}
+                  >
+                    <Lock className="h-5 w-5 mr-3" />
+                    <span>Безопасность</span>
+                  </button>
+
+                  <button
+                    onClick={() => setActiveTab("orders")}
+                    className={`flex items-center text-left px-4 py-4 border-l-2 hover:bg-gray-50 transition-colors ${
+                      activeTab === "orders" 
+                        ? "border-[#8B2A82] text-[#8B2A82] font-medium bg-gray-50" 
+                        : "border-transparent text-gray-700"
+                    }`}
+                  >
+                    <ShoppingBag className="h-5 w-5 mr-3" />
+                    <span>Мои заказы</span>
+                  </button>
+
+                  <button
+                    onClick={() => setActiveTab("favorites")}
+                    className={`flex items-center text-left px-4 py-4 border-l-2 hover:bg-gray-50 transition-colors ${
+                      activeTab === "favorites" 
+                        ? "border-[#8B2A82] text-[#8B2A82] font-medium bg-gray-50" 
+                        : "border-transparent text-gray-700"
+                    }`}
+                  >
+                    <Heart className="h-5 w-5 mr-3" />
+                    <span>Избранное</span>
+                  </button>
+                </nav>
               </CardContent>
             </Card>
           </div>
           
           {/* Основной контент */}
           <div className="lg:col-span-3">
-            <Tabs defaultValue="profile" className="space-y-8">
-              {/* Вкладка профиля */}
-              <TabsContent value="profile">
-                <Card className="border border-gray-100 shadow-sm">
-                  <CardHeader>
-                    <CardTitle className="flex items-center text-xl">
-                      <User className="h-5 w-5 mr-2 text-[#8e2b85]" />
-                      Личная информация
-                    </CardTitle>
-                    <CardDescription>
-                      Здесь вы можете обновить свои личные данные и контактную информацию
-                    </CardDescription>
-                  </CardHeader>
-                  
-                  <CardContent>
-                    <Form {...profileForm}>
-                      <form onSubmit={profileForm.handleSubmit(onSaveProfile)} className="space-y-6">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                          <FormField
-                            control={profileForm.control}
-                            name="firstName"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel>Имя</FormLabel>
-                                <FormControl>
-                                  <div className="relative">
-                                    <User className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                                    <Input
-                                      className="pl-10 border-gray-200 focus:border-[#8e2b85] focus:ring-[#8e2b85]"
-                                      placeholder="Иван"
-                                      {...field}
-                                      value={field.value || ''}
-                                    />
-                                  </div>
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                          
-                          <FormField
-                            control={profileForm.control}
-                            name="lastName"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel>Фамилия</FormLabel>
-                                <FormControl>
-                                  <div className="relative">
-                                    <User className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                                    <Input
-                                      className="pl-10 border-gray-200 focus:border-[#8e2b85] focus:ring-[#8e2b85]"
-                                      placeholder="Иванов"
-                                      {...field}
-                                      value={field.value || ''}
-                                    />
-                                  </div>
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                        </div>
-                        
+            {/* Вкладка профиля */}
+            {activeTab === "profile" && (
+              <Card className="border border-gray-100 shadow-sm">
+                <CardHeader>
+                  <CardTitle className="flex items-center text-xl">
+                    <User className="h-5 w-5 mr-2 text-[#8B2A82]" />
+                    Личная информация
+                  </CardTitle>
+                  <CardDescription>
+                    Здесь вы можете обновить свои личные данные и контактную информацию
+                  </CardDescription>
+                </CardHeader>
+                
+                <CardContent>
+                  <Form {...profileForm}>
+                    <form onSubmit={profileForm.handleSubmit(onSaveProfile)} className="space-y-6">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <FormField
                           control={profileForm.control}
-                          name="email"
+                          name="firstName"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel>Email</FormLabel>
+                              <FormLabel>Имя</FormLabel>
                               <FormControl>
                                 <div className="relative">
-                                  <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                                  <User className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
                                   <Input
-                                    className="pl-10 border-gray-200 focus:border-[#8e2b85] focus:ring-[#8e2b85]"
-                                    placeholder="ivan@example.com"
-                                    type="email"
-                                    {...field}
-                                  />
-                                </div>
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                        
-                        <FormField
-                          control={profileForm.control}
-                          name="phone"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Телефон</FormLabel>
-                              <FormControl>
-                                <div className="relative">
-                                  <Phone className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                                  <Input
-                                    className="pl-10 border-gray-200 focus:border-[#8e2b85] focus:ring-[#8e2b85]"
-                                    placeholder="+7 (999) 123-45-67"
+                                    className="pl-10 border-gray-200 focus:border-[#8B2A82] focus:ring-[#8B2A82]"
+                                    placeholder="Ваше имя"
                                     {...field}
                                     value={field.value || ''}
                                   />
@@ -361,16 +317,16 @@ export default function ProfilePage() {
                         
                         <FormField
                           control={profileForm.control}
-                          name="address"
+                          name="lastName"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel>Адрес доставки</FormLabel>
+                              <FormLabel>Фамилия</FormLabel>
                               <FormControl>
                                 <div className="relative">
-                                  <MapPin className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                                  <User className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
                                   <Input
-                                    className="pl-10 border-gray-200 focus:border-[#8e2b85] focus:ring-[#8e2b85]"
-                                    placeholder="Город, улица, дом, квартира, индекс"
+                                    className="pl-10 border-gray-200 focus:border-[#8B2A82] focus:ring-[#8B2A82]"
+                                    placeholder="Ваша фамилия"
                                     {...field}
                                     value={field.value || ''}
                                   />
@@ -380,190 +336,345 @@ export default function ProfilePage() {
                             </FormItem>
                           )}
                         />
-                        
-                        <div className="flex justify-end">
-                          <Button 
-                            type="submit" 
-                            className="bg-[#8e2b85] hover:bg-[#762271] text-white px-6"
-                            disabled={isUpdatingProfile}
-                          >
-                            <Save className="h-4 w-4 mr-2" />
-                            {isUpdatingProfile ? "Сохранение..." : "Сохранить изменения"}
-                          </Button>
-                        </div>
-                      </form>
-                    </Form>
-                  </CardContent>
-                </Card>
-              </TabsContent>
-              
-              {/* Вкладка безопасности */}
-              <TabsContent value="security">
-                <Card className="border border-gray-100 shadow-sm">
-                  <CardHeader>
-                    <CardTitle className="flex items-center text-xl">
-                      <KeyRound className="h-5 w-5 mr-2 text-[#8e2b85]" />
-                      Безопасность
-                    </CardTitle>
-                    <CardDescription>
-                      Здесь вы можете изменить пароль для входа в систему
-                    </CardDescription>
-                  </CardHeader>
-                  
-                  <CardContent>
-                    <Form {...passwordForm}>
-                      <form onSubmit={passwordForm.handleSubmit(onChangePassword)} className="space-y-6">
-                        <FormField
-                          control={passwordForm.control}
-                          name="currentPassword"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Текущий пароль</FormLabel>
-                              <FormControl>
-                                <div className="relative">
-                                  <KeyRound className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                                  <Input
-                                    className="pl-10 border-gray-200 focus:border-[#8e2b85] focus:ring-[#8e2b85]"
-                                    type="password"
-                                    {...field}
-                                  />
-                                </div>
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                        
-                        <Separator className="my-4" />
-                        
-                        <FormField
-                          control={passwordForm.control}
-                          name="newPassword"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Новый пароль</FormLabel>
-                              <FormControl>
-                                <div className="relative">
-                                  <KeyRound className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                                  <Input
-                                    className="pl-10 border-gray-200 focus:border-[#8e2b85] focus:ring-[#8e2b85]"
-                                    type="password"
-                                    {...field}
-                                  />
-                                </div>
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                        
-                        <FormField
-                          control={passwordForm.control}
-                          name="confirmPassword"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Подтверждение пароля</FormLabel>
-                              <FormControl>
-                                <div className="relative">
-                                  <KeyRound className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                                  <Input
-                                    className="pl-10 border-gray-200 focus:border-[#8e2b85] focus:ring-[#8e2b85]"
-                                    type="password"
-                                    {...field}
-                                  />
-                                </div>
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                        
-                        <div className="flex justify-end">
-                          <Button 
-                            type="submit" 
-                            className="bg-[#8e2b85] hover:bg-[#762271] text-white px-6"
-                            disabled={isUpdatingPassword}
-                          >
-                            <KeyRound className="h-4 w-4 mr-2" />
-                            {isUpdatingPassword ? "Сохранение..." : "Изменить пароль"}
-                          </Button>
-                        </div>
-                      </form>
-                    </Form>
-                  </CardContent>
-                </Card>
-              </TabsContent>
-              
-              {/* Вкладка заказов */}
-              <TabsContent value="orders">
-                <Card className="border border-gray-100 shadow-sm">
-                  <CardHeader>
-                    <CardTitle className="flex items-center text-xl">
-                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-5 w-5 mr-2 text-[#8e2b85]">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007zM8.625 10.5a.375.375 0 11-.75 0 .375.375 0 01.75 0zm7.5 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
-                      </svg>
-                      Мои заказы
-                    </CardTitle>
-                    <CardDescription>
-                      История ваших заказов и их статус
-                    </CardDescription>
-                  </CardHeader>
-                  
-                  <CardContent>
-                    <div className="rounded-lg border border-gray-200 overflow-hidden">
-                      <div className="text-center py-12 px-4">
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 mx-auto text-gray-300 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007zM8.625 10.5a.375.375 0 11-.75 0 .375.375 0 01.75 0zm7.5 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
-                        </svg>
-                        <h3 className="text-lg font-medium text-gray-900 mb-1">У вас пока нет заказов</h3>
-                        <p className="text-gray-500 mb-6">Начните делать покупки прямо сейчас!</p>
+                      </div>
+                      
+                      <FormField
+                        control={profileForm.control}
+                        name="email"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Email</FormLabel>
+                            <FormControl>
+                              <div className="relative">
+                                <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                                <Input
+                                  className="pl-10 border-gray-200 focus:border-[#8B2A82] focus:ring-[#8B2A82]"
+                                  placeholder="Ваш email"
+                                  type="email"
+                                  {...field}
+                                />
+                              </div>
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      
+                      <FormField
+                        control={profileForm.control}
+                        name="phone"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Телефон</FormLabel>
+                            <FormControl>
+                              <div className="relative">
+                                <Phone className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                                <Input
+                                  className="pl-10 border-gray-200 focus:border-[#8B2A82] focus:ring-[#8B2A82]"
+                                  placeholder="+7 (999) 123-45-67"
+                                  {...field}
+                                  value={field.value || ''}
+                                />
+                              </div>
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      
+                      <FormField
+                        control={profileForm.control}
+                        name="address"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Адрес доставки</FormLabel>
+                            <FormControl>
+                              <div className="relative">
+                                <MapPin className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                                <Input
+                                  className="pl-10 border-gray-200 focus:border-[#8B2A82] focus:ring-[#8B2A82]"
+                                  placeholder="Ваш адрес доставки"
+                                  {...field}
+                                  value={field.value || ''}
+                                />
+                              </div>
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      
+                      <div className="flex justify-end">
                         <Button 
-                          onClick={() => navigate('/products')} 
-                          className="bg-[#8e2b85] hover:bg-[#762271] text-white"
+                          type="submit" 
+                          className="bg-[#8B2A82] hover:bg-[#7A2573] text-white"
+                          disabled={isUpdatingProfile}
                         >
-                          Перейти в каталог
+                          {isUpdatingProfile ? (
+                            <>
+                              <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                              </svg>
+                              Сохранение...
+                            </>
+                          ) : (
+                            <>
+                              <Save className="h-4 w-4 mr-2" />
+                              Сохранить изменения
+                            </>
+                          )}
                         </Button>
                       </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              </TabsContent>
-              
-              {/* Вкладка избранного */}
-              <TabsContent value="favorites">
-                <Card className="border border-gray-100 shadow-sm">
-                  <CardHeader>
-                    <CardTitle className="flex items-center text-xl">
-                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-5 w-5 mr-2 text-[#8e2b85]">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
-                      </svg>
-                      Избранное
-                    </CardTitle>
-                    <CardDescription>
-                      Товары, которые вы добавили в избранное
-                    </CardDescription>
-                  </CardHeader>
-                  
-                  <CardContent>
-                    <div className="rounded-lg border border-gray-200 overflow-hidden">
-                      <div className="text-center py-12 px-4">
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 mx-auto text-gray-300 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
-                        </svg>
-                        <h3 className="text-lg font-medium text-gray-900 mb-1">У вас пока нет избранных товаров</h3>
-                        <p className="text-gray-500 mb-6">Добавляйте товары в избранное, чтобы вернуться к ним позже</p>
+                    </form>
+                  </Form>
+                </CardContent>
+              </Card>
+            )}
+            
+            {/* Вкладка безопасности */}
+            {activeTab === "security" && (
+              <Card className="border border-gray-100 shadow-sm">
+                <CardHeader>
+                  <CardTitle className="flex items-center text-xl">
+                    <Lock className="h-5 w-5 mr-2 text-[#8B2A82]" />
+                    Безопасность
+                  </CardTitle>
+                  <CardDescription>
+                    Здесь вы можете изменить пароль от своей учетной записи
+                  </CardDescription>
+                </CardHeader>
+                
+                <CardContent>
+                  <Form {...passwordForm}>
+                    <form onSubmit={passwordForm.handleSubmit(onChangePassword)} className="space-y-6">
+                      <FormField
+                        control={passwordForm.control}
+                        name="currentPassword"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Текущий пароль</FormLabel>
+                            <FormControl>
+                              <div className="relative">
+                                <KeyRound className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                                <Input
+                                  className="pl-10 border-gray-200 focus:border-[#8B2A82] focus:ring-[#8B2A82]"
+                                  type="password"
+                                  placeholder="••••••••"
+                                  {...field}
+                                />
+                              </div>
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      
+                      <FormField
+                        control={passwordForm.control}
+                        name="newPassword"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Новый пароль</FormLabel>
+                            <FormControl>
+                              <div className="relative">
+                                <KeyRound className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                                <Input
+                                  className="pl-10 border-gray-200 focus:border-[#8B2A82] focus:ring-[#8B2A82]"
+                                  type="password"
+                                  placeholder="••••••••"
+                                  {...field}
+                                />
+                              </div>
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      
+                      <FormField
+                        control={passwordForm.control}
+                        name="confirmPassword"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Подтвердите новый пароль</FormLabel>
+                            <FormControl>
+                              <div className="relative">
+                                <KeyRound className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                                <Input
+                                  className="pl-10 border-gray-200 focus:border-[#8B2A82] focus:ring-[#8B2A82]"
+                                  type="password"
+                                  placeholder="••••••••"
+                                  {...field}
+                                />
+                              </div>
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      
+                      <div className="flex justify-end">
                         <Button 
-                          onClick={() => navigate('/products')} 
-                          className="bg-[#8e2b85] hover:bg-[#762271] text-white"
+                          type="submit" 
+                          className="bg-[#8B2A82] hover:bg-[#7A2573] text-white"
+                          disabled={isUpdatingPassword}
                         >
-                          Перейти в каталог
+                          {isUpdatingPassword ? (
+                            <>
+                              <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                              </svg>
+                              Изменение...
+                            </>
+                          ) : (
+                            <>
+                              <Save className="h-4 w-4 mr-2" />
+                              Изменить пароль
+                            </>
+                          )}
                         </Button>
                       </div>
+                    </form>
+                  </Form>
+                </CardContent>
+              </Card>
+            )}
+            
+            {/* Вкладка заказов */}
+            {activeTab === "orders" && (
+              <Card className="border border-gray-100 shadow-sm">
+                <CardHeader>
+                  <CardTitle className="flex items-center text-xl">
+                    <ShoppingBag className="h-5 w-5 mr-2 text-[#8B2A82]" />
+                    Мои заказы
+                  </CardTitle>
+                  <CardDescription>
+                    История ваших заказов и их статус
+                  </CardDescription>
+                </CardHeader>
+                
+                <CardContent>
+                  {orders.length > 0 ? (
+                    <div className="space-y-4">
+                      {orders.map((order: any) => (
+                        <div key={order.id} className="border border-gray-200 rounded-md p-4">
+                          <div className="flex flex-col md:flex-row justify-between mb-4">
+                            <div>
+                              <p className="text-sm text-gray-500">Заказ №{order.id}</p>
+                              <p className="font-medium">от {new Date(order.createdAt).toLocaleDateString()}</p>
+                            </div>
+                            <div className="mt-2 md:mt-0">
+                              <span className={`inline-flex items-center px-2 py-1 text-xs rounded-full ${
+                                order.status === 'completed' ? 'bg-green-100 text-green-800' :
+                                order.status === 'processing' ? 'bg-blue-100 text-blue-800' :
+                                order.status === 'cancelled' ? 'bg-red-100 text-red-800' :
+                                'bg-yellow-100 text-yellow-800'
+                              }`}>
+                                {order.status === 'completed' ? 'Выполнен' :
+                                 order.status === 'processing' ? 'В обработке' :
+                                 order.status === 'cancelled' ? 'Отменен' :
+                                 'Ожидает обработки'}
+                              </span>
+                            </div>
+                          </div>
+                          <div className="border-t border-gray-200 pt-3">
+                            <p className="font-medium">Сумма заказа: {parseFloat(order.totalAmount).toLocaleString()} ₽</p>
+                            <p className="text-sm text-gray-600 mt-1">Адрес доставки: {order.address}</p>
+                          </div>
+                          <div className="mt-3">
+                            <Button 
+                              variant="outline" 
+                              size="sm" 
+                              className="text-[#8B2A82] border-[#8B2A82] hover:bg-[#8B2A82]/10"
+                            >
+                              Подробнее
+                            </Button>
+                          </div>
+                        </div>
+                      ))}
                     </div>
-                  </CardContent>
-                </Card>
-              </TabsContent>
-            </Tabs>
+                  ) : (
+                    <div className="text-center py-8">
+                      <ShoppingBag className="h-12 w-12 mx-auto text-gray-300 mb-4" />
+                      <h3 className="text-lg font-medium text-gray-900 mb-1">У вас пока нет заказов</h3>
+                      <p className="text-gray-500 mb-4">Здесь будут отображаться ваши заказы</p>
+                      <Button className="bg-[#8B2A82] hover:bg-[#7A2573] text-white">
+                        Перейти к покупкам
+                      </Button>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            )}
+            
+            {/* Вкладка избранного */}
+            {activeTab === "favorites" && (
+              <Card className="border border-gray-100 shadow-sm">
+                <CardHeader>
+                  <CardTitle className="flex items-center text-xl">
+                    <Heart className="h-5 w-5 mr-2 text-[#8B2A82]" />
+                    Избранное
+                  </CardTitle>
+                  <CardDescription>
+                    Сохраненные товары, которые вам понравились
+                  </CardDescription>
+                </CardHeader>
+                
+                <CardContent>
+                  {favorites.length > 0 ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {favorites.map((product: any) => (
+                        <div key={product.id} className="border border-gray-200 rounded-md overflow-hidden">
+                          <div className="aspect-square bg-gray-100">
+                            {product.images && product.images[0] && (
+                              <img 
+                                src={product.images[0]} 
+                                alt={product.name} 
+                                className="w-full h-full object-cover"
+                              />
+                            )}
+                          </div>
+                          <div className="p-3">
+                            <h3 className="font-medium">{product.name}</h3>
+                            <p className="text-[#8B2A82] font-bold mt-1">
+                              {parseFloat(product.basePrice).toLocaleString()} ₽
+                            </p>
+                            <div className="flex space-x-2 mt-3">
+                              <Button 
+                                className="flex-1 bg-[#8B2A82] hover:bg-[#7A2573] text-white"
+                                size="sm"
+                              >
+                                В корзину
+                              </Button>
+                              <Button 
+                                variant="outline" 
+                                size="sm"
+                                className="text-red-600 border-red-200 hover:bg-red-50"
+                              >
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
+                                  <path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+                                </svg>
+                              </Button>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-center py-8">
+                      <Heart className="h-12 w-12 mx-auto text-gray-300 mb-4" />
+                      <h3 className="text-lg font-medium text-gray-900 mb-1">У вас пока нет избранных товаров</h3>
+                      <p className="text-gray-500 mb-4">Добавляйте товары в избранное, чтобы не потерять их</p>
+                      <Button className="bg-[#8B2A82] hover:bg-[#7A2573] text-white">
+                        Перейти к покупкам
+                      </Button>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            )}
           </div>
         </div>
       </div>
