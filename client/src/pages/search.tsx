@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { Link, useLocation } from 'wouter';
+import { Link } from 'wouter';
 import { Product } from '@shared/schema';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -9,15 +9,13 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 export default function SearchPage() {
-  const [location, setLocation] = useLocation();
-  
-  // Парсинг параметров запроса
+  // Получаем поисковый запрос из URL
   const getQueryParams = () => {
-    const params = new URLSearchParams(location.split('?')[1] || '');
+    const searchParams = new URLSearchParams(window.location.search);
     return {
-      q: params.get('q') || '',
-      category: params.get('category') || '',
-      sort: params.get('sort') || 'relevance'
+      q: searchParams.get('q') || '',
+      category: searchParams.get('category') || '',
+      sort: searchParams.get('sort') || 'relevance'
     };
   };
   
@@ -36,45 +34,38 @@ export default function SearchPage() {
     queryKey: ['/api/products'],
   });
   
-  // Обновление URL при изменении фильтров
-  useEffect(() => {
+  // Обработчик отправки формы поиска
+  const handleSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    // Собираем параметры запроса
     const params = new URLSearchParams();
     if (searchQuery) params.set('q', searchQuery);
     if (selectedCategory) params.set('category', selectedCategory);
     if (selectedSort !== 'relevance') params.set('sort', selectedSort);
     
-    const newPath = `/search${params.toString() ? `?${params.toString()}` : ''}`;
-    if (location !== newPath && searchQuery) {
-      setLocation(newPath);
-    }
-  }, [searchQuery, selectedCategory, selectedSort, location]);
-  
-  // При изменении URL обновляем состояние компонента
-  useEffect(() => {
-    const params = getQueryParams();
-    if (params.q && params.q !== searchQuery) {
-      setSearchQuery(params.q);
-    }
-    if (params.category !== selectedCategory) {
-      setSelectedCategory(params.category);
-    }
-    if (params.sort !== selectedSort) {
-      setSelectedSort(params.sort);
-    }
-  }, [location, getQueryParams, searchQuery, selectedCategory, selectedSort]);
-  
-  // Обработчик отправки формы поиска
-  const handleSearchSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    // URL обновляется автоматически через useEffect
+    // Обновляем URL без перезагрузки страницы
+    const newUrl = `/search${params.toString() ? `?${params.toString()}` : ''}`;
+    window.history.pushState({ path: newUrl }, '', newUrl);
   };
   
-  // Фильтрация и сортировка продуктов
+  // Обновление поискового запроса при загрузке страницы
+  useEffect(() => {
+    const { q } = getQueryParams();
+    if (q && q !== searchQuery) {
+      setSearchQuery(q);
+    }
+  }, []);
+  
+  // Фильтрация продуктов
   const filteredProducts = products?.filter(product => {
     // Фильтр по поисковому запросу
-    const matchesQuery = searchQuery ? 
-      product.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-      product.description.toLowerCase().includes(searchQuery.toLowerCase()) :
+    const query = searchQuery.trim().toLowerCase();
+    const matchesQuery = query ? 
+      product.name.toLowerCase().includes(query) || 
+      product.description.toLowerCase().includes(query) ||
+      (product.category === 'bed' && 'кровать'.includes(query)) ||
+      (product.category === 'mattress' && 'матрас'.includes(query)) :
       true;
       
     // Фильтр по категории

@@ -226,17 +226,15 @@ export default function Header() {
                               </div>
                             </Link>
                           ))}
-                          <Link 
+                          <a 
                             href={`/search?q=${encodeURIComponent(searchQuery)}`}
                             onClick={() => {
                               setIsSearchOpen(false);
-                              // Задержка, чтобы успела сработать навигация перед закрытием
-                              setTimeout(() => window.location.reload(), 50);
                             }}
                             className="block w-full mt-2 pt-2 text-center text-sm text-[#8e2b85] border-t border-gray-100"
                           >
                             Показать все результаты
-                          </Link>
+                          </a>
                         </>
                       ) : (
                         <div className="py-4 text-center text-gray-500 text-sm">
