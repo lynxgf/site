@@ -26,6 +26,9 @@ import AdminLogin from "@/pages/admin/login";
 import AdminDashboard from "@/pages/admin/dashboard";
 import AdminProducts from "@/pages/admin/products";
 import AdminProductEdit from "@/pages/admin/product-edit";
+import AdminOrders from "@/pages/admin/orders";
+import AdminUsers from "@/pages/admin/users";
+import AdminSettings from "@/pages/admin/settings";
 import NotFound from "@/pages/not-found";
 
 // Admin route guard
@@ -97,6 +100,15 @@ function Router() {
       </Route>
       <Route path="/admin/products/:id/edit">
         {(params) => <AdminRoute component={AdminProductEdit} params={params} />}
+      </Route>
+      <Route path="/admin/orders">
+        {(params) => <AdminRoute component={AdminOrders} params={params} />}
+      </Route>
+      <Route path="/admin/users">
+        {(params) => <AdminRoute component={AdminUsers} params={params} />}
+      </Route>
+      <Route path="/admin/settings">
+        {(params) => <AdminRoute component={AdminSettings} params={params} />}
       </Route>
       
       {/* Fallback to 404 */}
