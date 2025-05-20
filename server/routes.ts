@@ -627,6 +627,156 @@ export async function registerRoutes(app: Express): Promise<Server> {
     
     res.json(updatedOrder);
   });
+  
+  // API для импорта товаров
+  app.post("/api/admin/products/import", requireAdmin, async (req, res) => {
+    const products = req.body;
+    
+    if (!Array.isArray(products) || products.length === 0) {
+      return res.status(400).json({ message: "Неверный формат данных для импорта" });
+    }
+    
+    try {
+      const importedProducts = [];
+      
+      for (const product of products) {
+        // Подготовка продукта для вставки в БД
+        const productData = {
+          name: product.name || "Неизвестный товар",
+          description: product.description || "Описание отсутствует",
+          category: product.category || "mattress",
+          basePrice: product.basePrice || "0",
+          images: Array.isArray(product.images) ? product.images : [],
+          sizes: product.sizes || [],
+          fabricCategories: product.fabricCategories || [],
+          fabrics: product.fabrics || [],
+          hasLiftingMechanism: !!product.hasLiftingMechanism,
+          liftingMechanismPrice: product.liftingMechanismPrice || "0",
+          specifications: product.specifications || [],
+          discount: Number(product.discount) || 0,
+          featured: !!product.featured,
+          inStock: product.inStock !== false
+        };
+        
+        // Создание продукта
+        const importedProduct = await storage.createProduct(productData);
+        importedProducts.push(importedProduct);
+      }
+      
+      res.status(201).json({
+        message: `Успешно импортировано ${importedProducts.length} товаров`,
+        products: importedProducts
+      });
+    } catch (error) {
+      console.error("Ошибка при импорте товаров:", error);
+      res.status(500).json({ 
+        message: "Ошибка при импорте товаров",
+        error: error instanceof Error ? error.message : String(error)
+      });
+    }
+  });
+  
+  // API для импорта пользователей
+  app.post("/api/admin/users/import", requireAdmin, async (req, res) => {
+    const users = req.body;
+    
+    if (!Array.isArray(users) || users.length === 0) {
+      return res.status(400).json({ message: "Неверный формат данных для импорта" });
+    }
+    
+    try {
+      const importedUsers = [];
+      
+      for (const user of users) {
+        // Подготовка пользователя для вставки в БД
+        const userData = {
+          username: user.username || `user_${Date.now()}`,
+          email: user.email || `${Date.now()}@example.com`,
+          password: user.password || "password123", // В реальном проекте должен быть хеширован
+          firstName: user.firstName || null,
+          lastName: user.lastName || null,
+          phone: user.phone || null,
+          address: user.address || null,
+          isAdmin: !!user.isAdmin
+        };
+        
+        // Создание пользователя
+        const importedUser = await storage.createUser(userData);
+        importedUsers.push(importedUser);
+      }
+      
+      res.status(201).json({
+        message: `Успешно импортировано ${importedUsers.length} пользователей`,
+        users: importedUsers
+      });
+    } catch (error) {
+      console.error("Ошибка при импорте пользователей:", error);
+      res.status(500).json({ 
+        message: "Ошибка при импорте пользователей",
+        error: error instanceof Error ? error.message : String(error)
+      });
+    }
+  });
+  
+  // API для импорта заказов
+  app.post("/api/admin/orders/import", requireAdmin, async (req, res) => {
+    const orders = req.body;
+    
+    if (!Array.isArray(orders) || orders.length === 0) {
+      return res.status(400).json({ message: "Неверный формат данных для импорта" });
+    }
+    
+    try {
+      const importedOrders = [];
+      
+      for (const order of orders) {
+        if (!order.items || !Array.isArray(order.items) || order.items.length === 0) {
+          continue; // Пропускаем заказы без товаров
+        }
+        
+        // Подготовка заказа для вставки в БД
+        const orderData = {
+          sessionId: order.sessionId || `import_${Date.now()}`,
+          customerName: order.customerName || "Импортированный заказ",
+          customerEmail: order.customerEmail || "import@example.com",
+          customerPhone: order.customerPhone || "+7 (000) 000-00-00",
+          address: order.address || "Адрес импортированного заказа",
+          totalAmount: order.totalAmount || "0",
+          status: order.status || "pending"
+        };
+        
+        // Подготовка товаров заказа
+        const orderItems = order.items.map(item => ({
+          productId: item.productId || 1,
+          productName: item.productName || "Импортированный товар",
+          quantity: item.quantity || 1,
+          selectedSize: item.selectedSize || "standard",
+          customWidth: item.customWidth || null,
+          customLength: item.customLength || null,
+          selectedFabricCategory: item.selectedFabricCategory || "standard",
+          selectedFabric: item.selectedFabric || "cotton",
+          fabricName: item.fabricName || "Хлопок",
+          hasLiftingMechanism: !!item.hasLiftingMechanism,
+          price: item.price || "0"
+        }));
+        
+        // Создание заказа
+        const importedOrder = await storage.createOrder(orderData, orderItems);
+        importedOrders.push(importedOrder);
+      }
+      
+      res.status(201).json({
+        message: `Успешно импортировано ${importedOrders.length} заказов`,
+        orders: importedOrders
+      });
+    } catch (error) {
+      console.error("Ошибка при импорте заказов:", error);
+      res.status(500).json({ 
+        message: "Ошибка при импорте заказов",
+        error: error instanceof Error ? error.message : String(error)
+      });
+    }
+  });
 
   // Create HTTP server
   const httpServer = createServer(app);

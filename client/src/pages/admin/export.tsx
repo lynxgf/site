@@ -563,17 +563,116 @@ export default function AdminExport() {
           </Card>
         </div>
         
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle>Импорт данных</CardTitle>
+              <CardDescription>Загрузите CSV или JSON файл для импорта данных</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div>
+                  <Label htmlFor="importFormat">Формат файла</Label>
+                  <Select value={importFormat} onValueChange={setImportFormat}>
+                    <SelectTrigger id="importFormat">
+                      <SelectValue placeholder="Выберите формат" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="csv">CSV (.csv)</SelectItem>
+                      <SelectItem value="json">JSON (.json)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                
+                <div>
+                  <input 
+                    type="file" 
+                    accept={importFormat === 'csv' ? '.csv' : '.json'} 
+                    ref={fileInputRef}
+                    onChange={handleFileChange}
+                    className="hidden"
+                  />
+                  <div className="flex gap-2">
+                    <Button
+                      variant="outline"
+                      className="w-full"
+                      onClick={() => {
+                        if (fileInputRef.current) {
+                          fileInputRef.current.click();
+                        }
+                      }}
+                    >
+                      <Upload className="h-4 w-4 mr-2" />
+                      Выбрать файл
+                    </Button>
+                    <Button 
+                      className="w-full"
+                      onClick={handleImport}
+                      disabled={!importFile || importMutation.isPending}
+                    >
+                      {importMutation.isPending ? 'Импорт...' : 'Импортировать'}
+                    </Button>
+                  </div>
+                </div>
+                
+                {importFile && (
+                  <div className="mt-2 p-2 bg-gray-50 rounded-md">
+                    <div className="flex items-center">
+                      <FileText className="h-4 w-4 text-blue-600" />
+                      <span className="ml-2 text-sm font-medium">
+                        {importFile.name} ({Math.round(importFile.size / 1024)} КБ)
+                      </span>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+          
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle>Экспорт данных</CardTitle>
+              <CardDescription>Выгрузите данные из системы в нужном формате</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div>
+                  <Label htmlFor="exportFormat">Формат файла</Label>
+                  <Select value={exportFormat} onValueChange={setExportFormat}>
+                    <SelectTrigger id="exportFormat">
+                      <SelectValue placeholder="Выберите формат" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="csv">CSV (.csv)</SelectItem>
+                      <SelectItem value="json">JSON (.json)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                
+                <Button
+                  className="w-full"
+                  onClick={handleExport}
+                  disabled={isLoading}
+                >
+                  <DownloadCloud className="h-4 w-4 mr-2" />
+                  {isLoading ? 'Загрузка...' : 'Экспортировать данные'}
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+        
         <Card>
           <CardHeader>
             <div className="flex justify-between items-center">
               <div>
                 <CardTitle>
-                  {activeTab === 'orders' && 'Экспорт заказов'}
-                  {activeTab === 'products' && 'Экспорт товаров'}
-                  {activeTab === 'users' && 'Экспорт пользователей'}
+                  {activeTab === 'orders' && 'Данные заказов'}
+                  {activeTab === 'products' && 'Данные товаров'}
+                  {activeTab === 'users' && 'Данные пользователей'}
                 </CardTitle>
                 <CardDescription>
-                  Настройте параметры экспорта и выберите формат файла
+                  Просмотр и выбор данных для экспорта
                 </CardDescription>
               </div>
               <Tabs value={activeTab} onValueChange={setActiveTab}>
