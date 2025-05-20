@@ -53,6 +53,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Authentication routes
   app.post("/api/register", async (req, res) => {
     try {
+      console.log("Register request body:", req.body);
+      
       // Validate user data
       const { confirmPassword, ...userData } = registerUserSchema.parse(req.body);
       
@@ -85,15 +87,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Return user data (without password)
       const { password, ...userWithoutPassword } = newUser;
-      res.status(201).json(userWithoutPassword);
+      return res.status(201).json({ 
+        success: true,
+        user: userWithoutPassword 
+      });
     } catch (error) {
+      console.error("Registration error:", error);
       if (error instanceof z.ZodError) {
         return res.status(400).json({ 
+          success: false,
           message: "Ошибка валидации", 
           errors: error.errors 
         });
       }
-      res.status(500).json({ message: "Произошла ошибка при регистрации" });
+      return res.status(500).json({ 
+        success: false,
+        message: "Произошла ошибка при регистрации" 
+      });
     }
   });
   
