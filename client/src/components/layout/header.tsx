@@ -171,11 +171,10 @@ export default function Header() {
             <div className="hidden md:block">
               {isAuthenticated ? (
                 <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <button 
-                      className="p-2 flex items-center gap-2 text-black hover:text-[#8e2b85] transition-colors rounded-full"
+                  <DropdownMenuTrigger>
+                    <div 
+                      className="p-2 flex items-center gap-2 text-black hover:text-[#8e2b85] transition-colors rounded-full cursor-pointer"
                       aria-label="Профиль пользователя"
-                      onClick={(e) => e.preventDefault()}
                     >
                       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
@@ -183,7 +182,7 @@ export default function Header() {
                       <span className="text-sm font-medium hidden lg:block">
                         {user?.username || "Профиль"}
                       </span>
-                    </button>
+                    </div>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="w-56">
                     <div className="flex items-center justify-start gap-2 p-2">
