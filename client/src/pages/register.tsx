@@ -68,6 +68,8 @@ export default function RegisterPage() {
         throw new Error(data.message || "Ошибка при регистрации");
       }
       
+      console.log("Registration success:", data);
+      
       // Обновляем статус аутентификации
       await checkAuth();
       

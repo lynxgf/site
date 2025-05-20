@@ -53,7 +53,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Authentication routes
   app.post("/api/register", async (req, res) => {
     try {
-      console.log("Register request body:", req.body);
+      // Validate user data
+      console.log("Register request received:", JSON.stringify(req.body));
       
       // Validate user data
       const { confirmPassword, ...userData } = registerUserSchema.parse(req.body);
