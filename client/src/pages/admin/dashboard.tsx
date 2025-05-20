@@ -154,14 +154,14 @@ export default function AdminDashboard() {
           Array.isArray(products) ? products.filter(p => p.category === 'mattress').length : 0,
         ],
         backgroundColor: [
-          'hsl(var(--chart-1))',
-          'hsl(var(--chart-2))',
+          'rgba(120, 50, 255, 0.8)',
+          'rgba(46, 187, 149, 0.8)',
         ],
         borderColor: [
-          'hsl(var(--chart-1))',
-          'hsl(var(--chart-2))',
+          'rgba(120, 50, 255, 1)',
+          'rgba(46, 187, 149, 1)',
         ],
-        borderWidth: 1,
+        borderWidth: 2,
       },
     ],
   };
@@ -178,16 +178,16 @@ export default function AdminDashboard() {
           Array.isArray(orders) ? orders.filter(o => o.status === 'completed').length : 0,
         ],
         backgroundColor: [
-          'hsl(var(--chart-3))',
-          'hsl(var(--chart-1))',
-          'hsl(var(--chart-2))',
+          'rgba(255, 159, 64, 0.8)',  // Оранжевый для "Ожидает"
+          'rgba(54, 162, 235, 0.8)',  // Синий для "В обработке"
+          'rgba(75, 192, 120, 0.8)',  // Зеленый для "Выполнен"
         ],
         borderColor: [
-          'hsl(var(--chart-3))',
-          'hsl(var(--chart-1))',
-          'hsl(var(--chart-2))',
+          'rgba(255, 159, 64, 1)',
+          'rgba(54, 162, 235, 1)',
+          'rgba(75, 192, 120, 1)',
         ],
-        borderWidth: 1,
+        borderWidth: 2,
       },
     ],
   };
@@ -273,6 +273,31 @@ export default function AdminDashboard() {
                   plugins: {
                     legend: {
                       position: 'bottom',
+                      labels: {
+                        font: {
+                          size: 14,
+                          weight: 'bold'
+                        },
+                        padding: 20,
+                        usePointStyle: true,
+                        pointStyle: 'circle'
+                      }
+                    },
+                    tooltip: {
+                      backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                      padding: 12,
+                      titleFont: {
+                        size: 14,
+                        weight: 'bold'
+                      },
+                      bodyFont: {
+                        size: 13
+                      },
+                      cornerRadius: 8,
+                      displayColors: true,
+                      boxWidth: 10,
+                      boxHeight: 10,
+                      boxPadding: 3
                     }
                   }
                 }} />
@@ -293,6 +318,31 @@ export default function AdminDashboard() {
                   plugins: {
                     legend: {
                       position: 'bottom',
+                      labels: {
+                        font: {
+                          size: 14,
+                          weight: 'bold'
+                        },
+                        padding: 20,
+                        usePointStyle: true,
+                        pointStyle: 'circle'
+                      }
+                    },
+                    tooltip: {
+                      backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                      padding: 12,
+                      titleFont: {
+                        size: 14,
+                        weight: 'bold'
+                      },
+                      bodyFont: {
+                        size: 13
+                      },
+                      cornerRadius: 8,
+                      displayColors: true,
+                      boxWidth: 10,
+                      boxHeight: 10,
+                      boxPadding: 3
                     }
                   }
                 }} />

@@ -85,24 +85,29 @@ export default function AdminExport() {
   });
   
   const handleExport = () => {
+    console.log('Export начался. Активная вкладка:', activeTab);
+    console.log('Данные для экспорта:', {orders, products, users});
+    
     let dataToExport: any[] = [];
     let filename = '';
     
     // Determine which data to export based on active tab
     switch (activeTab) {
       case 'orders':
-        dataToExport = orders;
+        dataToExport = Array.isArray(orders) ? orders : [];
         filename = `orders_export_${format(new Date(), 'yyyyMMdd')}`;
         break;
       case 'products':
-        dataToExport = products;
+        dataToExport = Array.isArray(products) ? products : [];
         filename = `products_export_${format(new Date(), 'yyyyMMdd')}`;
         break;
       case 'users':
-        dataToExport = users;
+        dataToExport = Array.isArray(users) ? users : [];
         filename = `users_export_${format(new Date(), 'yyyyMMdd')}`;
         break;
       default:
+        dataToExport = [];
+        filename = `export_${format(new Date(), 'yyyyMMdd')}`;
         break;
     }
     
@@ -137,59 +142,97 @@ export default function AdminExport() {
   };
   
   const exportCSV = (data: any[], filename: string) => {
-    // Get headers from first data item
-    const headers = Object.keys(data[0]);
+    // Проверка на пустые данные
+    if (!data || data.length === 0) {
+      toast({
+        title: 'Ошибка экспорта',
+        description: 'Нет данных для экспорта',
+        variant: 'destructive',
+      });
+      return;
+    }
     
-    // Create CSV content
-    let csvContent = headers.join(',') + '\n';
-    data.forEach(item => {
-      const row = headers.map(header => {
-        const value = item[header];
-        // Handle special cases for CSV
-        if (typeof value === 'string' && (value.includes(',') || value.includes('"') || value.includes('\n'))) {
-          return `"${value.replace(/"/g, '""')}"`;
-        } else if (typeof value === 'object' && value !== null) {
-          return `"${JSON.stringify(value).replace(/"/g, '""')}"`;
-        } else {
-          return value;
-        }
-      }).join(',');
-      csvContent += row + '\n';
-    });
-    
-    // Create downloadable link
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.setAttribute('href', url);
-    link.setAttribute('download', `${filename}.csv`);
-    link.style.visibility = 'hidden';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    
-    toast({
-      title: 'Экспорт успешно выполнен',
-      description: `Файл ${filename}.csv был создан и загружен`,
-    });
+    try {
+      // Get headers from first data item
+      const headers = Object.keys(data[0]);
+      
+      // Create CSV content
+      let csvContent = headers.join(',') + '\n';
+      data.forEach(item => {
+        const row = headers.map(header => {
+          const value = item[header];
+          // Handle special cases for CSV
+          if (typeof value === 'string' && (value.includes(',') || value.includes('"') || value.includes('\n'))) {
+            return `"${value.replace(/"/g, '""')}"`;
+          } else if (typeof value === 'object' && value !== null) {
+            return `"${JSON.stringify(value).replace(/"/g, '""')}"`;
+          } else {
+            return value;
+          }
+        }).join(',');
+        csvContent += row + '\n';
+      });
+      
+      // Create downloadable link
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.setAttribute('href', url);
+      link.setAttribute('download', `${filename}.csv`);
+      link.style.visibility = 'hidden';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      toast({
+        title: 'Экспорт успешно выполнен',
+        description: `Файл ${filename}.csv был создан и загружен`,
+      });
+    } catch (error) {
+      console.error('Ошибка экспорта CSV:', error);
+      toast({
+        title: 'Ошибка экспорта',
+        description: 'Не удалось создать CSV файл',
+        variant: 'destructive',
+      });
+    }
   };
   
   const exportJSON = (data: any[], filename: string) => {
-    const jsonContent = JSON.stringify(data, null, 2);
-    const blob = new Blob([jsonContent], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.setAttribute('href', url);
-    link.setAttribute('download', `${filename}.json`);
-    link.style.visibility = 'hidden';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    // Проверка на пустые данные
+    if (!data || data.length === 0) {
+      toast({
+        title: 'Ошибка экспорта',
+        description: 'Нет данных для экспорта',
+        variant: 'destructive',
+      });
+      return;
+    }
     
-    toast({
-      title: 'Экспорт успешно выполнен',
-      description: `Файл ${filename}.json был создан и загружен`,
-    });
+    try {
+      const jsonContent = JSON.stringify(data, null, 2);
+      const blob = new Blob([jsonContent], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.setAttribute('href', url);
+      link.setAttribute('download', `${filename}.json`);
+      link.style.visibility = 'hidden';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      toast({
+        title: 'Экспорт успешно выполнен',
+        description: `Файл ${filename}.json был создан и загружен`,
+      });
+    } catch (error) {
+      console.error('Ошибка экспорта JSON:', error);
+      toast({
+        title: 'Ошибка экспорта',
+        description: 'Не удалось создать JSON файл',
+        variant: 'destructive',
+      });
+    }
   };
   
   const isLoading = ordersLoading || productsLoading || usersLoading;
