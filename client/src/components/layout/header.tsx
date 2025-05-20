@@ -170,20 +170,63 @@ export default function Header() {
             {/* Профиль/Авторизация */}
             <div className="hidden md:block">
               {isAuthenticated ? (
-                <DropdownMenu>
-                  <DropdownMenuTrigger>
-                    <div 
-                      className="p-2 flex items-center gap-2 text-black hover:text-[#8e2b85] transition-colors rounded-full cursor-pointer"
-                      aria-label="Профиль пользователя"
-                    >
-                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
-                      </svg>
-                      <span className="text-sm font-medium hidden lg:block">
-                        {user?.username || "Профиль"}
-                      </span>
+                <div className="relative">
+                  <div 
+                    className="p-2 flex items-center gap-2 text-black hover:text-[#8e2b85] transition-colors rounded-full cursor-pointer"
+                    aria-label="Профиль пользователя"
+                    onClick={() => {
+                      const menu = document.getElementById('profile-dropdown');
+                      if (menu) {
+                        menu.classList.toggle('hidden');
+                      }
+                    }}
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+                    </svg>
+                    <span className="text-sm font-medium hidden lg:block">
+                      {user?.username || "Профиль"}
+                    </span>
+                  </div>
+                  
+                  <div id="profile-dropdown" className="absolute right-0 top-full mt-2 w-56 bg-white rounded-md shadow-lg hidden z-50">
+                    <div className="flex items-center justify-start gap-2 p-3 border-b">
+                      <div className="rounded-full w-10 h-10 bg-[#8e2b85] text-white flex items-center justify-center">
+                        <span className="text-lg font-medium">
+                          {username ? username.charAt(0).toUpperCase() : 'U'}
+                        </span>
+                      </div>
+                      <div className="flex flex-col">
+                        <span className="font-medium">{username}</span>
+                        <span className="text-xs text-gray-500 truncate">{user?.email}</span>
+                      </div>
                     </div>
-                  </DropdownMenuTrigger>
+                    
+                    <div className="py-1">
+                      <Link href="/profile" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-[#8e2b85]">
+                        Личный кабинет
+                      </Link>
+                      
+                      {isAdmin && (
+                        <Link href="/admin/dashboard" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-[#8e2b85]">
+                          Панель администратора
+                        </Link>
+                      )}
+                    </div>
+                    
+                    <div className="py-1 border-t">
+                      <button 
+                        className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
+                        onClick={async () => {
+                          await logout();
+                          setLocation('/');
+                        }}
+                      >
+                        Выйти
+                      </button>
+                    </div>
+                  </div>
+                </div>)
                   <DropdownMenuContent align="end" className="w-56">
                     <div className="flex items-center justify-start gap-2 p-2">
                       <div className="rounded-full w-10 h-10 bg-[#8e2b85] text-white flex items-center justify-center">
