@@ -164,6 +164,9 @@ export default function Header() {
               <Link to="/contacts" className={`${location === '/contacts' ? 'text-[#8e2b85]' : 'text-black hover:text-[#8e2b85]'} transition-colors`}>
                 Контакты
               </Link>
+              <Link to="/faq" className={`${location === '/faq' ? 'text-[#8e2b85]' : 'text-black hover:text-[#8e2b85]'} transition-colors`}>
+                FAQ
+              </Link>
             </nav>
           </div>
           
