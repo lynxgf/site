@@ -249,17 +249,35 @@ export default function AdminProducts() {
                           )}
                         </TableCell>
                         <TableCell className="text-center">
-                          {product.inStock ? (
-                            <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
-                              <CheckCircle className="h-4 w-4 mr-1" />
-                              В наличии
-                            </Badge>
-                          ) : (
-                            <Badge variant="outline" className="bg-red-50 text-red-700 border-red-200">
-                              <XCircle className="h-4 w-4 mr-1" />
-                              Нет в наличии
-                            </Badge>
-                          )}
+                          <div 
+                            className="cursor-pointer" 
+                            onClick={() => {
+                              // Обновить статус наличия
+                              updateProductMutation.mutate({
+                                productId: product.id,
+                                updates: { inStock: !product.inStock }
+                              });
+                              
+                              // Немедленно обновить кеш
+                              setTimeout(() => {
+                                queryClient.invalidateQueries({ queryKey: ['/api/products'] });
+                                queryClient.invalidateQueries({ queryKey: [`/api/products/${product.id}`] });
+                                queryClient.refetchQueries({ queryKey: ['/api/products'] });
+                              }, 300);
+                            }}
+                          >
+                            {product.inStock ? (
+                              <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
+                                <CheckCircle className="h-4 w-4 mr-1" />
+                                В наличии
+                              </Badge>
+                            ) : (
+                              <Badge variant="outline" className="bg-red-50 text-red-700 border-red-200">
+                                <XCircle className="h-4 w-4 mr-1" />
+                                Нет в наличии
+                              </Badge>
+                            )}
+                          </div>
                         </TableCell>
                         <TableCell className="text-right">
                           <div className="flex items-center justify-end space-x-2">
