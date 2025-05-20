@@ -11,10 +11,17 @@ async function initDb() {
     if (existingUsers.length === 0) {
       console.log('Creating admin user...');
       
-      // Create admin user
+      // Create admin user with bcrypt password hashing
+      const bcrypt = require('bcryptjs');
+      const salt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash('admin123', salt);
+      
       const adminUser: InsertUser = {
         username: 'admin',
-        password: 'admin123', // In a real app, this should be hashed
+        email: 'admin@example.com',
+        password: hashedPassword,
+        firstName: 'Admin',
+        lastName: 'User',
         isAdmin: true
       };
       

@@ -176,23 +176,40 @@ export const useCartStore = create<CartState>((set, get) => ({
   }
 }));
 
+// User profile type
+export type UserProfile = {
+  id: number;
+  username: string;
+  email: string;
+  firstName: string | null;
+  lastName: string | null;
+  phone: string | null;
+  address: string | null;
+  isAdmin: boolean;
+};
+
 // Auth state
 interface AuthState {
   isAuthenticated: boolean;
   isAdmin: boolean;
   username: string | null;
+  user: UserProfile | null;
   isLoading: boolean;
   error: string | null;
   login: (username: string, password: string) => Promise<boolean>;
   logout: () => Promise<void>;
   checkAuth: () => Promise<void>;
+  getUserProfile: () => Promise<UserProfile | null>;
+  updateUserProfile: (updates: Partial<UserProfile>) => Promise<UserProfile | null>;
+  updatePassword: (currentPassword: string, newPassword: string) => Promise<boolean>;
 }
 
 // Auth store
-export const useAuthStore = create<AuthState>((set) => ({
+export const useAuthStore = create<AuthState>((set, get) => ({
   isAuthenticated: false,
   isAdmin: false,
   username: null,
+  user: null,
   isLoading: false,
   error: null,
   
@@ -209,7 +226,7 @@ export const useAuthStore = create<AuthState>((set) => ({
       
       if (!res.ok) {
         const errorData = await res.json();
-        throw new Error(errorData.message || 'Login failed');
+        throw new Error(errorData.message || 'Неверное имя пользователя или пароль');
       }
       
       const userData = await res.json();
@@ -218,13 +235,18 @@ export const useAuthStore = create<AuthState>((set) => ({
         isAuthenticated: true, 
         isAdmin: userData.isAdmin,
         username: userData.username,
-        isLoading: false 
+        user: userData,
+        isLoading: false,
+        error: null
       });
+      
+      // Загружаем полный профиль пользователя
+      await get().getUserProfile();
       
       return true;
     } catch (error) {
       set({ 
-        error: error instanceof Error ? error.message : 'Login failed', 
+        error: error instanceof Error ? error.message : 'Ошибка входа', 
         isLoading: false 
       });
       return false;
@@ -239,10 +261,15 @@ export const useAuthStore = create<AuthState>((set) => ({
         isAuthenticated: false, 
         isAdmin: false,
         username: null,
-        isLoading: false 
+        user: null,
+        isLoading: false,
+        error: null
       });
     } catch (error) {
-      set({ isLoading: false });
+      set({ 
+        isLoading: false,
+        error: error instanceof Error ? error.message : 'Ошибка выхода из системы'
+      });
     }
   },
   
@@ -257,10 +284,113 @@ export const useAuthStore = create<AuthState>((set) => ({
         isAdmin: data.isAdmin,
         isLoading: false 
       });
+      
+      // Если пользователь авторизован, загружаем его профиль
+      if (data.isLoggedIn) {
+        await get().getUserProfile();
+      }
     } catch (error) {
-      set({ isLoading: false });
+      set({ 
+        isLoading: false,
+        error: error instanceof Error ? error.message : 'Ошибка проверки авторизации'
+      });
     }
-  }
+  },
+  
+  getUserProfile: async () => {
+    try {
+      if (!get().isAuthenticated) {
+        return null;
+      }
+      
+      const response = await fetch('/api/user/profile');
+      
+      if (!response.ok) {
+        throw new Error('Не удалось загрузить профиль пользователя');
+      }
+      
+      const profileData = await response.json();
+      
+      set({
+        user: profileData,
+        username: profileData.username,
+        isAdmin: profileData.isAdmin,
+      });
+      
+      return profileData;
+    } catch (error) {
+      set({
+        error: error instanceof Error ? error.message : 'Ошибка загрузки профиля',
+      });
+      return null;
+    }
+  },
+  
+  updateUserProfile: async (updates) => {
+    try {
+      if (!get().isAuthenticated) {
+        return null;
+      }
+      
+      const response = await fetch('/api/user/profile', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(updates),
+      });
+      
+      if (!response.ok) {
+        throw new Error('Не удалось обновить профиль');
+      }
+      
+      const updatedProfile = await response.json();
+      
+      set({
+        user: updatedProfile,
+        username: updatedProfile.username,
+      });
+      
+      return updatedProfile;
+    } catch (error) {
+      set({
+        error: error instanceof Error ? error.message : 'Ошибка обновления профиля',
+      });
+      return null;
+    }
+  },
+  
+  updatePassword: async (currentPassword, newPassword) => {
+    try {
+      if (!get().isAuthenticated) {
+        return false;
+      }
+      
+      const response = await fetch('/api/user/password', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          currentPassword,
+          newPassword,
+          confirmPassword: newPassword,
+        }),
+      });
+      
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.message || 'Не удалось обновить пароль');
+      }
+      
+      return true;
+    } catch (error) {
+      set({
+        error: error instanceof Error ? error.message : 'Ошибка обновления пароля',
+      });
+      return false;
+    }
+  },
 }));
 
 // Product configuration store (for product page)
