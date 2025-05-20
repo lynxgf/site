@@ -15,6 +15,9 @@ import Product from "@/pages/product";
 import Cart from "@/pages/cart";
 import Checkout from "@/pages/checkout";
 import Search from "@/pages/search";
+import Login from "@/pages/login";
+import Register from "@/pages/register";
+import Profile from "@/pages/profile";
 import AdminLogin from "@/pages/admin/login";
 import AdminDashboard from "@/pages/admin/dashboard";
 import AdminProducts from "@/pages/admin/products";
@@ -65,6 +68,11 @@ function Router() {
       <Route path="/search" component={Search} />
       <Route path="/cart" component={Cart} />
       <Route path="/checkout" component={Checkout} />
+      
+      {/* User authentication routes */}
+      <Route path="/login" component={Login} />
+      <Route path="/register" component={Register} />
+      <Route path="/profile" component={Profile} />
       
       {/* Admin routes */}
       <Route path="/admin/login" component={AdminLogin} />
