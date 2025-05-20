@@ -19,9 +19,13 @@ export default function Home() {
         {/* Background image with overlay */}
         <div className="absolute inset-0 z-10">
           <img 
-            src="https://images.unsplash.com/photo-1631052667614-63c990f8b9a0?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80" 
+            src="https://images.pexels.com/photos/6585598/pexels-photo-6585598.jpeg?auto=compress&cs=tinysrgb&w=1600" 
             alt="Премиальный ортопедический матрас в современной спальне" 
             className="w-full h-full object-cover object-center"
+            onError={(e) => {
+              e.currentTarget.src = "https://via.placeholder.com/1600x900/121212/FFFFFF?text=Матрасовъ";
+              e.currentTarget.onerror = null;
+            }}
           />
           <div className="absolute inset-0 bg-black/40"></div>
         </div>

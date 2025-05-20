@@ -55,27 +55,27 @@ async function initDb() {
       
       const fabrics = [
         // Economy fabrics
-        { id: 'gray', name: 'Серый', category: 'economy', thumbnail: 'https://images.unsplash.com/photo-1594377157809-5c1a31dd3933?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&h=100', image: 'https://images.unsplash.com/photo-1594377157809-5c1a31dd3933?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&h=800' },
-        { id: 'blue', name: 'Синий', category: 'economy', thumbnail: 'https://images.unsplash.com/photo-1577401239170-897942555fb3?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&h=100', image: 'https://images.unsplash.com/photo-1577401239170-897942555fb3?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&h=800' },
-        { id: 'brown', name: 'Коричневый', category: 'economy', thumbnail: 'https://images.unsplash.com/photo-1579271723124-09bdee8249a1?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&h=100', image: 'https://images.unsplash.com/photo-1579271723124-09bdee8249a1?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&h=800' },
+        { id: 'gray', name: 'Серый', category: 'economy', thumbnail: 'https://images.pexels.com/photos/172277/pexels-photo-172277.jpeg?auto=compress&cs=tinysrgb&w=100&h=100', image: 'https://images.pexels.com/photos/172277/pexels-photo-172277.jpeg?auto=compress&cs=tinysrgb&w=1200' },
+        { id: 'blue', name: 'Синий', category: 'economy', thumbnail: 'https://images.pexels.com/photos/14936126/pexels-photo-14936126.jpeg?auto=compress&cs=tinysrgb&w=100&h=100', image: 'https://images.pexels.com/photos/14936126/pexels-photo-14936126.jpeg?auto=compress&cs=tinysrgb&w=1200' },
+        { id: 'brown', name: 'Коричневый', category: 'economy', thumbnail: 'https://images.pexels.com/photos/2121121/pexels-photo-2121121.jpeg?auto=compress&cs=tinysrgb&w=100&h=100', image: 'https://images.pexels.com/photos/2121121/pexels-photo-2121121.jpeg?auto=compress&cs=tinysrgb&w=1200' },
         
         // Standard fabrics
-        { id: 'beige', name: 'Бежевый', category: 'standard', thumbnail: 'https://images.unsplash.com/photo-1582966772680-860e372bb558?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&h=100', image: 'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&h=800' },
-        { id: 'light_gray', name: 'Светло-серый', category: 'standard', thumbnail: 'https://images.unsplash.com/photo-1586105449897-20b5d46a3b51?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&h=100', image: 'https://images.unsplash.com/photo-1586105449897-20b5d46a3b51?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&h=800' },
-        { id: 'dark_gray', name: 'Темно-серый', category: 'standard', thumbnail: 'https://images.unsplash.com/photo-1618477247222-acbdb0e159b3?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&h=100', image: 'https://images.unsplash.com/photo-1618477247222-acbdb0e159b3?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&h=800' },
+        { id: 'beige', name: 'Бежевый', category: 'standard', thumbnail: 'https://images.pexels.com/photos/7728587/pexels-photo-7728587.jpeg?auto=compress&cs=tinysrgb&w=100&h=100', image: 'https://images.pexels.com/photos/7728587/pexels-photo-7728587.jpeg?auto=compress&cs=tinysrgb&w=1200' },
+        { id: 'light_gray', name: 'Светло-серый', category: 'standard', thumbnail: 'https://images.pexels.com/photos/7676332/pexels-photo-7676332.jpeg?auto=compress&cs=tinysrgb&w=100&h=100', image: 'https://images.pexels.com/photos/7676332/pexels-photo-7676332.jpeg?auto=compress&cs=tinysrgb&w=1200' },
+        { id: 'dark_gray', name: 'Темно-серый', category: 'standard', thumbnail: 'https://images.pexels.com/photos/1497365/pexels-photo-1497365.jpeg?auto=compress&cs=tinysrgb&w=100&h=100', image: 'https://images.pexels.com/photos/1497365/pexels-photo-1497365.jpeg?auto=compress&cs=tinysrgb&w=1200' },
         
         // Premium fabrics
-        { id: 'velvet_blue', name: 'Синий бархат', category: 'premium', thumbnail: 'https://images.unsplash.com/photo-1574634534894-89d7576c8259?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&h=100', image: 'https://images.unsplash.com/photo-1574634534894-89d7576c8259?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&h=800' },
-        { id: 'velvet_green', name: 'Зеленый бархат', category: 'premium', thumbnail: 'https://images.unsplash.com/photo-1517722014278-c256a91a6fba?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&h=100', image: 'https://images.unsplash.com/photo-1517722014278-c256a91a6fba?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&h=800' },
-        { id: 'leather_brown', name: 'Коричневая кожа', category: 'premium', thumbnail: 'https://images.unsplash.com/photo-1596461010724-cae17a682069?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&h=100', image: 'https://images.unsplash.com/photo-1596461010724-cae17a682069?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&h=800' }
+        { id: 'velvet_blue', name: 'Синий бархат', category: 'premium', thumbnail: 'https://images.pexels.com/photos/6373305/pexels-photo-6373305.jpeg?auto=compress&cs=tinysrgb&w=100&h=100', image: 'https://images.pexels.com/photos/6373305/pexels-photo-6373305.jpeg?auto=compress&cs=tinysrgb&w=1200' },
+        { id: 'velvet_green', name: 'Зеленый бархат', category: 'premium', thumbnail: 'https://images.pexels.com/photos/7354079/pexels-photo-7354079.jpeg?auto=compress&cs=tinysrgb&w=100&h=100', image: 'https://images.pexels.com/photos/7354079/pexels-photo-7354079.jpeg?auto=compress&cs=tinysrgb&w=1200' },
+        { id: 'leather_brown', name: 'Коричневая кожа', category: 'premium', thumbnail: 'https://images.pexels.com/photos/276093/pexels-photo-276093.jpeg?auto=compress&cs=tinysrgb&w=100&h=100', image: 'https://images.pexels.com/photos/276093/pexels-photo-276093.jpeg?auto=compress&cs=tinysrgb&w=1200' }
       ];
       
       // Add bed products
       const bedImages = [
-        'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&h=800',
-        'https://pixabay.com/get/g8564507a523b41a94c2c53505c4c740e0eca77507f4f45b2a76b28ad4947cd52de50e842488f1180ef2dddcd5383108b3a654686a23bb046435217108be0458d_1280.jpg',
-        'https://pixabay.com/get/g7d3c01f7acb195037092d455f2257459ab47d8b2477269f5fb73e15d17d280af1af292ad9bb9ff5f4255d91f0f0d17302e5b13e012608dc7daab2db90d1fd787_1280.jpg',
-        'https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&h=800'
+        'https://images.pexels.com/photos/6585598/pexels-photo-6585598.jpeg?auto=compress&cs=tinysrgb&w=1200',
+        'https://images.pexels.com/photos/3773584/pexels-photo-3773584.png?auto=compress&cs=tinysrgb&w=1200',
+        'https://images.pexels.com/photos/4210339/pexels-photo-4210339.jpeg?auto=compress&cs=tinysrgb&w=1200',
+        'https://images.pexels.com/photos/6489093/pexels-photo-6489093.jpeg?auto=compress&cs=tinysrgb&w=1200'
       ];
       
       const morfeoBed: InsertProduct = {
@@ -112,7 +112,7 @@ async function initDb() {
         description: 'Современная кровать "Аврора" с изящным дизайном и высоким изголовьем. Подходит для классических и современных интерьеров.',
         category: 'bed',
         basePrice: "44900",
-        images: ['https://images.unsplash.com/photo-1560185007-cde436f6a4d0?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&h=800'],
+        images: ['https://images.pexels.com/photos/3773579/pexels-photo-3773579.png?auto=compress&cs=tinysrgb&w=1200'],
         sizes: bedSizes,
         fabricCategories: fabricCategories,
         fabrics: fabrics,
@@ -136,7 +136,7 @@ async function initDb() {
         description: 'Функциональная кровать с вместительным бельевым ящиком и стильным дизайном. Идеальное решение для небольших спален.',
         category: 'bed',
         basePrice: "52400",
-        images: ['https://pixabay.com/get/gfb55c2292bf14a34cc7592809d064d939cd93dce47146613ca50e916e27c6b854e0c45cef9d51dccd3137c97829ad866b9c9500d422d33c3e72c25df175708a1_1280.jpg'],
+        images: ['https://images.pexels.com/photos/1743229/pexels-photo-1743229.jpeg?auto=compress&cs=tinysrgb&w=1200'],
         sizes: bedSizes,
         fabricCategories: fabricCategories,
         fabrics: fabrics,
