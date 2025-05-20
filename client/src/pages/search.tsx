@@ -8,20 +8,20 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
-// Парсинг параметров запроса
-function useQueryParams() {
-  const [location] = useLocation();
-  const params = new URLSearchParams(location.split('?')[1] || '');
-  return {
-    q: params.get('q') || '',
-    category: params.get('category') || '',
-    sort: params.get('sort') || 'relevance'
-  };
-}
-
 export default function SearchPage() {
-  const { q: initialQuery, category: initialCategory, sort: initialSort } = useQueryParams();
   const [location, setLocation] = useLocation();
+  
+  // Парсинг параметров запроса
+  const getQueryParams = () => {
+    const params = new URLSearchParams(location.split('?')[1] || '');
+    return {
+      q: params.get('q') || '',
+      category: params.get('category') || '',
+      sort: params.get('sort') || 'relevance'
+    };
+  };
+  
+  const { q: initialQuery, category: initialCategory, sort: initialSort } = getQueryParams();
   
   // Состояния поиска и фильтров
   const [searchQuery, setSearchQuery] = useState(initialQuery);
@@ -51,17 +51,17 @@ export default function SearchPage() {
   
   // При изменении URL обновляем состояние компонента
   useEffect(() => {
-    const { q, category, sort } = useQueryParams();
-    if (q && q !== searchQuery) {
-      setSearchQuery(q);
+    const params = getQueryParams();
+    if (params.q && params.q !== searchQuery) {
+      setSearchQuery(params.q);
     }
-    if (category !== selectedCategory) {
-      setSelectedCategory(category);
+    if (params.category !== selectedCategory) {
+      setSelectedCategory(params.category);
     }
-    if (sort !== selectedSort) {
-      setSelectedSort(sort);
+    if (params.sort !== selectedSort) {
+      setSelectedSort(params.sort);
     }
-  }, [location]);
+  }, [location, getQueryParams, searchQuery, selectedCategory, selectedSort]);
   
   // Обработчик отправки формы поиска
   const handleSearchSubmit = (e: React.FormEvent) => {
