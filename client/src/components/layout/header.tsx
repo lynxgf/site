@@ -12,6 +12,7 @@ import {
 import { useCartStore, useAuthStore } from '@/lib/store';
 import { useQuery } from "@tanstack/react-query";
 import { Product } from "@shared/schema";
+import { LogOut, Settings, ShoppingBag, User } from "lucide-react";
 
 export default function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -131,7 +132,7 @@ export default function Header() {
       <div className="container mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-8">
-            <Link href="/">
+            <Link to="/">
               <div className="flex items-center h-8">
                 <svg width="120" height="22" viewBox="0 0 100 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <g fill="#8e2b85">
@@ -148,19 +149,19 @@ export default function Header() {
             </Link>
             
             <nav className="hidden lg:flex space-x-8">
-              <Link href="/products/mattress" className={`${location.includes('/products/mattress') ? 'text-[#8e2b85]' : 'text-black hover:text-[#8e2b85]'} transition-colors`}>
+              <Link to="/products/mattress" className={`${location.includes('/products/mattress') ? 'text-[#8e2b85]' : 'text-black hover:text-[#8e2b85]'} transition-colors`}>
                 Матрасы
               </Link>
-              <Link href="/products/bed" className={`${location.includes('/products/bed') ? 'text-[#8e2b85]' : 'text-black hover:text-[#8e2b85]'} transition-colors`}>
+              <Link to="/products/bed" className={`${location.includes('/products/bed') ? 'text-[#8e2b85]' : 'text-black hover:text-[#8e2b85]'} transition-colors`}>
                 Кровати
               </Link>
-              <Link href="/products/accessory" className={`${location.includes('/products/accessory') ? 'text-[#8e2b85]' : 'text-black hover:text-[#8e2b85]'} transition-colors`}>
+              <Link to="/products/accessory" className={`${location.includes('/products/accessory') ? 'text-[#8e2b85]' : 'text-black hover:text-[#8e2b85]'} transition-colors`}>
                 Аксессуары
               </Link>
-              <Link href="/about" className={`${location === '/about' ? 'text-[#8e2b85]' : 'text-black hover:text-[#8e2b85]'} transition-colors`}>
+              <Link to="/about" className={`${location === '/about' ? 'text-[#8e2b85]' : 'text-black hover:text-[#8e2b85]'} transition-colors`}>
                 О компании
               </Link>
-              <Link href="/contacts" className={`${location === '/contacts' ? 'text-[#8e2b85]' : 'text-black hover:text-[#8e2b85]'} transition-colors`}>
+              <Link to="/contacts" className={`${location === '/contacts' ? 'text-[#8e2b85]' : 'text-black hover:text-[#8e2b85]'} transition-colors`}>
                 Контакты
               </Link>
             </nav>
@@ -170,15 +171,34 @@ export default function Header() {
             {/* Профиль/Авторизация */}
             <div className="hidden md:block">
               {isAuthenticated ? (
-                <div className="relative">
+                <div className="relative" id="profile-menu-container">
                   <div 
                     className="p-2 flex items-center gap-2 text-black hover:text-[#8e2b85] transition-colors rounded-full cursor-pointer"
                     aria-label="Профиль пользователя"
-                    onClick={() => {
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
                       const menu = document.getElementById('profile-dropdown');
                       if (menu) {
                         menu.classList.toggle('hidden');
                       }
+                      
+                      // Добавляем обработчик клика вне меню
+                      const handleOutsideClick = (event: MouseEvent) => {
+                        const container = document.getElementById('profile-menu-container');
+                        if (container && !container.contains(event.target as Node)) {
+                          const menu = document.getElementById('profile-dropdown');
+                          if (menu) {
+                            menu.classList.add('hidden');
+                          }
+                          document.removeEventListener('click', handleOutsideClick);
+                        }
+                      };
+                      
+                      // Добавляем обработчик с небольшой задержкой, чтобы не сработало сразу
+                      setTimeout(() => {
+                        document.addEventListener('click', handleOutsideClick);
+                      }, 100);
                     }}
                   >
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
@@ -193,108 +213,69 @@ export default function Header() {
                     <div className="flex items-center justify-start gap-2 p-3 border-b">
                       <div className="rounded-full w-10 h-10 bg-[#8e2b85] text-white flex items-center justify-center">
                         <span className="text-lg font-medium">
-                          {username ? username.charAt(0).toUpperCase() : 'U'}
+                          {username ? username.charAt(0).toUpperCase() : 'У'}
                         </span>
                       </div>
                       <div className="flex flex-col">
-                        <span className="font-medium">{username}</span>
-                        <span className="text-xs text-gray-500 truncate">{user?.email}</span>
+                        <span className="font-medium">{username || "Пользователь"}</span>
+                        <span className="text-xs text-gray-500 truncate">{user?.email || "Нет email"}</span>
                       </div>
                     </div>
                     
                     <div className="py-1">
-                      <Link href="/profile" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-[#8e2b85]">
-                        Личный кабинет
+                      <Link to="/profile" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-[#8e2b85]">
+                        <div className="flex items-center">
+                          <User className="w-4 h-4 mr-2" />
+                          <span>Личный кабинет</span>
+                        </div>
+                      </Link>
+                      
+                      <Link to="/orders" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-[#8e2b85]">
+                        <div className="flex items-center">
+                          <ShoppingBag className="w-4 h-4 mr-2" />
+                          <span>Мои заказы</span>
+                        </div>
                       </Link>
                       
                       {isAdmin && (
-                        <Link href="/admin/dashboard" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-[#8e2b85]">
-                          Панель администратора
+                        <Link to="/admin" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-[#8e2b85]">
+                          <div className="flex items-center">
+                            <Settings className="w-4 h-4 mr-2" />
+                            <span>Панель администратора</span>
+                          </div>
                         </Link>
                       )}
                     </div>
                     
                     <div className="py-1 border-t">
                       <button 
-                        className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
-                        onClick={async () => {
+                        className="flex items-center w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
+                        onClick={async (e) => {
+                          e.preventDefault();
                           await logout();
                           setLocation('/');
                         }}
                       >
-                        Выйти
+                        <LogOut className="w-4 h-4 mr-2" />
+                        <span>Выйти</span>
                       </button>
                     </div>
                   </div>
-                </div>)
-                  <DropdownMenuContent align="end" className="w-56">
-                    <div className="flex items-center justify-start gap-2 p-2">
-                      <div className="rounded-full w-10 h-10 bg-[#8e2b85] text-white flex items-center justify-center">
-                        <span className="text-lg font-medium">
-                          {username ? username.charAt(0).toUpperCase() : 'U'}
-                        </span>
-                      </div>
-                      <div className="flex flex-col">
-                        <span className="font-medium">{username}</span>
-                        <span className="text-xs text-gray-500 truncate">{user?.email}</span>
-                      </div>
-                    </div>
-                    
-                    <DropdownMenuSeparator />
-                    
-                    <DropdownMenuItem asChild>
-                      <Link href="/profile" className="cursor-pointer">
-                        Личный кабинет
-                      </Link>
-                    </DropdownMenuItem>
-                    
-                    {isAdmin && (
-                      <DropdownMenuItem asChild>
-                        <Link href="/admin/dashboard" className="cursor-pointer">
-                          Панель администратора
-                        </Link>
-                      </DropdownMenuItem>
-                    )}
-                    
-                    <DropdownMenuSeparator />
-                    
-                    <DropdownMenuItem 
-                      className="text-red-600 focus:text-red-700 cursor-pointer"
-                      onClick={async () => {
-                        await logout();
-                        setLocation('/');
-                      }}
-                    >
-                      Выйти
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              ) : (
-                <div className="flex items-center space-x-2">
-                  <Link href="/login">
-                    <Button 
-                      variant="ghost" 
-                      size="sm" 
-                      className="text-black hover:text-[#8e2b85] transition-colors"
-                    >
-                      Войти
-                    </Button>
-                  </Link>
-                  <Link href="/register">
-                    <Button 
-                      variant="default"
-                      size="sm"
-                      className="bg-[#8e2b85] hover:bg-[#762271] text-white"
-                    >
-                      Регистрация
-                    </Button>
-                  </Link>
                 </div>
+              ) : (
+                <Link href="/login" className="p-2 flex items-center gap-2 text-black hover:text-[#8e2b85] transition-colors">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+                  </svg>
+                  <span className="text-sm font-medium hidden lg:block">
+                    Войти
+                  </span>
+                </Link>
               )}
             </div>
             
             {/* Поиск */}
-            <div className="relative" ref={searchRef}>
+            <div className="relative">
               <button
                 onClick={toggleSearch}
                 className="p-2 text-black hover:text-[#8e2b85] transition-colors"
@@ -306,189 +287,141 @@ export default function Header() {
               </button>
               
               {isSearchOpen && (
-                <div className="absolute right-0 top-full mt-2 w-80 bg-white shadow-lg rounded-md overflow-hidden border border-gray-200 z-50">
-                  <form onSubmit={handleSearchSubmit} className="p-3 border-b border-gray-100">
-                    <div className="flex items-center">
+                <div ref={searchRef} className="absolute right-0 top-full mt-2 w-80 bg-white shadow-lg rounded-md p-4 z-30">
+                  <form onSubmit={handleSearchSubmit}>
+                    <div className="flex">
                       <Input
                         id="search-input"
-                        type="text"
+                        className="flex-grow"
                         placeholder="Поиск товаров..."
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        className="border-none focus-visible:ring-0 focus-visible:ring-offset-0"
                       />
-                      <button type="submit" className="ml-2 text-[#8e2b85] hover:text-[#722169]">
+                      <Button type="submit" className="ml-2 bg-[#8e2b85] hover:bg-[#76236e]">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
                           <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
                         </svg>
-                      </button>
+                      </Button>
                     </div>
                   </form>
                   
-                  {searchQuery.trim() !== '' && (
-                    <div className="max-h-80 overflow-y-auto p-2">
-                      {searchResults.length > 0 ? (
-                        <>
-                          {searchResults.map((product) => (
-                            <Link 
-                              key={product.id} 
-                              href={`/product/${product.id}`}
-                              onClick={() => setIsSearchOpen(false)}
-                              className="flex items-center p-2 hover:bg-gray-50 rounded-md"
-                            >
-                              <div className="w-12 h-12 mr-3 flex-shrink-0 bg-gray-100 overflow-hidden rounded-sm">
-                                {product.images && product.images.length > 0 ? (
-                                  <img 
-                                    src={product.images[0]} 
-                                    alt={product.name}
-                                    className="w-full h-full object-cover"
-                                  />
-                                ) : (
-                                  <div className="w-full h-full flex items-center justify-center text-gray-400 text-xs">
-                                    Нет фото
-                                  </div>
-                                )}
+                  {searchResults.length > 0 && (
+                    <div className="mt-3 space-y-2">
+                      <h4 className="text-sm font-medium text-gray-500">Результаты поиска:</h4>
+                      <div className="divide-y">
+                        {searchResults.map((product) => (
+                          <Link key={product.id} href={`/product/${product.id}`}>
+                            <div className="py-2 flex items-center gap-3 hover:bg-gray-50 cursor-pointer">
+                              {product.images.length > 0 && (
+                                <img src={product.images[0]} className="w-12 h-12 object-cover" alt={product.name} />
+                              )}
+                              <div>
+                                <h5 className="text-sm font-medium">{product.name}</h5>
+                                <p className="text-xs text-gray-500 truncate">{product.category}</p>
                               </div>
-                              <div className="flex-1 min-w-0">
-                                <p className="text-sm font-medium text-gray-900 truncate">{product.name}</p>
-                                <p className="text-xs text-gray-500 truncate">{product.category === 'mattress' ? 'Матрас' : product.category === 'bed' ? 'Кровать' : 'Аксессуар'}</p>
-                                <p className="text-sm font-medium text-[#8e2b85]">
-                                  {product.discount && product.discount > 0 
-                                    ? Math.round(parseFloat(product.basePrice) * (1 - product.discount / 100))
-                                    : product.basePrice} ₽
-                                </p>
-                              </div>
-                            </Link>
-                          ))}
-                          <a 
-                            href={`/search?q=${encodeURIComponent(searchQuery)}`}
-                            onClick={() => {
-                              setIsSearchOpen(false);
-                            }}
-                            className="block w-full mt-2 pt-2 text-center text-sm text-[#8e2b85] border-t border-gray-100"
-                          >
-                            Показать все результаты
-                          </a>
-                        </>
-                      ) : (
-                        <div className="py-4 text-center text-gray-500 text-sm">
-                          По запросу "{searchQuery}" ничего не найдено
-                        </div>
-                      )}
+                            </div>
+                          </Link>
+                        ))}
+                      </div>
                     </div>
                   )}
                 </div>
               )}
             </div>
             
+            {/* Корзина */}
             <Link href="/cart" className="p-2 text-black hover:text-[#8e2b85] transition-colors relative">
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007zM8.625 10.5a.375.375 0 11-.75 0 .375.375 0 01.75 0zm7.5 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
+                <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 00-16.536-1.84M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z" />
               </svg>
+              
               {cartItemCount > 0 && (
-                <span className="absolute -top-1 -right-1 bg-[#8e2b85] text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                  {cartItemCount}
+                <span className="absolute top-0 right-0 bg-[#8e2b85] text-white text-xs rounded-full h-5 w-5 flex items-center justify-center -mt-1 -mr-1">
+                  {cartItemCount > 9 ? '9+' : cartItemCount}
                 </span>
               )}
             </Link>
             
-            <Link href="/login" className="p-2 text-black hover:text-[#8e2b85] transition-colors hidden md:block">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
-              </svg>
-            </Link>
-            
-            <div className="hidden md:block">
-              <Button
-                variant="outline"
-                className="border border-[#8e2b85] text-[#8e2b85] bg-white hover:bg-[#8e2b85] hover:text-white transition-colors rounded-none"
-                asChild
-              >
-                <Link href="/call-back">Заказать звонок</Link>
+            <div className="hidden lg:block">
+              <Button className="bg-[#8e2b85] hover:bg-[#76236e]">
+                Заказать звонок
               </Button>
             </div>
             
-            <button 
-              className="lg:hidden p-2 text-black hover:text-[#8e2b85]"
-              onClick={toggleMobileMenu}
-              aria-label="Меню"
-            >
-              {isMobileMenuOpen ? (
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              ) : (
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
-                </svg>
-              )}
-            </button>
+            {/* Мобильное меню */}
+            <div className="lg:hidden">
+              <button
+                onClick={toggleMobileMenu}
+                className="p-2 text-black hover:text-[#8e2b85] transition-colors"
+                aria-label="Открыть меню"
+              >
+                {isMobileMenuOpen ? (
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" className="w-6 h-6">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                ) : (
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" className="w-6 h-6">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                  </svg>
+                )}
+              </button>
+            </div>
           </div>
         </div>
-        
-        {/* Mobile menu */}
-        {isMobileMenuOpen && (
-          <div className="lg:hidden mt-4 pb-4 border-t border-gray-100 pt-4">
-            <nav className="flex flex-col space-y-4">
-              <Link 
-                href="/products/mattress" 
-                className={`${location.includes('/products/mattress') ? 'text-[#8e2b85]' : 'text-black'}`}
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                Матрасы
-              </Link>
-              <Link 
-                href="/products/bed" 
-                className={`${location.includes('/products/bed') ? 'text-[#8e2b85]' : 'text-black'}`}
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                Кровати
-              </Link>
-              <Link 
-                href="/products/accessory" 
-                className={`${location.includes('/products/accessory') ? 'text-[#8e2b85]' : 'text-black'}`}
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                Аксессуары
-              </Link>
-              <Link 
-                href="/about" 
-                className={`${location === '/about' ? 'text-[#8e2b85]' : 'text-black'}`}
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                О компании
-              </Link>
-              <Link 
-                href="/contacts" 
-                className={`${location === '/contacts' ? 'text-[#8e2b85]' : 'text-black'}`}
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                Контакты
-              </Link>
-              
-              <div className="pt-4 flex justify-between">
-                <Link 
-                  href="/login" 
-                  className="flex items-center text-black hover:text-[#8e2b85]"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 mr-2">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
-                  </svg>
-                  <span>Личный кабинет</span>
-                </Link>
-              </div>
-              
-              <Button
-                className="border border-[#8e2b85] text-[#8e2b85] bg-white hover:bg-[#8e2b85] hover:text-white w-full mt-2 rounded-none"
-                asChild
-              >
-                <Link href="/call-back" onClick={() => setIsMobileMenuOpen(false)}>Заказать звонок</Link>
-              </Button>
-            </nav>
-          </div>
-        )}
       </div>
+      
+      {/* Мобильное меню */}
+      {isMobileMenuOpen && (
+        <div className="lg:hidden bg-white border-t border-gray-200 py-4 px-4">
+          <div className="container mx-auto space-y-4">
+            <Link href="/products/mattress" className="block py-2 border-b border-gray-100">
+              Матрасы
+            </Link>
+            <Link href="/products/bed" className="block py-2 border-b border-gray-100">
+              Кровати
+            </Link>
+            <Link href="/products/accessory" className="block py-2 border-b border-gray-100">
+              Аксессуары
+            </Link>
+            <Link href="/about" className="block py-2 border-b border-gray-100">
+              О компании
+            </Link>
+            <Link href="/contacts" className="block py-2 border-b border-gray-100">
+              Контакты
+            </Link>
+            
+            {!isAuthenticated && (
+              <Link href="/login" className="block py-2 border-b border-gray-100">
+                Войти
+              </Link>
+            )}
+            
+            {isAuthenticated && (
+              <>
+                <Link href="/profile" className="block py-2 border-b border-gray-100">
+                  Личный кабинет
+                </Link>
+                <button
+                  onClick={async () => {
+                    await logout();
+                    setLocation('/');
+                    setIsMobileMenuOpen(false);
+                  }}
+                  className="block w-full text-left py-2 text-red-600"
+                >
+                  Выйти
+                </button>
+              </>
+            )}
+            
+            <div className="pt-4">
+              <Button className="w-full bg-[#8e2b85] hover:bg-[#76236e]">
+                Заказать звонок
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </header>
   );
 }
