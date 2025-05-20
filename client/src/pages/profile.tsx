@@ -178,14 +178,14 @@ export default function ProfilePage() {
               <div className="flex flex-col sm:flex-row items-center gap-4 -mt-12 z-10">
                 <div className="rounded-full w-24 h-24 bg-[#8e2b85] text-white flex items-center justify-center text-4xl border-4 border-white shadow-md">
                   <span className="font-medium">
-                    {username ? username.charAt(0).toUpperCase() : 'U'}
+                    {user?.username ? user.username.charAt(0).toUpperCase() : 'U'}
                   </span>
                 </div>
                 <div className="text-center sm:text-left mt-2 sm:mt-0">
                   <h1 className="text-2xl sm:text-3xl font-bold">
                     {user?.firstName && user?.lastName 
                       ? `${user.firstName} ${user.lastName}` 
-                      : username}
+                      : user?.username}
                   </h1>
                   <p className="text-gray-500">{user?.email}</p>
                 </div>
