@@ -75,8 +75,8 @@ export default function AdminOrders() {
     queryFn: async () => {
       try {
         const response = await apiRequest('GET', '/api/admin/orders');
-        const data = response as Order[];
-        return data;
+        const data = response as any;
+        return data as Order[];
       } catch (error) {
         // В реальном приложении здесь будет использоваться API
         // Для демонстрации используем мок-данные

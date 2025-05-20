@@ -84,20 +84,19 @@ export default function AdminSidebar() {
             <ul className="space-y-1">
               {navigationItems.map((item) => (
                 <li key={item.href}>
-                  <Link href={item.href}>
-                    <a
-                      className={`
-                        flex items-center px-4 py-3 rounded-md text-sm font-medium transition-colors
-                        ${location === item.href
-                          ? 'bg-primary-50 text-primary-900'
-                          : 'text-gray-700 hover:bg-gray-100'
-                        }
-                      `}
-                      onClick={() => setIsMobileMenuOpen(false)}
-                    >
-                      <span className="mr-3">{item.icon}</span>
-                      {item.name}
-                    </a>
+                  <Link 
+                    href={item.href}
+                    className={`
+                      flex items-center px-4 py-3 rounded-md text-sm font-medium transition-colors
+                      ${location === item.href
+                        ? 'bg-primary-50 text-primary-900'
+                        : 'text-gray-700 hover:bg-gray-100'
+                      }
+                    `}
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    <span className="mr-3">{item.icon}</span>
+                    {item.name}
                   </Link>
                 </li>
               ))}

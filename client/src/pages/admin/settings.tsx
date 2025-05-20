@@ -78,7 +78,8 @@ export default function AdminSettings() {
     queryFn: async () => {
       try {
         const response = await apiRequest('GET', '/api/admin/settings');
-        return response as ShopSettings;
+        const data = response as any;
+        return data as ShopSettings;
       } catch (error) {
         // Для демонстрации используем мок-данные
         return {
@@ -120,9 +121,8 @@ export default function AdminSettings() {
     },
   });
   
-  // State for form values
-  const [formValues, setFormValues] = useState<ShopSettings>({
-    // Initialize with empty values
+  // Создаем начальные значения для формы
+  const defaultSettings: ShopSettings = {
     shopName: '',
     shopDescription: '',
     contactEmail: '',
@@ -145,7 +145,10 @@ export default function AdminSettings() {
     enableSmsNotifications: false,
     smsOrderConfirmation: false,
     smsOrderStatusUpdate: false,
-  });
+  };
+  
+  // State for form values
+  const [formValues, setFormValues] = useState<ShopSettings>(defaultSettings);
   
   // Update form when settings are loaded
   useEffect(() => {

@@ -85,8 +85,8 @@ export default function AdminUsers() {
     queryFn: async () => {
       try {
         const response = await apiRequest('GET', '/api/admin/users');
-        const data = response as UserData[];
-        return data;
+        const data = response as any;
+        return data as UserData[];
       } catch (error) {
         // В реальном приложении здесь будет API
         // Для демонстрации используем мок-данные
