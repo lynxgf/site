@@ -75,6 +75,7 @@ function Router() {
       {/* Информационные страницы */}
       <Route path="/about" component={About} />
       <Route path="/contacts" component={Contacts} />
+      <Route path="/faq" component={Faq} />
       
       {/* User authentication routes */}
       <Route path="/login" component={Login} />

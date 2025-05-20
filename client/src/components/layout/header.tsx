@@ -389,6 +389,9 @@ export default function Header() {
             <Link href="/contacts" className="block py-2 border-b border-gray-100">
               Контакты
             </Link>
+            <Link href="/faq" className="block py-2 border-b border-gray-100">
+              Часто задаваемые вопросы
+            </Link>
             
             {!isAuthenticated && (
               <Link href="/login" className="block py-2 border-b border-gray-100">
