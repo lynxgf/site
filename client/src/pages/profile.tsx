@@ -180,33 +180,34 @@ export default function ProfilePage() {
   return (
     <div className="bg-gray-50 min-h-screen py-12">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
-        {/* Профиль хедер */}
+        {/* Профиль хедер - улучшенный дизайн */}
         <div className="bg-white rounded-lg shadow-sm mb-8 border border-gray-100 overflow-hidden">
-          <div className="relative h-48 bg-gradient-to-r from-[#8B2A82] to-[#7A2573]">
-            <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-black/30 to-transparent"></div>
+          <div className="relative h-40 bg-[#8B2A82]">
+            {/* Мы убрали градиент, сделав фон более однородным, как на скриншоте */}
           </div>
           
           <div className="relative px-8 pb-6">
             <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
-              <div className="flex flex-col sm:flex-row items-center gap-4 -mt-12 z-10">
-                <div className="rounded-full w-24 h-24 bg-[#8B2A82] text-white flex items-center justify-center text-4xl border-4 border-white shadow-md">
+              <div className="flex flex-col sm:flex-row items-center gap-6 -mt-12 z-10">
+                <div className="rounded-full w-24 h-24 bg-[#8B2A82] text-white flex items-center justify-center text-5xl border-4 border-white shadow-md">
                   <span className="font-medium">
-                    {user?.username ? user.username.charAt(0).toUpperCase() : 'У'}
+                    {user?.firstName ? user.firstName.charAt(0).toUpperCase() : 
+                     user?.username ? user.username.charAt(0).toUpperCase() : 'Л'}
                   </span>
                 </div>
                 <div className="text-center sm:text-left mt-2 sm:mt-0">
-                  <h1 className="text-2xl sm:text-3xl font-bold">
+                  <h1 className="text-2xl sm:text-3xl font-semibold text-gray-900">
                     {user?.firstName && user?.lastName 
                       ? `${user.firstName} ${user.lastName}` 
                       : user?.username}
                   </h1>
-                  <p className="text-gray-500">{user?.email}</p>
+                  <p className="text-gray-500 text-sm mt-1">{user?.email}</p>
                 </div>
               </div>
               
               <Button 
                 variant="outline" 
-                className="border-red-300 text-red-600 hover:bg-red-50" 
+                className="border border-red-300 text-red-600 hover:bg-red-50 rounded-sm"
                 onClick={handleLogout}
               >
                 <LogOut className="h-4 w-4 mr-2" />
@@ -217,17 +218,17 @@ export default function ProfilePage() {
         </div>
         
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-          {/* Боковое меню */}
+          {/* Боковое меню - улучшенный дизайн в соответствии с макетом */}
           <div className="lg:col-span-1">
-            <Card className="border border-gray-100 shadow-sm">
+            <Card className="border-0 shadow-none">
               <CardContent className="p-0">
                 <nav className="flex flex-col">
                   <button
                     onClick={() => setActiveTab("profile")}
-                    className={`flex items-center text-left px-4 py-4 border-l-2 hover:bg-gray-50 transition-colors ${
+                    className={`flex items-center text-left px-4 py-3 hover:bg-gray-50 transition-colors text-sm ${
                       activeTab === "profile" 
-                        ? "border-[#8B2A82] text-[#8B2A82] font-medium bg-gray-50" 
-                        : "border-transparent text-gray-700"
+                        ? "border-l-[3px] border-[#8B2A82] pl-[calc(1rem-3px)] text-[#8B2A82] font-medium" 
+                        : "border-l-[3px] border-transparent text-gray-800"
                     }`}
                   >
                     <User className="h-5 w-5 mr-3" />
@@ -236,10 +237,10 @@ export default function ProfilePage() {
 
                   <button
                     onClick={() => setActiveTab("security")}
-                    className={`flex items-center text-left px-4 py-4 border-l-2 hover:bg-gray-50 transition-colors ${
+                    className={`flex items-center text-left px-4 py-3 hover:bg-gray-50 transition-colors text-sm ${
                       activeTab === "security" 
-                        ? "border-[#8B2A82] text-[#8B2A82] font-medium bg-gray-50" 
-                        : "border-transparent text-gray-700"
+                        ? "border-l-[3px] border-[#8B2A82] pl-[calc(1rem-3px)] text-[#8B2A82] font-medium" 
+                        : "border-l-[3px] border-transparent text-gray-800"
                     }`}
                   >
                     <Lock className="h-5 w-5 mr-3" />
@@ -248,10 +249,10 @@ export default function ProfilePage() {
 
                   <button
                     onClick={() => setActiveTab("orders")}
-                    className={`flex items-center text-left px-4 py-4 border-l-2 hover:bg-gray-50 transition-colors ${
+                    className={`flex items-center text-left px-4 py-3 hover:bg-gray-50 transition-colors text-sm ${
                       activeTab === "orders" 
-                        ? "border-[#8B2A82] text-[#8B2A82] font-medium bg-gray-50" 
-                        : "border-transparent text-gray-700"
+                        ? "border-l-[3px] border-[#8B2A82] pl-[calc(1rem-3px)] text-[#8B2A82] font-medium" 
+                        : "border-l-[3px] border-transparent text-gray-800"
                     }`}
                   >
                     <ShoppingBag className="h-5 w-5 mr-3" />
@@ -260,10 +261,10 @@ export default function ProfilePage() {
 
                   <button
                     onClick={() => setActiveTab("favorites")}
-                    className={`flex items-center text-left px-4 py-4 border-l-2 hover:bg-gray-50 transition-colors ${
+                    className={`flex items-center text-left px-4 py-3 hover:bg-gray-50 transition-colors text-sm ${
                       activeTab === "favorites" 
-                        ? "border-[#8B2A82] text-[#8B2A82] font-medium bg-gray-50" 
-                        : "border-transparent text-gray-700"
+                        ? "border-l-[3px] border-[#8B2A82] pl-[calc(1rem-3px)] text-[#8B2A82] font-medium" 
+                        : "border-l-[3px] border-transparent text-gray-800"
                     }`}
                   >
                     <Heart className="h-5 w-5 mr-3" />
@@ -276,15 +277,15 @@ export default function ProfilePage() {
           
           {/* Основной контент */}
           <div className="lg:col-span-3">
-            {/* Вкладка профиля */}
+            {/* Вкладка профиля - улучшенный дизайн */}
             {activeTab === "profile" && (
-              <Card className="border border-gray-100 shadow-sm">
-                <CardHeader>
-                  <CardTitle className="flex items-center text-xl">
+              <Card className="border-0 shadow-none bg-transparent">
+                <CardHeader className="pb-2 px-0">
+                  <CardTitle className="flex items-center text-lg font-medium text-gray-900">
                     <User className="h-5 w-5 mr-2 text-[#8B2A82]" />
                     Личная информация
                   </CardTitle>
-                  <CardDescription>
+                  <CardDescription className="text-sm text-gray-500 mt-1">
                     Здесь вы можете обновить свои личные данные и контактную информацию
                   </CardDescription>
                 </CardHeader>
