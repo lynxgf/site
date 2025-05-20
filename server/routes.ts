@@ -180,24 +180,58 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
   
   app.post("/api/cart", async (req, res) => {
-    const sessionId = req.session.sessionId;
+    const sessionId = req.session.sessionId || "";
     
     try {
-      const cartItemData = insertCartItemSchema.parse({
-        ...req.body,
-        sessionId
-      });
+      console.log("Raw cart data:", JSON.stringify(req.body));
+      
+      if (!sessionId) {
+        return res.status(400).json({ message: "Missing session ID" });
+      }
+      
+      if (!req.body.productId) {
+        return res.status(400).json({ message: "Missing product ID" });
+      }
+      
+      // Создаем правильный объект для валидации
+      const cartData = {
+        sessionId: sessionId,
+        productId: Number(req.body.productId),
+        quantity: Number(req.body.quantity || 1),
+        selectedSize: String(req.body.selectedSize || "standard"),
+        selectedFabricCategory: String(req.body.selectedFabricCategory || "standard"),
+        selectedFabric: String(req.body.selectedFabric || "cotton"),
+        hasLiftingMechanism: Boolean(req.body.hasLiftingMechanism),
+        price: Number(req.body.price),
+      };
+      
+      // Добавляем опционные поля только если они не null и не undefined
+      if (req.body.customWidth) {
+        cartData.customWidth = Number(req.body.customWidth);
+      }
+      
+      if (req.body.customLength) {
+        cartData.customLength = Number(req.body.customLength);
+      }
+      
+      console.log("Processed cart data:", JSON.stringify(cartData));
       
       // Verify that the product exists
-      const product = await storage.getProductById(cartItemData.productId);
+      const product = await storage.getProductById(cartData.productId);
       if (!product) {
         return res.status(404).json({ message: "Product not found" });
       }
       
-      const cartItem = await storage.addToCart(cartItemData);
+      const cartItem = await storage.addToCart(cartData);
+      console.log("Added cart item:", JSON.stringify(cartItem));
+      
       res.status(201).json(cartItem);
     } catch (error) {
-      res.status(400).json({ message: "Invalid cart item data", error });
+      console.error("Cart error:", error);
+      res.status(400).json({ 
+        message: "Invalid cart item data", 
+        error: error instanceof Error ? error.message : String(error) 
+      });
     }
   });
   

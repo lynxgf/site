@@ -92,16 +92,17 @@ export default function ProductConfigurator({ product }: ProductConfiguratorProp
         throw new Error('Please select a fabric');
       }
       
-      const cartItem = {
+      // Данные для корзины
+      const cartItem: any = {
         productId: product.id,
         quantity: 1,
         selectedSize,
-        customWidth: selectedSize === 'custom' ? customWidth : undefined,
-        customLength: selectedSize === 'custom' ? customLength : undefined,
+        customWidth: selectedSize === 'custom' ? Number(customWidth) : null,
+        customLength: selectedSize === 'custom' ? Number(customLength) : null,
         selectedFabricCategory,
         selectedFabric,
         hasLiftingMechanism,
-        price: totalPrice
+        price: Number(totalPrice)
       };
       
       await addToCart(cartItem);
