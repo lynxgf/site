@@ -180,33 +180,35 @@ export default function ProfilePage() {
   return (
     <div className="bg-gray-50 min-h-screen">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
-        {/* Профиль хедер - точно как на вашем скриншоте */}
-        <div className="bg-white rounded-lg shadow-sm mb-8 overflow-hidden">
-          {/* Верхняя часть хедера - фиолетовый фон */}
-          <div className="bg-[#8B2A82] h-32 relative">
-            {/* Аватар и данные пользователя с абсолютным позиционированием */}
-            <div className="absolute bottom-0 left-8 transform translate-y-1/2 flex items-center">
+        {/* Профиль хедер - новая версия по скриншоту */}
+        <div className="rounded-lg shadow-sm mb-8 overflow-hidden">
+          {/* Хедер - полностью фиолетовый фон */}
+          <div className="bg-[#8B2A82] h-28 relative">
+            {/* Данные пользователя */}
+            <div className="absolute left-32 top-1/2 transform -translate-y-1/2">
+              <h1 className="text-xl font-bold text-white">
+                {user?.firstName && user?.lastName 
+                  ? `${user.firstName} ${user.lastName}` 
+                  : user?.username}
+              </h1>
+              <p className="text-white/80 text-sm">{user?.email}</p>
+            </div>
+            
+            {/* Аватар - теперь слева и немного внизу */}
+            <div className="absolute bottom-0 left-8 transform translate-y-1/2">
               <div className="rounded-full w-20 h-20 bg-[#8B2A82] text-white flex items-center justify-center text-4xl border-4 border-white shadow-sm">
                 <span className="font-medium">
                   {user?.firstName ? user.firstName.charAt(0).toUpperCase() : 
-                   user?.username ? user.username.charAt(0).toUpperCase() : 'Л'}
+                   user?.username ? user.username.charAt(0).toUpperCase() : 'Д'}
                 </span>
-              </div>
-              <div className="ml-4 pb-10">
-                <h1 className="text-xl font-bold text-white">
-                  {user?.firstName && user?.lastName 
-                    ? `${user.firstName} ${user.lastName}` 
-                    : user?.username}
-                </h1>
-                <p className="text-white/80 text-sm">{user?.email}</p>
               </div>
             </div>
             
-            {/* Кнопка выхода */}
+            {/* Кнопка выхода - в правом верхнем углу с полупрозрачным фоном */}
             <div className="absolute top-4 right-4">
               <Button 
                 variant="outline" 
-                className="bg-transparent border border-white/20 text-white hover:bg-white/10 rounded-sm text-sm"
+                className="bg-[#8B2A82] border-0 text-white hover:bg-[#9c3994] rounded-sm text-sm"
                 onClick={handleLogout}
               >
                 <LogOut className="h-4 w-4 mr-2" />
@@ -214,9 +216,6 @@ export default function ProfilePage() {
               </Button>
             </div>
           </div>
-          
-          {/* Нижняя часть хедера - белый фон для наполнения пространства */}
-          <div className="h-10 bg-white"></div>
         </div>
         
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
