@@ -11,7 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 // Парсинг параметров запроса
 function useQueryParams() {
   const [location] = useLocation();
-  const params = new URLSearchParams(location.split('?')[1]);
+  const params = new URLSearchParams(location.split('?')[1] || '');
   return {
     q: params.get('q') || '',
     category: params.get('category') || '',
@@ -44,10 +44,24 @@ export default function SearchPage() {
     if (selectedSort !== 'relevance') params.set('sort', selectedSort);
     
     const newPath = `/search${params.toString() ? `?${params.toString()}` : ''}`;
-    if (location !== newPath) {
+    if (location !== newPath && searchQuery) {
       setLocation(newPath);
     }
-  }, [searchQuery, selectedCategory, selectedSort]);
+  }, [searchQuery, selectedCategory, selectedSort, location]);
+  
+  // При изменении URL обновляем состояние компонента
+  useEffect(() => {
+    const { q, category, sort } = useQueryParams();
+    if (q && q !== searchQuery) {
+      setSearchQuery(q);
+    }
+    if (category !== selectedCategory) {
+      setSelectedCategory(category);
+    }
+    if (sort !== selectedSort) {
+      setSelectedSort(sort);
+    }
+  }, [location]);
   
   // Обработчик отправки формы поиска
   const handleSearchSubmit = (e: React.FormEvent) => {
