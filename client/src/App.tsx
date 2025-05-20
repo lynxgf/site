@@ -20,6 +20,7 @@ import Register from "@/pages/register";
 import Profile from "@/pages/profile";
 import About from "@/pages/about";
 import Contacts from "@/pages/contacts";
+import Faq from "@/pages/faq";
 import AdminLogin from "@/pages/admin/login";
 import AdminDashboard from "@/pages/admin/dashboard";
 import AdminProducts from "@/pages/admin/products";
