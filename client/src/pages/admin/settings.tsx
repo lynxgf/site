@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { queryClient, apiRequest } from '@/lib/queryClient';
 import AdminSidebar from '@/components/admin/sidebar';
@@ -148,11 +148,11 @@ export default function AdminSettings() {
   });
   
   // Update form when settings are loaded
-  useState(() => {
+  useEffect(() => {
     if (settings) {
       setFormValues(settings);
     }
-  });
+  }, [settings]);
   
   // Update settings mutation
   const updateSettingsMutation = useMutation({
