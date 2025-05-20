@@ -61,12 +61,18 @@ export default function Home() {
                 <Link href="/products/bed">Каталог кроватей</Link>
               </Button>
               
-              <Link href="#explore" className="text-white hover:text-[#d4af37] transition-colors flex items-center gap-2 group">
-                <span className="border-b border-transparent group-hover:border-[#d4af37] pb-1">Узнать больше</span>
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-5 h-5 transform group-hover:translate-x-1 transition-transform">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
-                </svg>
-              </Link>
+              <Button 
+                size="lg" 
+                className="bg-gray-800 text-white hover:bg-gray-700 transition-colors py-6 px-10 text-base font-normal rounded-none shadow-lg flex items-center gap-2" 
+                asChild
+              >
+                <Link href="/about">
+                  Узнать больше
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-5 h-5">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                  </svg>
+                </Link>
+              </Button>
             </div>
           </div>
         </div>
