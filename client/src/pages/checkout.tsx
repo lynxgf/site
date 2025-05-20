@@ -301,39 +301,43 @@ export default function CheckoutPage() {
                                   defaultValue={field.value}
                                   className="flex flex-col space-y-3"
                                 >
-                                  <Card className={`border ${field.value === 'courier' ? 'border-[#8e2b85]' : 'border-gray-200'} p-4 cursor-pointer transition-all hover:border-[#8e2b85]`}>
-                                    <div className="flex items-center gap-4">
-                                      <RadioGroupItem value="courier" id="courier" className="text-[#8e2b85]" />
-                                      <div className="w-10 h-10 bg-gray-50 rounded-full flex items-center justify-center">
-                                        <Truck className="h-5 w-5 text-[#8e2b85]" />
+                                  <div onClick={() => field.onChange('courier')}>
+                                    <Card className={`border ${field.value === 'courier' ? 'border-[#8e2b85]' : 'border-gray-200'} p-4 cursor-pointer transition-all hover:border-[#8e2b85]`}>
+                                      <div className="flex items-center gap-4">
+                                        <RadioGroupItem value="courier" id="courier" className="text-[#8e2b85]" />
+                                        <div className="w-10 h-10 bg-gray-50 rounded-full flex items-center justify-center">
+                                          <Truck className="h-5 w-5 text-[#8e2b85]" />
+                                        </div>
+                                        <div className="flex-1">
+                                          <FormLabel className="font-medium text-gray-900 cursor-pointer block" htmlFor="courier">
+                                            Курьером (+500 ₽)
+                                          </FormLabel>
+                                          <p className="text-sm text-gray-500 mt-1">
+                                            Доставка в течение 1-3 дней после подтверждения
+                                          </p>
+                                        </div>
                                       </div>
-                                      <div>
-                                        <FormLabel className="font-medium text-gray-900 cursor-pointer block" htmlFor="courier">
-                                          Курьером (+500 ₽)
-                                        </FormLabel>
-                                        <p className="text-sm text-gray-500 mt-1">
-                                          Доставка в течение 1-3 дней после подтверждения
-                                        </p>
-                                      </div>
-                                    </div>
-                                  </Card>
+                                    </Card>
+                                  </div>
                                   
-                                  <Card className={`border ${field.value === 'pickup' ? 'border-[#8e2b85]' : 'border-gray-200'} p-4 cursor-pointer transition-all hover:border-[#8e2b85]`}>
-                                    <div className="flex items-center gap-4">
-                                      <RadioGroupItem value="pickup" id="pickup" className="text-[#8e2b85]" />
-                                      <div className="w-10 h-10 bg-gray-50 rounded-full flex items-center justify-center">
-                                        <Package className="h-5 w-5 text-[#8e2b85]" />
+                                  <div onClick={() => field.onChange('pickup')}>
+                                    <Card className={`border ${field.value === 'pickup' ? 'border-[#8e2b85]' : 'border-gray-200'} p-4 cursor-pointer transition-all hover:border-[#8e2b85]`}>
+                                      <div className="flex items-center gap-4">
+                                        <RadioGroupItem value="pickup" id="pickup" className="text-[#8e2b85]" />
+                                        <div className="w-10 h-10 bg-gray-50 rounded-full flex items-center justify-center">
+                                          <Package className="h-5 w-5 text-[#8e2b85]" />
+                                        </div>
+                                        <div className="flex-1">
+                                          <FormLabel className="font-medium text-gray-900 cursor-pointer block" htmlFor="pickup">
+                                            Самовывоз (бесплатно)
+                                          </FormLabel>
+                                          <p className="text-sm text-gray-500 mt-1">
+                                            Из нашего магазина в центре города
+                                          </p>
+                                        </div>
                                       </div>
-                                      <div>
-                                        <FormLabel className="font-medium text-gray-900 cursor-pointer block" htmlFor="pickup">
-                                          Самовывоз (бесплатно)
-                                        </FormLabel>
-                                        <p className="text-sm text-gray-500 mt-1">
-                                          Из нашего магазина в центре города
-                                        </p>
-                                      </div>
-                                    </div>
-                                  </Card>
+                                    </Card>
+                                  </div>
                                 </RadioGroup>
                               </FormControl>
                               <FormMessage />
@@ -384,35 +388,38 @@ export default function CheckoutPage() {
                                   defaultValue={field.value}
                                   className="flex flex-col space-y-3"
                                 >
-                                  <Card className={`border ${field.value === 'card' ? 'border-[#8e2b85]' : 'border-gray-200'} p-4 cursor-pointer transition-all hover:border-[#8e2b85]`}>
-                                    <div className="flex items-center gap-4">
-                                      <RadioGroupItem value="card" id="card" className="text-[#8e2b85]" />
-                                      <div className="w-10 h-10 bg-gray-50 rounded-full flex items-center justify-center">
-                                        <CreditCard className="h-5 w-5 text-[#8e2b85]" />
+                                  <div onClick={() => field.onChange('card')}>
+                                    <Card className={`border ${field.value === 'card' ? 'border-[#8e2b85]' : 'border-gray-200'} p-4 cursor-pointer transition-all hover:border-[#8e2b85]`}>
+                                      <div className="flex items-center gap-4">
+                                        <RadioGroupItem value="card" id="card" className="text-[#8e2b85]" />
+                                        <div className="w-10 h-10 bg-gray-50 rounded-full flex items-center justify-center">
+                                          <CreditCard className="h-5 w-5 text-[#8e2b85]" />
+                                        </div>
+                                        <div className="flex-1">
+                                          <FormLabel className="font-medium text-gray-900 cursor-pointer block" htmlFor="card">
+                                            Банковской картой онлайн
+                                          </FormLabel>
+                                          <p className="text-sm text-gray-500 mt-1">
+                                            Visa, MasterCard, Мир и другие
+                                          </p>
+                                        </div>
                                       </div>
-                                      <div>
-                                        <FormLabel className="font-medium text-gray-900 cursor-pointer block" htmlFor="card">
-                                          Банковской картой онлайн
-                                        </FormLabel>
-                                        <p className="text-sm text-gray-500 mt-1">
-                                          Visa, MasterCard, Мир и другие
-                                        </p>
-                                      </div>
-                                    </div>
-                                  </Card>
+                                    </Card>
+                                  </div>
                                   
-                                  <Card className={`border ${field.value === 'cash' ? 'border-[#8e2b85]' : 'border-gray-200'} p-4 cursor-pointer transition-all hover:border-[#8e2b85]`}>
-                                    <div className="flex items-center gap-4">
-                                      <RadioGroupItem value="cash" id="cash" className="text-[#8e2b85]" />
-                                      <div className="w-10 h-10 bg-gray-50 rounded-full flex items-center justify-center">
-                                        <ShoppingCart className="h-5 w-5 text-[#8e2b85]" />
-                                      </div>
-                                      <div>
-                                        <FormLabel className="font-medium text-gray-900 cursor-pointer block" htmlFor="cash">
-                                          Наличными при получении
-                                        </FormLabel>
-                                        <p className="text-sm text-gray-500 mt-1">
-                                          Оплата курьеру или в пункте выдачи
+                                  <div onClick={() => field.onChange('cash')}>
+                                    <Card className={`border ${field.value === 'cash' ? 'border-[#8e2b85]' : 'border-gray-200'} p-4 cursor-pointer transition-all hover:border-[#8e2b85]`}>
+                                      <div className="flex items-center gap-4">
+                                        <RadioGroupItem value="cash" id="cash" className="text-[#8e2b85]" />
+                                        <div className="w-10 h-10 bg-gray-50 rounded-full flex items-center justify-center">
+                                          <ShoppingCart className="h-5 w-5 text-[#8e2b85]" />
+                                        </div>
+                                        <div className="flex-1">
+                                          <FormLabel className="font-medium text-gray-900 cursor-pointer block" htmlFor="cash">
+                                            Наличными при получении
+                                          </FormLabel>
+                                          <p className="text-sm text-gray-500 mt-1">
+                                            Оплата курьеру или в пункте выдачи
                                         </p>
                                       </div>
                                     </div>
