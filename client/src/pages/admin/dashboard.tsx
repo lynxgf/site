@@ -114,15 +114,32 @@ export default function AdminDashboard() {
   
   // Update stats when data is loaded
   useEffect(() => {
+    if (!products || !orders) return;
+    
     // Проверяем, что данные являются массивами
     const validProducts = Array.isArray(products) ? products : [];
     const validOrders = Array.isArray(orders) ? orders : [];
 
-    setStats({
-      totalSales: validOrders.reduce((sum, order) => sum + Number(order.totalAmount), 0),
-      totalOrders: validOrders.length,
-      totalProducts: validProducts.length,
-      totalCustomers: new Set(validOrders.map(order => order.sessionId)).size,
+    setStats(prevStats => {
+      // Предотвращаем циклические обновления, сравнивая с предыдущими значениями
+      const newStats = {
+        totalSales: validOrders.reduce((sum, order) => sum + Number(order.totalAmount), 0),
+        totalOrders: validOrders.length,
+        totalProducts: validProducts.length,
+        totalCustomers: new Set(validOrders.map(order => order.sessionId)).size,
+      };
+      
+      // Если статистика идентична предыдущей, не обновляем состояние
+      if (
+        prevStats.totalSales === newStats.totalSales &&
+        prevStats.totalOrders === newStats.totalOrders &&
+        prevStats.totalProducts === newStats.totalProducts &&
+        prevStats.totalCustomers === newStats.totalCustomers
+      ) {
+        return prevStats;
+      }
+      
+      return newStats;
     });
   }, [products, orders]);
   

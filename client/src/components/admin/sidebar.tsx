@@ -10,7 +10,8 @@ import {
   Settings, 
   LogOut,
   Menu,
-  X
+  X,
+  DownloadCloud
 } from 'lucide-react';
 
 export default function AdminSidebar() {
@@ -38,6 +39,11 @@ export default function AdminSidebar() {
       name: 'Пользователи', 
       href: '/admin/users', 
       icon: <Users size={20} /> 
+    },
+    { 
+      name: 'Экспорт данных', 
+      href: '/admin/export', 
+      icon: <DownloadCloud size={20} /> 
     },
     { 
       name: 'Настройки', 
