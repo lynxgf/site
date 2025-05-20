@@ -77,43 +77,75 @@ export default function CartItem({ item }: CartItemProps) {
   }
   
   return (
-    <Card className="overflow-hidden">
+    <Card className="overflow-hidden border border-gray-100 shadow-sm">
       <CardContent className="p-0">
         <div className="flex flex-col sm:flex-row">
-          {/* Product image */}
-          <div className="sm:w-1/4 h-32 sm:h-auto">
+          {/* Product image with badge */}
+          <div className="relative sm:w-1/4 h-40 sm:h-auto overflow-hidden">
             <img 
               src={item.product.images[0]} 
               alt={item.product.name} 
-              className="w-full h-full object-cover"
+              className="w-full h-full object-cover transition-transform hover:scale-105"
             />
+            {item.product.discount > 0 && (
+              <div className="absolute top-3 left-3 bg-[#8e2b85] text-white text-xs font-medium py-1 px-2 rounded">
+                -{item.product.discount}%
+              </div>
+            )}
           </div>
           
           {/* Product details */}
-          <div className="p-4 flex-1 flex flex-col sm:flex-row justify-between">
-            <div className="mb-4 sm:mb-0 sm:mr-4">
-              <h3 className="font-semibold text-lg text-gray-900 mb-1">
+          <div className="p-6 flex-1 flex flex-col sm:flex-row justify-between">
+            <div className="mb-4 sm:mb-0 sm:mr-4 flex-1">
+              <h3 className="font-semibold text-lg text-gray-900 mb-3 hover:text-[#8e2b85] transition-colors">
                 {item.product.name}
               </h3>
               
-              <ul className="text-sm text-gray-600 space-y-1">
-                <li>Размер: {formatSize()}</li>
-                <li>Ткань: {getFabricName()} ({
-                  item.selectedFabricCategory === 'economy' ? 'Эконом' :
-                  item.selectedFabricCategory === 'premium' ? 'Премиум' : 'Стандарт'
-                })</li>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-2">
+                <div className="flex items-center">
+                  <div className="w-4 h-4 mr-2 bg-gray-100 rounded-full flex-shrink-0"></div>
+                  <span className="text-sm text-gray-700">Размер: <span className="font-medium">{formatSize()}</span></span>
+                </div>
+                
+                <div className="flex items-center">
+                  <div className="w-4 h-4 mr-2 bg-gray-100 rounded-full flex-shrink-0"></div>
+                  <span className="text-sm text-gray-700">
+                    Ткань: <span className="font-medium">{getFabricName()}</span>
+                  </span>
+                </div>
+                
+                <div className="flex items-center">
+                  <div className="w-4 h-4 mr-2 bg-gray-100 rounded-full flex-shrink-0"></div>
+                  <span className="text-sm text-gray-700">
+                    Категория: <span className="font-medium">{
+                      item.selectedFabricCategory === 'economy' ? 'Эконом' :
+                      item.selectedFabricCategory === 'premium' ? 'Премиум' : 'Стандарт'
+                    }</span>
+                  </span>
+                </div>
+                
                 {item.hasLiftingMechanism && (
-                  <li>Подъемный механизм: Да</li>
+                  <div className="flex items-center">
+                    <div className="w-4 h-4 mr-2 bg-gray-100 rounded-full flex-shrink-0"></div>
+                    <span className="text-sm text-gray-700">
+                      Подъемный механизм: <span className="font-medium">Да</span>
+                    </span>
+                  </div>
                 )}
-              </ul>
+              </div>
             </div>
             
             <div className="flex flex-row sm:flex-col justify-between items-end">
               {/* Price */}
               <div className="text-right mb-4">
-                <p className="font-bold text-gray-900">{formatPrice(item.price)} ₽</p>
-                <p className="text-sm text-gray-500">
-                  {formatPrice(item.price)} ₽ за шт.
+                <p className="font-semibold text-xl text-gray-900">{formatPrice(item.price)} ₽</p>
+                {item.product.discount > 0 && (
+                  <p className="text-sm text-gray-500 line-through">
+                    {formatPrice(parseFloat(item.product.basePrice))} ₽
+                  </p>
+                )}
+                <p className="text-sm text-gray-500 mt-1">
+                  {formatPrice(parseFloat(item.price))} ₽ за шт.
                 </p>
               </div>
               
@@ -122,7 +154,7 @@ export default function CartItem({ item }: CartItemProps) {
                 <Button 
                   variant="outline" 
                   size="icon" 
-                  className="h-8 w-8 rounded-r-none"
+                  className="h-9 w-9 rounded-r-none border-gray-200 hover:bg-gray-50 hover:text-[#8e2b85]"
                   onClick={decreaseQuantity}
                 >
                   <span className="text-lg">-</span>
@@ -134,22 +166,24 @@ export default function CartItem({ item }: CartItemProps) {
                   value={quantity}
                   onChange={handleQuantityChange}
                   onBlur={handleUpdateQuantity}
-                  className="h-8 w-12 rounded-none text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                  className="h-9 w-14 rounded-none text-center border-x-0 border-gray-200 focus:ring-0 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                 />
                 <Button 
                   variant="outline" 
                   size="icon" 
-                  className="h-8 w-8 rounded-l-none"
+                  className="h-9 w-9 rounded-l-none border-gray-200 hover:bg-gray-50 hover:text-[#8e2b85]"
                   onClick={increaseQuantity}
                 >
                   <span className="text-lg">+</span>
                 </Button>
                 
+                <div className="w-px h-8 bg-gray-100 mx-3"></div>
+                
                 <Button 
                   variant="ghost" 
                   size="icon" 
                   onClick={handleRemove}
-                  className="ml-2 text-gray-500 hover:text-accent-500"
+                  className="text-gray-400 hover:text-[#8e2b85] hover:bg-gray-50"
                 >
                   <Trash2 size={18} />
                 </Button>
