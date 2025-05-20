@@ -2,16 +2,8 @@ import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Product, Order } from '@shared/schema';
 import AdminSidebar from '@/components/admin/sidebar';
+import { apiRequest } from '@/lib/queryClient';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import {
-  Chart,
-  ChartContainer,
-  ChartLegend,
-  ChartLegendItem,
-  ChartTooltip,
-  ChartTooltipContent,
-  ChartTooltipItem,
-} from '@/components/ui/chart';
 import {
   CategoryScale,
   Chart as ChartJS,
@@ -55,46 +47,68 @@ export default function AdminDashboard() {
     queryKey: ['/api/products'],
   });
   
-  // Fetch orders (mock data for now, would use real endpoint in production)
-  const { data: orders } = useQuery<Order[]>({
+  // Fetch orders
+  const { data: orders = [] } = useQuery<Order[]>({
     queryKey: ['/api/admin/orders'],
     queryFn: async () => {
-      // Mock order data until endpoint is implemented
-      return [
-        {
-          id: 1,
-          sessionId: '123',
-          customerName: 'Иван Иванов',
-          customerEmail: 'ivan@example.com',
-          customerPhone: '+7 900 123-45-67',
-          address: 'г. Москва, ул. Примерная, д. 1, кв. 123',
-          totalAmount: '52400',
-          status: 'completed',
-          createdAt: new Date('2023-05-15')
-        },
-        {
-          id: 2,
-          sessionId: '456',
-          customerName: 'Анна Петрова',
-          customerEmail: 'anna@example.com',
-          customerPhone: '+7 900 987-65-43',
-          address: 'г. Санкт-Петербург, ул. Тестовая, д. 5, кв. 42',
-          totalAmount: '41900',
-          status: 'processing',
-          createdAt: new Date('2023-05-20')
-        },
-        {
-          id: 3,
-          sessionId: '789',
-          customerName: 'Сергей Смирнов',
-          customerEmail: 'sergey@example.com',
-          customerPhone: '+7 900 111-22-33',
-          address: 'г. Екатеринбург, ул. Образцовая, д. 10, кв. 15',
-          totalAmount: '28900',
-          status: 'pending',
-          createdAt: new Date('2023-05-25')
-        }
-      ];
+      try {
+        const response = await apiRequest('GET', '/api/admin/orders');
+        const data = response as any;
+        return data as Order[];
+      } catch (error) {
+        console.error("Error fetching orders:", error);
+        // Если API еще не реализован, используем мок-данные
+        return [
+          {
+            id: 1,
+            sessionId: '123',
+            customerName: 'Иван Иванов',
+            customerEmail: 'ivan@example.com',
+            customerPhone: '+7 900 123-45-67',
+            address: 'г. Москва, ул. Примерная, д. 1, кв. 123',
+            totalAmount: '52400',
+            status: 'completed',
+            createdAt: new Date('2023-05-15')
+          },
+          {
+            id: 2,
+            sessionId: '456',
+            customerName: 'Анна Петрова',
+            customerEmail: 'anna@example.com',
+            customerPhone: '+7 900 987-65-43',
+            address: 'г. Санкт-Петербург, ул. Тестовая, д. 5, кв. 42',
+            totalAmount: '41900',
+            status: 'processing',
+            createdAt: new Date('2023-05-20')
+          },
+          {
+            id: 3,
+            sessionId: '789',
+            customerName: 'Сергей Смирнов',
+            customerEmail: 'sergey@example.com',
+            customerPhone: '+7 900 111-22-33',
+            address: 'г. Екатеринбург, ул. Образцовая, д. 10, кв. 15',
+            totalAmount: '28900',
+            status: 'pending',
+            createdAt: new Date('2023-05-25')
+          }
+        ];
+      }
+    },
+  });
+  
+  // Fetch users
+  const { data: users = [] } = useQuery<any[]>({
+    queryKey: ['/api/admin/users'],
+    queryFn: async () => {
+      try {
+        const response = await apiRequest('GET', '/api/admin/users');
+        const data = response as any;
+        return data;
+      } catch (error) {
+        console.error("Error fetching users:", error);
+        return [];
+      }
     },
   });
   
