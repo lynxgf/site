@@ -9,7 +9,6 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-  CardFooter
 } from '@/components/ui/card';
 import {
   Tabs,
@@ -24,13 +23,11 @@ import { Label } from '@/components/ui/label';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { format } from 'date-fns';
-import { DataTable } from '@/components/ui/data-table';
 import { 
   Calendar as CalendarIcon, 
   DownloadCloud, 
   FileJson, 
   FileText, 
-  Filter, 
   Users, 
   Package, 
   ShoppingCart, 
@@ -104,7 +101,6 @@ export default function AdminExport() {
   
   const handleExport = () => {
     console.log('Export начался. Активная вкладка:', activeTab);
-    console.log('Данные для экспорта:', {orders, products, users});
     
     let dataToExport: any[] = [];
     let filename = '';
@@ -323,11 +319,7 @@ export default function AdminExport() {
       });
     };
     
-    if (importFormat === 'csv') {
-      reader.readAsText(file);
-    } else if (importFormat === 'json') {
-      reader.readAsText(file);
-    }
+    reader.readAsText(file);
   };
   
   // Мутация для импорта данных в базу
@@ -435,9 +427,7 @@ export default function AdminExport() {
         });
       };
       
-      if (importFormat === 'csv' || importFormat === 'json') {
-        reader.readAsText(importFile);
-      }
+      reader.readAsText(importFile);
     } catch (error) {
       console.error('Ошибка при импорте:', error);
       toast({
@@ -476,7 +466,7 @@ export default function AdminExport() {
               <div className="grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-6">
                 <div>
                   <div className="space-y-4">
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div>
                         <Label htmlFor="importDataType">Тип данных</Label>
                         <Select 
@@ -537,7 +527,7 @@ export default function AdminExport() {
                     
                     <div>
                       <Label htmlFor="importFile">Выберите файл</Label>
-                      <div className="flex items-center mt-1.5">
+                      <div className="flex items-center mt-1.5 flex-col sm:flex-row space-y-2 sm:space-y-0">
                         <Input 
                           ref={fileInputRef}
                           id="importFile" 
@@ -549,17 +539,17 @@ export default function AdminExport() {
                         <Button 
                           onClick={handleImport} 
                           disabled={!importFile || importMutation.isPending}
-                          className="ml-2 bg-purple-600 hover:bg-purple-700"
+                          className="w-full sm:w-auto sm:ml-2 bg-purple-600 hover:bg-purple-700 text-lg font-medium py-5 px-8"
                         >
                           {importMutation.isPending ? (
                             <>
-                              <div className="h-4 w-4 mr-2 animate-spin rounded-full border-2 border-solid border-white border-r-transparent"></div>
+                              <div className="h-5 w-5 mr-2 animate-spin rounded-full border-2 border-solid border-white border-r-transparent"></div>
                               Импорт...
                             </>
                           ) : (
                             <>
-                              <Upload className="mr-2 h-4 w-4" />
-                              Импортировать
+                              <Upload className="mr-2 h-5 w-5" />
+                              ИМПОРТИРОВАТЬ
                             </>
                           )}
                         </Button>
@@ -585,7 +575,7 @@ export default function AdminExport() {
                                 <tr key={index}>
                                   {Object.values(item).map((value: any, i) => (
                                     <td key={i} className="px-3 py-2 whitespace-nowrap text-sm text-gray-900">
-                                      {typeof value === 'object' ? JSON.stringify(value) : value}
+                                      {typeof value === 'object' ? JSON.stringify(value) : String(value)}
                                     </td>
                                   ))}
                                 </tr>
@@ -672,130 +662,136 @@ export default function AdminExport() {
                           <p className="ml-3">Загрузка данных...</p>
                         </div>
                       ) : (
-                        <div>
-                          <TabsContent value="orders" className="m-0">
-                            {Array.isArray(orders) && orders.length > 0 ? (
-                              <div className="overflow-auto max-h-[400px]">
-                                <table className="min-w-full divide-y divide-gray-200">
-                                  <thead className="bg-gray-100">
-                                    <tr>
-                                      <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
-                                      <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Клиент</th>
-                                      <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Дата</th>
-                                      <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Сумма</th>
-                                      <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Статус</th>
-                                    </tr>
-                                  </thead>
-                                  <tbody className="bg-white divide-y divide-gray-200">
-                                    {orders.slice(0, 10).map((order: any) => (
-                                      <tr key={order.id}>
-                                        <td className="px-3 py-2 whitespace-nowrap text-sm text-gray-900">#{order.id}</td>
-                                        <td className="px-3 py-2 whitespace-nowrap text-sm text-gray-900">{order.customerName}</td>
-                                        <td className="px-3 py-2 whitespace-nowrap text-sm text-gray-900">
-                                          {new Date(order.createdAt).toLocaleDateString()}
-                                        </td>
-                                        <td className="px-3 py-2 whitespace-nowrap text-sm text-gray-900">
-                                          {typeof order.totalAmount === 'string' 
-                                            ? formatPrice(parseFloat(order.totalAmount))
-                                            : formatPrice(order.totalAmount)}
-                                        </td>
-                                        <td className="px-3 py-2 whitespace-nowrap text-sm">
-                                          <span className={`px-2 py-1 text-xs rounded-full ${
-                                            order.status === 'completed' ? 'bg-green-100 text-green-800' :
-                                            order.status === 'processing' ? 'bg-blue-100 text-blue-800' :
-                                            order.status === 'cancelled' ? 'bg-red-100 text-red-800' :
-                                            'bg-yellow-100 text-yellow-800'
-                                          }`}>
-                                            {order.status === 'completed' && 'Завершен'}
-                                            {order.status === 'processing' && 'В обработке'}
-                                            {order.status === 'cancelled' && 'Отменен'}
-                                            {order.status === 'pending' && 'Ожидает'}
-                                          </span>
-                                        </td>
+                        <>
+                          {activeTab === 'orders' && (
+                            <>
+                              {Array.isArray(orders) && orders.length > 0 ? (
+                                <div className="overflow-auto max-h-[400px]">
+                                  <table className="min-w-full divide-y divide-gray-200">
+                                    <thead className="bg-gray-100">
+                                      <tr>
+                                        <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
+                                        <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Клиент</th>
+                                        <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Дата</th>
+                                        <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Сумма</th>
+                                        <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Статус</th>
                                       </tr>
-                                    ))}
-                                  </tbody>
-                                </table>
-                              </div>
-                            ) : (
-                              <div className="text-center py-10">
-                                <p className="text-gray-500">Нет данных для отображения</p>
-                              </div>
-                            )}
-                          </TabsContent>
+                                    </thead>
+                                    <tbody className="bg-white divide-y divide-gray-200">
+                                      {orders.slice(0, 10).map((order: any) => (
+                                        <tr key={order.id}>
+                                          <td className="px-3 py-2 whitespace-nowrap text-sm text-gray-900">#{order.id}</td>
+                                          <td className="px-3 py-2 whitespace-nowrap text-sm text-gray-900">{order.customerName}</td>
+                                          <td className="px-3 py-2 whitespace-nowrap text-sm text-gray-900">
+                                            {new Date(order.createdAt).toLocaleDateString()}
+                                          </td>
+                                          <td className="px-3 py-2 whitespace-nowrap text-sm text-gray-900">
+                                            {typeof order.totalAmount === 'string' 
+                                              ? formatPrice(parseFloat(order.totalAmount))
+                                              : formatPrice(order.totalAmount)}
+                                          </td>
+                                          <td className="px-3 py-2 whitespace-nowrap text-sm">
+                                            <span className={`px-2 py-1 text-xs rounded-full ${
+                                              order.status === 'completed' ? 'bg-green-100 text-green-800' :
+                                              order.status === 'processing' ? 'bg-blue-100 text-blue-800' :
+                                              order.status === 'cancelled' ? 'bg-red-100 text-red-800' :
+                                              'bg-yellow-100 text-yellow-800'
+                                            }`}>
+                                              {order.status === 'completed' && 'Завершен'}
+                                              {order.status === 'processing' && 'В обработке'}
+                                              {order.status === 'cancelled' && 'Отменен'}
+                                              {order.status === 'pending' && 'Ожидает'}
+                                            </span>
+                                          </td>
+                                        </tr>
+                                      ))}
+                                    </tbody>
+                                  </table>
+                                </div>
+                              ) : (
+                                <div className="text-center py-10">
+                                  <p className="text-gray-500">Нет данных для отображения</p>
+                                </div>
+                              )}
+                            </>
+                          )}
                           
-                          <TabsContent value="products" className="m-0">
-                            {Array.isArray(products) && products.length > 0 ? (
-                              <div className="overflow-auto max-h-[400px]">
-                                <table className="min-w-full divide-y divide-gray-200">
-                                  <thead className="bg-gray-100">
-                                    <tr>
-                                      <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
-                                      <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Название</th>
-                                      <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Категория</th>
-                                      <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Цена</th>
-                                    </tr>
-                                  </thead>
-                                  <tbody className="bg-white divide-y divide-gray-200">
-                                    {products.slice(0, 10).map((product: any) => (
-                                      <tr key={product.id}>
-                                        <td className="px-3 py-2 whitespace-nowrap text-sm text-gray-900">#{product.id}</td>
-                                        <td className="px-3 py-2 whitespace-nowrap text-sm text-gray-900">{product.name}</td>
-                                        <td className="px-3 py-2 whitespace-nowrap text-sm text-gray-900">{product.category}</td>
-                                        <td className="px-3 py-2 whitespace-nowrap text-sm text-gray-900">
-                                          {typeof product.basePrice === 'string' 
-                                            ? formatPrice(parseFloat(product.basePrice))
-                                            : formatPrice(product.basePrice)}
-                                        </td>
+                          {activeTab === 'products' && (
+                            <>
+                              {Array.isArray(products) && products.length > 0 ? (
+                                <div className="overflow-auto max-h-[400px]">
+                                  <table className="min-w-full divide-y divide-gray-200">
+                                    <thead className="bg-gray-100">
+                                      <tr>
+                                        <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
+                                        <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Название</th>
+                                        <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Категория</th>
+                                        <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Цена</th>
                                       </tr>
-                                    ))}
-                                  </tbody>
-                                </table>
-                              </div>
-                            ) : (
-                              <div className="text-center py-10">
-                                <p className="text-gray-500">Нет данных для отображения</p>
-                              </div>
-                            )}
-                          </TabsContent>
+                                    </thead>
+                                    <tbody className="bg-white divide-y divide-gray-200">
+                                      {products.slice(0, 10).map((product: any) => (
+                                        <tr key={product.id}>
+                                          <td className="px-3 py-2 whitespace-nowrap text-sm text-gray-900">#{product.id}</td>
+                                          <td className="px-3 py-2 whitespace-nowrap text-sm text-gray-900">{product.name}</td>
+                                          <td className="px-3 py-2 whitespace-nowrap text-sm text-gray-900">{product.category}</td>
+                                          <td className="px-3 py-2 whitespace-nowrap text-sm text-gray-900">
+                                            {typeof product.basePrice === 'string' 
+                                              ? formatPrice(parseFloat(product.basePrice))
+                                              : formatPrice(product.basePrice)}
+                                          </td>
+                                        </tr>
+                                      ))}
+                                    </tbody>
+                                  </table>
+                                </div>
+                              ) : (
+                                <div className="text-center py-10">
+                                  <p className="text-gray-500">Нет данных для отображения</p>
+                                </div>
+                              )}
+                            </>
+                          )}
                           
-                          <TabsContent value="users" className="m-0">
-                            {Array.isArray(users) && users.length > 0 ? (
-                              <div className="overflow-auto max-h-[400px]">
-                                <table className="min-w-full divide-y divide-gray-200">
-                                  <thead className="bg-gray-100">
-                                    <tr>
-                                      <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
-                                      <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Имя пользователя</th>
-                                      <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
-                                      <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Роль</th>
-                                    </tr>
-                                  </thead>
-                                  <tbody className="bg-white divide-y divide-gray-200">
-                                    {users.slice(0, 10).map((user: any) => (
-                                      <tr key={user.id}>
-                                        <td className="px-3 py-2 whitespace-nowrap text-sm text-gray-900">#{user.id}</td>
-                                        <td className="px-3 py-2 whitespace-nowrap text-sm text-gray-900">{user.username}</td>
-                                        <td className="px-3 py-2 whitespace-nowrap text-sm text-gray-900">{user.email}</td>
-                                        <td className="px-3 py-2 whitespace-nowrap text-sm">
-                                          <span className={`px-2 py-1 text-xs rounded-full ${
-                                            user.isAdmin ? 'bg-purple-100 text-purple-800' : 'bg-blue-100 text-blue-800'
-                                          }`}>
-                                            {user.isAdmin ? 'Администратор' : 'Пользователь'}
-                                          </span>
-                                        </td>
+                          {activeTab === 'users' && (
+                            <>
+                              {Array.isArray(users) && users.length > 0 ? (
+                                <div className="overflow-auto max-h-[400px]">
+                                  <table className="min-w-full divide-y divide-gray-200">
+                                    <thead className="bg-gray-100">
+                                      <tr>
+                                        <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
+                                        <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Имя пользователя</th>
+                                        <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+                                        <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Роль</th>
                                       </tr>
-                                    ))}
-                                  </tbody>
-                                </table>
-                              </div>
-                            ) : (
-                              <div className="text-center py-10">
-                                <p className="text-gray-500">Нет данных для отображения</p>
-                              </div>
-                            )}
-                          </TabsContent>
-                        </div>
+                                    </thead>
+                                    <tbody className="bg-white divide-y divide-gray-200">
+                                      {users.slice(0, 10).map((user: any) => (
+                                        <tr key={user.id}>
+                                          <td className="px-3 py-2 whitespace-nowrap text-sm text-gray-900">#{user.id}</td>
+                                          <td className="px-3 py-2 whitespace-nowrap text-sm text-gray-900">{user.username}</td>
+                                          <td className="px-3 py-2 whitespace-nowrap text-sm text-gray-900">{user.email}</td>
+                                          <td className="px-3 py-2 whitespace-nowrap text-sm">
+                                            <span className={`px-2 py-1 text-xs rounded-full ${
+                                              user.isAdmin ? 'bg-purple-100 text-purple-800' : 'bg-blue-100 text-blue-800'
+                                            }`}>
+                                              {user.isAdmin ? 'Администратор' : 'Пользователь'}
+                                            </span>
+                                          </td>
+                                        </tr>
+                                      ))}
+                                    </tbody>
+                                  </table>
+                                </div>
+                              ) : (
+                                <div className="text-center py-10">
+                                  <p className="text-gray-500">Нет данных для отображения</p>
+                                </div>
+                              )}
+                            </>
+                          )}
+                        </>
                       )}
                     </div>
                   </Tabs>
@@ -863,10 +859,10 @@ export default function AdminExport() {
                       </div>
                       <Button 
                         onClick={handleExport} 
-                        className="mt-auto w-full md:w-auto bg-blue-600 hover:bg-blue-700"
+                        className="mt-auto w-full md:w-auto bg-blue-600 hover:bg-blue-700 text-lg py-5 px-8"
                       >
-                        <DownloadCloud className="mr-2 h-4 w-4" />
-                        Экспортировать
+                        <DownloadCloud className="mr-2 h-5 w-5" />
+                        ЭКСПОРТИРОВАТЬ
                       </Button>
                     </div>
                   </div>
