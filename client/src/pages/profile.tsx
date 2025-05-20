@@ -153,13 +153,13 @@ export default function ProfilePage() {
   };
 
   // Получаем данные о заказах
-  const { data: orders = [] } = useQuery({
+  const { data: orders = [] as any[] } = useQuery<any[]>({
     queryKey: ["/api/orders"],
     enabled: activeTab === "orders", // Загружаем только когда нужно
   });
   
   // Получаем избранное
-  const { data: favorites = [] } = useQuery({
+  const { data: favorites = [] as any[] } = useQuery<any[]>({
     queryKey: ["/api/favorites"],
     enabled: activeTab === "favorites", // Загружаем только когда нужно
   });
@@ -561,9 +561,9 @@ export default function ProfilePage() {
                 </CardHeader>
                 
                 <CardContent>
-                  {orders.length > 0 ? (
+                  {Array.isArray(orders) && orders.length > 0 ? (
                     <div className="space-y-4">
-                      {orders.map((order: any) => (
+                      {orders.map((order) => (
                         <div key={order.id} className="border border-gray-200 rounded-md p-4">
                           <div className="flex flex-col md:flex-row justify-between mb-4">
                             <div>
@@ -628,9 +628,9 @@ export default function ProfilePage() {
                 </CardHeader>
                 
                 <CardContent>
-                  {favorites.length > 0 ? (
+                  {Array.isArray(favorites) && favorites.length > 0 ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {favorites.map((product: any) => (
+                      {favorites.map((product) => (
                         <div key={product.id} className="border border-gray-200 rounded-md overflow-hidden">
                           <div className="aspect-square bg-gray-100">
                             {product.images && product.images[0] && (
