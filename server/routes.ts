@@ -351,7 +351,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Cart routes
   app.get("/api/cart", async (req, res) => {
-    const sessionId = req.session.sessionId;
+    const sessionId = req.session.sessionId || "";
     const cartItems = await storage.getCartItems(sessionId);
     
     // Get complete product information for each cart item
@@ -364,6 +364,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
         };
       })
     );
+    
+    // Сохраняем продукты в сессии для использования при создании заказа
+    req.session.cartProducts = enrichedCartItems.map(item => {
+      return {
+        id: item.productId,
+        name: item.product?.name || "Неизвестный товар",
+        price: item.price
+      };
+    });
     
     res.json(enrichedCartItems);
   });
@@ -479,14 +488,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
   
   app.delete("/api/cart", async (req, res) => {
-    const sessionId = req.session.sessionId;
+    const sessionId = req.session.sessionId || "";
     await storage.clearCart(sessionId);
     res.json({ message: "Cart cleared successfully" });
   });
 
   // Order routes
   app.post("/api/orders", async (req, res) => {
-    const sessionId = req.session.sessionId;
+    const sessionId = req.session.sessionId || "";
+    
+    if (!sessionId) {
+      return res.status(400).json({ message: "Invalid session ID" });
+    }
     
     try {
       // Validate order data
@@ -501,7 +514,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           selectedFabric: z.string(),
           fabricName: z.string(),
           hasLiftingMechanism: z.boolean().default(false),
-          price: z.number()
+          price: z.union([z.number(), z.string()]) // Поддержка как числового, так и строкового формата цены
         }))
       });
       
@@ -518,11 +531,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       // Create order items
-      const orderItems = orderData.items.map(item => ({
-        orderId: 0, // Will be set after order creation
-        ...item,
-        price: item.price.toString()
-      }));
+      const orderItems = orderData.items.map(item => {
+        // Получаем информацию о продукте для добавления названия продукта
+        const productInfo = req.session.cartProducts?.find(p => p.id === item.productId);
+        
+        return {
+          orderId: 0, // Will be set after order creation
+          ...item,
+          // Необходимые поля для соответствия схеме
+          productName: productInfo?.name || "Неизвестный товар",
+          // Убедимся, что цена всегда преобразуется в строку правильно
+          price: typeof item.price === 'number' ? item.price.toString() : item.price
+        };
+      });
       
       // Create order
       const order = await storage.createOrder(
