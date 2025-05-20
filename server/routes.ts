@@ -504,12 +504,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       // Validate order data
       const orderSchema = insertOrderSchema.extend({
+        customerName: z.string(),
+        customerEmail: z.string().email(),
+        customerPhone: z.string(), 
+        address: z.string(),
+        deliveryMethod: z.enum(['courier', 'pickup']),
+        paymentMethod: z.enum(['card', 'cash']),
+        comment: z.string().optional(),
+        totalAmount: z.union([z.number(), z.string()]),
         items: z.array(z.object({
           productId: z.number(),
           quantity: z.number(),
           selectedSize: z.string(),
-          customWidth: z.number().optional(),
-          customLength: z.number().optional(),
+          customWidth: z.number().nullable().optional(),
+          customLength: z.number().nullable().optional(),
           selectedFabricCategory: z.string(),
           selectedFabric: z.string(),
           fabricName: z.string(),
