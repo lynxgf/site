@@ -18,6 +18,8 @@ import Search from "@/pages/search";
 import Login from "@/pages/login";
 import Register from "@/pages/register";
 import Profile from "@/pages/profile";
+import About from "@/pages/about";
+import Contacts from "@/pages/contacts";
 import AdminLogin from "@/pages/admin/login";
 import AdminDashboard from "@/pages/admin/dashboard";
 import AdminProducts from "@/pages/admin/products";
@@ -68,6 +70,10 @@ function Router() {
       <Route path="/search" component={Search} />
       <Route path="/cart" component={Cart} />
       <Route path="/checkout" component={Checkout} />
+      
+      {/* Информационные страницы */}
+      <Route path="/about" component={About} />
+      <Route path="/contacts" component={Contacts} />
       
       {/* User authentication routes */}
       <Route path="/login" component={Login} />
