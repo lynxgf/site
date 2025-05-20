@@ -180,35 +180,38 @@ export default function ProfilePage() {
   return (
     <div className="bg-gray-50 min-h-screen">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
-        {/* Профиль хедер - новая версия по скриншоту */}
+        {/* Профиль хедер - точно как на последнем скриншоте */}
         <div className="rounded-lg shadow-sm mb-8 overflow-hidden">
-          {/* Хедер - полностью фиолетовый фон */}
-          <div className="bg-[#8B2A82] h-28 relative">
-            {/* Данные пользователя */}
-            <div className="absolute left-32 top-1/2 transform -translate-y-1/2">
-              <h1 className="text-xl font-bold text-white">
-                {user?.firstName && user?.lastName 
-                  ? `${user.firstName} ${user.lastName}` 
-                  : user?.username}
-              </h1>
-              <p className="text-white/80 text-sm">{user?.email}</p>
+          <div className="bg-[#8B2A82] py-6 relative">
+            {/* Имя пользователя и email - слева от аватара с отступами */}
+            <div className="flex items-center pl-32">
+              <div className="text-white">
+                <h1 className="text-lg font-medium">
+                  {user?.firstName && user?.lastName 
+                    ? `${user.firstName} ${user.lastName}` 
+                    : user?.username}
+                </h1>
+                <p className="text-white/80 text-sm mt-1">
+                  {user?.email}
+                </p>
+              </div>
             </div>
             
-            {/* Аватар - теперь слева и немного внизу */}
-            <div className="absolute bottom-0 left-8 transform translate-y-1/2">
-              <div className="rounded-full w-20 h-20 bg-[#8B2A82] text-white flex items-center justify-center text-4xl border-4 border-white shadow-sm">
+            {/* Аватар - слева с отступом */}
+            <div className="absolute left-8 top-1/2 transform -translate-y-1/2">
+              <div className="rounded-full w-16 h-16 bg-[#8B2A82] text-white flex items-center justify-center text-3xl border-2 border-white shadow-sm">
                 <span className="font-medium">
                   {user?.firstName ? user.firstName.charAt(0).toUpperCase() : 
-                   user?.username ? user.username.charAt(0).toUpperCase() : 'Д'}
+                   user?.username ? user.username.charAt(0).toUpperCase() : 'A'}
                 </span>
               </div>
             </div>
             
-            {/* Кнопка выхода - в правом верхнем углу с полупрозрачным фоном */}
-            <div className="absolute top-4 right-4">
+            {/* Кнопка выхода - в правом верхнем углу */}
+            <div className="absolute top-1/2 right-8 transform -translate-y-1/2">
               <Button 
-                variant="outline" 
-                className="bg-[#8B2A82] border-0 text-white hover:bg-[#9c3994] rounded-sm text-sm"
+                variant="ghost" 
+                className="text-white hover:bg-[#9c3994] hover:text-white px-3 py-1 h-8 text-sm"
                 onClick={handleLogout}
               >
                 <LogOut className="h-4 w-4 mr-2" />

@@ -238,7 +238,7 @@ export default function Header() {
                       </Link>
                       
                       {isAdmin && (
-                        <Link to="/admin" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-[#8e2b85]">
+                        <Link to="/admin/dashboard" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-[#8e2b85]">
                           <div className="flex items-center">
                             <Settings className="w-4 h-4 mr-2" />
                             <span>Панель администратора</span>
