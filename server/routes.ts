@@ -560,15 +560,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
         
         console.log("Товары в корзине:", cartItems);
         
-        // Используем товары из корзины, а не из req.body.items
-        // Получаем данные о продуктах
-        const productPromises = cartItems.map(item => 
+        // Используем товары из тела запроса, а не из корзины
+        if (!orderData.items || orderData.items.length === 0) {
+          return res.status(400).json({ message: "В заказе отсутствуют товары" });
+        }
+        
+        console.log("Товары из запроса:", orderData.items);
+        
+        // Получаем данные о продуктах из товаров запроса
+        const productPromises = orderData.items.map(item => 
           storage.getProductById(item.productId)
         );
         const products = await Promise.all(productPromises);
         
-        // Подготавливаем позиции заказа из товаров корзины
-        const orderItems = cartItems.map((item, index) => {
+        // Подготавливаем позиции заказа из товаров запроса
+        const orderItems = orderData.items.map((item, index) => {
           const productInfo = products[index];
           
           return {
@@ -581,7 +587,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
             selected_fabric_category: item.selectedFabricCategory,
             selected_fabric: item.selectedFabric,
             product_name: productInfo?.name || "Неизвестный товар",
-            fabric_name: item.selectedFabric || "стандартная",
+            fabric_name: item.fabricName || item.selectedFabric || "стандартная",
             has_lifting_mechanism: !!item.hasLiftingMechanism,
             price: item.price
           };
