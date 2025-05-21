@@ -120,11 +120,7 @@ export class DatabaseStorage implements IStorage {
     
     // Handle the hasLiftingMechanism field differently because it can be null
     if (hasLiftingMechanism !== undefined) {
-      if (hasLiftingMechanism === null) {
-        conditions.push(eq(cartItems.hasLiftingMechanism, null));
-      } else {
-        conditions.push(eq(cartItems.hasLiftingMechanism, Boolean(hasLiftingMechanism)));
-      }
+      conditions.push(eq(cartItems.hasLiftingMechanism, hasLiftingMechanism === null ? null : Boolean(hasLiftingMechanism)));
     }
     
     const [item] = await db.select().from(cartItems).where(and(...conditions));
@@ -160,7 +156,7 @@ export class DatabaseStorage implements IStorage {
   }
   
   // Order methods
-  async createOrder(order: InsertOrder, items: InsertOrderItem[]): Promise<Order> {
+  async createOrder(order: any, items: any[]): Promise<Order> {
     // Логируем данные для отладки
     console.log("DATABASE_STORAGE: Данные заказа для сохранения:", JSON.stringify(order, null, 2));
     
@@ -179,7 +175,7 @@ export class DatabaseStorage implements IStorage {
         if (items.length > 0) {
           const orderItemsWithOrderId = items.map(item => ({
             ...item,
-            orderId: newOrder.id
+            order_id: newOrder.id // Используем snake_case для соответствия с БД
           }));
           
           await tx.insert(orderItems).values(orderItemsWithOrderId);

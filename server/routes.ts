@@ -549,17 +549,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
       );
       const products = await Promise.all(productPromises);
       
-      // Create order items
+      // Create order items - используем snake_case для соответствия колонкам БД
       const orderItems = orderData.items.map((item, index) => {
         // Получаем информацию о продукте
         const productInfo = products[index];
         
         return {
-          orderId: 0, // Will be set after order creation
-          ...item,
+          order_id: 0, // Will be set after order creation
+          product_id: item.productId,
+          quantity: item.quantity,
+          selected_size: item.selectedSize,
+          custom_width: item.customWidth || null,
+          custom_length: item.customLength || null,
+          selected_fabric_category: item.selectedFabricCategory,
+          selected_fabric: item.selectedFabric,
           // Необходимые поля для соответствия схеме
-          productName: productInfo?.name || "Неизвестный товар",
-          fabricName: item.fabricName || item.selectedFabric || "",
+          product_name: productInfo?.name || "Неизвестный товар",
+          fabric_name: item.fabricName || item.selectedFabric || "",
+          has_lifting_mechanism: !!item.hasLiftingMechanism,
           // Убедимся, что цена всегда преобразуется в строку правильно
           price: typeof item.price === 'number' ? item.price.toString() : item.price
         };
