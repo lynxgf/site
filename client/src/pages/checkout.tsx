@@ -43,12 +43,12 @@ export default function CheckoutPage() {
   const [orderComplete, setOrderComplete] = useState(false);
   const [orderId, setOrderId] = useState<number | null>(null);
   
-  // Важно: Если корзина пуста и заказ завершен, не нужно делать запрос на получение корзины
+  // Получаем корзину только если заказ не завершен
   useEffect(() => {
-    if (!orderComplete && !isCartLoading && cartItems.length === 0) {
+    if (!orderComplete) {
       fetchCart();
     }
-  }, [orderComplete, isCartLoading, cartItems.length, fetchCart]);
+  }, [orderComplete, fetchCart]);
   
   // Calculate totals
   const subtotal = cartItems.reduce((sum, item) => sum + (Number(item.price) * item.quantity), 0);
@@ -81,10 +81,14 @@ export default function CheckoutPage() {
     fetchCart();
   }, [fetchCart]);
   
-  // Redirect to cart if empty (но только если заказ не завершен)
+  // Этот эффект отвечает за перенаправление из оформления заказа обратно в корзину
+  // при отсутствии товаров (но только если заказ еще не был оформлен успешно)
   useEffect(() => {
+    // Перенаправляем только если:
+    // 1. Корзина уже загружена (не в процессе загрузки)
+    // 2. Корзина пуста (нет товаров для заказа)
+    // 3. Заказ НЕ был только что завершен (это очень важно!)
     if (!isCartLoading && cartItems.length === 0 && !orderComplete) {
-      // Перенаправляем на корзину только если нет товаров и заказ не был завершен
       navigate('/cart');
     }
   }, [cartItems, isCartLoading, navigate, orderComplete]);
