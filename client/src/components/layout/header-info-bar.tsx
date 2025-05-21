@@ -5,7 +5,7 @@ export default function HeaderInfoBar() {
   const { settings, fetchSettings } = useSettingsStore();
   const [isLoading, setIsLoading] = useState(true);
   
-  // Важно: добавляем периодический опрос API для обновления настроек в хедере
+  // Загружаем настройки при монтировании и периодически их обновляем
   useEffect(() => {
     async function loadSettings() {
       await fetchSettings();
@@ -15,10 +15,10 @@ export default function HeaderInfoBar() {
     // Загружаем настройки сразу
     loadSettings();
     
-    // Создаем интервал для периодического обновления (каждые 3 секунды)
+    // Создаем интервал для периодического обновления с увеличенным интервалом
     const intervalId = setInterval(() => {
       fetchSettings();
-    }, 3000);
+    }, 5000); // Увеличено до 5 секунд
     
     // Очищаем интервал при размонтировании компонента
     return () => clearInterval(intervalId);
