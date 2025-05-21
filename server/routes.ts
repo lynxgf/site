@@ -501,160 +501,156 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Order routes
   app.post("/api/orders", async (req, res) => {
     try {
-      // Для отладки выведем все данные тела запроса
-      console.log("ПОЛНОЕ ТЕЛО ЗАПРОСА:", req.body);
+      console.log("================== НАЧАЛО СОЗДАНИЯ ЗАКАЗА ==================");
+      console.log("ПОЛНОЕ ТЕЛО ЗАПРОСА:", JSON.stringify(req.body, null, 2));
       
-      // Приоритетно используем sessionId из тела запроса, если он есть
-      // В противном случае используем sessionId из сессии
-      const sessionIdFromBody = req.body.sessionId;
+      // Получаем session ID с приоритетом тела запроса, затем сессии
+      const sessionIdFromBody = req.body.sessionId || "";
       const sessionIdFromSession = req.session.sessionId || "";
+      const sessionId = sessionIdFromBody || sessionIdFromSession || "generated-" + Date.now();
       
-      // Если ни один из источников не предоставил sessionId,
-      // то создаем временный для отладки (только для тестирования)
-      const sessionId = sessionIdFromBody || sessionIdFromSession || "fallback-session-id";
+      console.log("Используемый ID сессии:", sessionId);
       
-      console.log("Session ID from body:", sessionIdFromBody);
-      console.log("Session ID from session:", sessionIdFromSession);
-      console.log("Using session ID:", sessionId);
+      // 1. Проверка и сбор данных товаров заказа
+      let orderItems = [];
       
-      console.log("Данные заказа:", JSON.stringify(req.body, null, 2));
-      
-      try {
-        // Validate order data
-        const orderSchema = z.object({
-          customerName: z.string(),
-          customerEmail: z.string().email(),
-          customerPhone: z.string(), 
-          address: z.string().optional().default(""),
-          deliveryMethod: z.enum(['courier', 'pickup']),
-          deliveryMethodText: z.string().optional(),
-          deliveryPrice: z.union([z.number(), z.string()]).optional(),
-          paymentMethod: z.enum(['card', 'cash']),
-          paymentMethodText: z.string().optional(),
-          comment: z.string().optional().nullable(),
-          totalAmount: z.union([z.number(), z.string()]),
-          items: z.array(z.object({
-            productId: z.number(),
-            quantity: z.number(),
-            selectedSize: z.string(),
-            customWidth: z.number().nullable().optional(),
-            customLength: z.number().nullable().optional(),
-            selectedFabricCategory: z.string(),
-            selectedFabric: z.string(),
-            fabricName: z.string().optional().default(""),
-            hasLiftingMechanism: z.boolean().default(false),
-            price: z.union([z.number(), z.string()])
-          }))
-        });
+      // Сначала проверяем товары в запросе
+      if (req.body.items && Array.isArray(req.body.items) && req.body.items.length > 0) {
+        console.log("✅ Найдены товары в запросе:", req.body.items.length);
+        orderItems = req.body.items;
+      } else {
+        // Если в запросе нет товаров, берем из корзины
+        console.log("❌ В запросе нет товаров, проверяем корзину...");
+        const cartItems = await storage.getCartItems(sessionId);
         
-        // Парсим и валидируем данные, но НЕ добавляем sessionId,
-        // так как будем использовать уже определенный выше
-        const orderData = orderSchema.parse(req.body);
-        
-        // Сначала проверяем наличие товаров в запросе
-        if (!orderData.items || orderData.items.length === 0) {
-          // Если в запросе нет товаров, проверяем товары в корзине
-          const cartItems = await storage.getCartItems(sessionId);
-          
-          if (cartItems.length === 0) {
-            return res.status(400).json({ message: "Корзина пуста и в запросе нет товаров" });
-          }
-          
-          console.log("В запросе нет товаров, используем товары из корзины:", cartItems);
-          
-          // Преобразуем товары из корзины в формат для заказа
-          orderData.items = cartItems.map(item => ({
-            productId: item.productId,
-            quantity: item.quantity,
-            selectedSize: item.selectedSize,
-            customWidth: item.customWidth,
-            customLength: item.customLength,
-            selectedFabricCategory: item.selectedFabricCategory,
-            selectedFabric: item.selectedFabric,
-            fabricName: item.selectedFabric, // Используем ID ткани как имя
-            hasLiftingMechanism: !!item.hasLiftingMechanism,
-            price: item.price
-          }));
+        if (!cartItems || cartItems.length === 0) {
+          console.error("❌ Корзина пуста, заказ невозможен");
+          return res.status(400).json({ message: "В корзине нет товаров. Добавьте товары в корзину перед оформлением заказа." });
         }
         
-        console.log("Итоговые товары для заказа:", orderData.items);
-        
-        // Удаляем дублирующееся логирование
-        console.log("Подготавливаем товары для заказа из:", orderData.items);
-        
-        // Получаем данные о продуктах из товаров запроса
-        const productPromises = orderData.items.map(item => 
-          storage.getProductById(item.productId)
-        );
-        const products = await Promise.all(productPromises);
-        
-        // Подготавливаем позиции заказа из товаров запроса
-        const orderItems = orderData.items.map((item, index) => {
-          const productInfo = products[index];
-          
-          return {
-            order_id: 0, // Будет установлено после создания заказа
-            product_id: item.productId,
-            quantity: item.quantity,
-            selected_size: item.selectedSize,
-            custom_width: item.customWidth || null,
-            custom_length: item.customLength || null,
-            selected_fabric_category: item.selectedFabricCategory,
-            selected_fabric: item.selectedFabric,
-            product_name: productInfo?.name || "Неизвестный товар",
-            fabric_name: item.fabricName || item.selectedFabric || "стандартная",
-            has_lifting_mechanism: !!item.hasLiftingMechanism,
-            price: item.price
-          };
-        });
-        
-        // Проверяем sessionId еще раз перед созданием заказа и устанавливаем запасной вариант
-        let finalSessionId = sessionId;
-        if (!finalSessionId || finalSessionId === 'null' || finalSessionId === 'undefined') {
-          console.log("ОШИБКА: Перед созданием заказа идентификатор сессии отсутствует или недействителен.");
-          console.log("Создаем резервный идентификатор сессии на основе текущего времени.");
-          finalSessionId = 'fallback-session-' + Date.now();
-        }
-        
-        // Подготавливаем данные заказа
-        const orderToCreate = {
-          session_id: finalSessionId, // Используем проверенный идентификатор
-          customer_name: orderData.customerName,
-          customer_email: orderData.customerEmail,
-          customer_phone: orderData.customerPhone,
-          address: orderData.address || '',
-          delivery_method: orderData.deliveryMethod,
-          delivery_method_text: orderData.deliveryMethodText || (orderData.deliveryMethod === 'courier' ? 'Курьером' : 'Самовывоз'),
-          delivery_price: orderData.deliveryPrice?.toString() || (orderData.deliveryMethod === 'courier' ? '500' : '0'),
-          payment_method: orderData.paymentMethod,
-          payment_method_text: orderData.paymentMethodText || (orderData.paymentMethod === 'card' ? 'Банковской картой' : 'Наличными'),
-          comment: orderData.comment || null,
-          total_amount: String(orderData.totalAmount),
-          status: "pending"
-        };
-        
-        console.log("Создаем заказ с данными:", orderToCreate);
-        
-        // Создаем заказ
-        const order = await storage.createOrder(orderToCreate, orderItems);
-        
-        // Очищаем корзину после успешного оформления заказа
-        await storage.clearCart(sessionId);
-        
-        res.status(201).json({ 
-          order,
-          message: "Order placed successfully" 
-        });
-      } catch (validationError) {
-        console.error("Ошибка валидации:", validationError);
-        return res.status(400).json({ 
-          message: "Invalid order data", 
-          error: validationError 
-        });
+        console.log("✅ Найдены товары в корзине:", cartItems.length);
+        orderItems = cartItems.map(item => ({
+          productId: item.productId,
+          quantity: item.quantity || 1,
+          selectedSize: item.selectedSize || "standard",
+          customWidth: item.customWidth || null, 
+          customLength: item.customLength || null,
+          selectedFabricCategory: item.selectedFabricCategory || "standard",
+          selectedFabric: item.selectedFabric || "standard",
+          fabricName: item.selectedFabric || "Стандартная",
+          hasLiftingMechanism: !!item.hasLiftingMechanism,
+          price: item.price || "0"
+        }));
       }
+      
+      console.log("ТОВАРЫ ДЛЯ ЗАКАЗА:", JSON.stringify(orderItems, null, 2));
+      
+      // 2. Проверка корректности данных о клиенте и доставке
+      if (!req.body.customerName || !req.body.customerEmail || !req.body.customerPhone) {
+        console.error("❌ Отсутствуют данные клиента");
+        return res.status(400).json({ message: "Необходимо указать имя, email и телефон клиента" });
+      }
+      
+      // 3. Проверка суммы заказа
+      if (!req.body.totalAmount) {
+        console.error("❌ Отсутствует сумма заказа");
+        return res.status(400).json({ message: "Необходимо указать сумму заказа" });
+      }
+      
+      // 4. Подготовка окончательных товаров заказа с информацией о продуктах
+      // Получаем информацию о каждом товаре из БД
+      let productsInfo = [];
+      try {
+        const productPromises = orderItems.map(item => 
+          storage.getProductById(item.productId).catch(() => null)
+        );
+        productsInfo = await Promise.all(productPromises);
+        console.log("✅ Получена информация о товарах");
+      } catch (error) {
+        console.error("❌ Ошибка при получении информации о товарах:", error);
+        // Продолжаем выполнение, даже если не удалось получить информацию о всех товарах
+      }
+      
+      // Подготавливаем позиции заказа для БД
+      const dbOrderItems = orderItems.map((item, index) => {
+        const productInfo = productsInfo[index];
+        return {
+          order_id: 0, // Будет заполнено после создания заказа
+          product_id: item.productId,
+          product_name: productInfo ? productInfo.name : "Товар " + item.productId,
+          quantity: item.quantity || 1,
+          selected_size: item.selectedSize || "standard",
+          custom_width: item.customWidth || null,
+          custom_length: item.customLength || null,
+          selected_fabric_category: item.selectedFabricCategory || "standard",
+          selected_fabric: item.selectedFabric || "standard",
+          fabric_name: item.fabricName || item.selectedFabric || "Стандартная",
+          has_lifting_mechanism: !!item.hasLiftingMechanism,
+          price: item.price || "0"
+        };
+      });
+      
+      // 5. Формирование объекта заказа для БД
+      const totalAmount = typeof req.body.totalAmount === 'number' 
+        ? req.body.totalAmount.toString() 
+        : (req.body.totalAmount || "0");
+      
+      const orderToCreate = {
+        session_id: sessionId,
+        customer_name: req.body.customerName,
+        customer_email: req.body.customerEmail,
+        customer_phone: req.body.customerPhone,
+        address: req.body.address || '',
+        delivery_method: req.body.deliveryMethod || 'pickup',
+        delivery_method_text: req.body.deliveryMethodText || (req.body.deliveryMethod === 'courier' ? 'Курьером' : 'Самовывоз'),
+        delivery_price: req.body.deliveryPrice?.toString() || '0',
+        payment_method: req.body.paymentMethod || 'cash',
+        payment_method_text: req.body.paymentMethodText || (req.body.paymentMethod === 'card' ? 'Банковской картой' : 'Наличными'),
+        comment: req.body.comment || null,
+        total_amount: totalAmount,
+        status: "pending"
+      };
+      
+      console.log("ФИНАЛЬНЫЕ ДАННЫЕ ЗАКАЗА:", JSON.stringify(orderToCreate, null, 2));
+      console.log("ФИНАЛЬНЫЕ ТОВАРЫ ЗАКАЗА:", JSON.stringify(dbOrderItems, null, 2));
+      
+      // 6. Сохранение заказа в БД
+      let createdOrder;
+      try {
+        createdOrder = await storage.createOrder(orderToCreate, dbOrderItems);
+        console.log("✅ Заказ успешно создан:", createdOrder?.id || "ID неизвестен");
+      } catch (error) {
+        console.error("❌ Ошибка при создании заказа:", error);
+        throw new Error(`Не удалось создать заказ в базе данных: ${error.message}`);
+      }
+      
+      if (!createdOrder) {
+        throw new Error("База данных не вернула информацию о созданном заказе");
+      }
+      
+      // 7. Очищаем корзину после успешного оформления заказа
+      try {
+        await storage.clearCart(sessionId);
+        console.log("✅ Корзина очищена");
+      } catch (error) {
+        console.error("⚠️ Ошибка при очистке корзины:", error);
+        // Не блокируем создание заказа из-за ошибки очистки корзины
+      }
+      
+      console.log("================== ЗАКАЗ УСПЕШНО СОЗДАН ==================");
+      
+      // 8. Отправляем успешный ответ клиенту
+      res.status(201).json({ 
+        order: createdOrder,
+        message: "Заказ успешно оформлен" 
+      });
+      
     } catch (error) {
-      console.error("Ошибка при создании заказа:", error);
-      res.status(500).json({ message: "Server error", error });
+      console.error("❌❌❌ КРИТИЧЕСКАЯ ОШИБКА ПРИ СОЗДАНИИ ЗАКАЗА:", error);
+      res.status(500).json({ 
+        message: "Ошибка при создании заказа", 
+        error: error.message || "Неизвестная ошибка" 
+      });
     }
   });
   
