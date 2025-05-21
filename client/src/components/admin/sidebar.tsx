@@ -23,7 +23,7 @@ export default function AdminSidebar() {
   const navigationItems = [
     { 
       name: 'Панель управления', 
-      href: '/admin', 
+      href: '/admin/dashboard', 
       icon: <LayoutDashboard className="h-5 w-5" /> 
     },
     { 
