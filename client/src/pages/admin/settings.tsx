@@ -13,7 +13,7 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
-import AdminLayout from '@/components/admin/layout';
+import AdminSidebar from '@/components/admin/sidebar';
 import { ShopSettings, useSettingsStore } from '@/lib/store';
 
 export default function AdminSettings() {
@@ -100,27 +100,32 @@ export default function AdminSettings() {
   
   if (isLoading || !formValues) {
     return (
-      <AdminLayout>
-        <div className="container mx-auto p-4">
-          <h1 className="text-2xl font-bold mb-6">Настройки магазина</h1>
-          <div className="flex items-center justify-center h-40">
-            <p>Загрузка настроек...</p>
+      <div className="flex min-h-screen bg-white">
+        <AdminSidebar />
+        <main className="flex-1 p-6">
+          <div className="container mx-auto">
+            <h1 className="text-2xl font-bold mb-6">Настройки магазина</h1>
+            <div className="flex items-center justify-center h-40">
+              <p>Загрузка настроек...</p>
+            </div>
           </div>
-        </div>
-      </AdminLayout>
+        </main>
+      </div>
     );
   }
   
   return (
-    <AdminLayout>
-      <div className="container mx-auto p-4">
-        <h1 className="text-2xl font-bold mb-6">Настройки магазина</h1>
-        
-        {error && (
-          <div className="bg-red-100 border border-red-300 text-red-700 p-4 mb-6 rounded">
-            {error}
-          </div>
-        )}
+    <div className="flex min-h-screen bg-white">
+      <AdminSidebar />
+      <main className="flex-1 p-6">
+        <div className="container mx-auto">
+          <h1 className="text-2xl font-bold mb-6">Настройки магазина</h1>
+          
+          {error && (
+            <div className="bg-red-100 border border-red-300 text-red-700 p-4 mb-6 rounded">
+              {error}
+            </div>
+          )}
         
         <form onSubmit={handleSubmit}>
           <Tabs defaultValue="general">
