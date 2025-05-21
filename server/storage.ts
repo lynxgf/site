@@ -1,10 +1,11 @@
 import {
-  users, products, cartItems, orders, orderItems,
+  users, products, cartItems, orders, orderItems, reviews,
   type User, type InsertUser, 
   type Product, type InsertProduct,
   type CartItem, type InsertCartItem,
   type Order, type InsertOrder,
   type OrderItem, type InsertOrderItem,
+  type Review, type InsertReview,
   type Size, type FabricCategory, type Fabric
 } from "@shared/schema";
 import { nanoid } from "nanoid";
@@ -56,11 +57,13 @@ export class MemStorage implements IStorage {
   private cartItems: Map<number, CartItem>;
   private orders: Map<number, Order>;
   private orderItems: Map<number, OrderItem>;
+  private reviews: Map<number, Review>;
   private currentUserId: number;
   private currentProductId: number;
   private currentCartItemId: number;
   private currentOrderId: number;
   private currentOrderItemId: number;
+  private currentReviewId: number;
 
   constructor() {
     this.users = new Map();
@@ -68,17 +71,20 @@ export class MemStorage implements IStorage {
     this.cartItems = new Map();
     this.orders = new Map();
     this.orderItems = new Map();
+    this.reviews = new Map();
     this.currentUserId = 1;
     this.currentProductId = 1;
     this.currentCartItemId = 1;
     this.currentOrderId = 1;
     this.currentOrderItemId = 1;
+    this.currentReviewId = 1;
     
     // Initialize with admin user
     this.createUser({
       username: 'admin',
       password: 'admin123', // In a real app, this would be hashed
-      isAdmin: true
+      isAdmin: true,
+      email: 'admin@matrasov.ru'
     });
     
     // Initialize with sample products
