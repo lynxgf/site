@@ -528,6 +528,7 @@ export default function AdminOrders() {
                         <TableCell className="text-right font-medium">
                           {order.totalAmount ? formatPrice(order.totalAmount) + " ₽" : "0 ₽"}
                         </TableCell>
+                        <TableCell>{getDeliveryBadge(order.deliveryMethod || 'pickup')}</TableCell>
                         <TableCell>{getStatusBadge(order.status || 'pending')}</TableCell>
                         <TableCell className="text-right">
                           <Button
