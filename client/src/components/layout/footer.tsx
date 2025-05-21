@@ -69,30 +69,30 @@ export default function Footer() {
           {/* Информация */}
           <div>
             <h3 className="text-xl font-semibold mb-4">Информация</h3>
-            <ul className="space-y-2">
-              <li><Link href="/about" className="hover:underline">О компании</Link></li>
-              <li><Link href="/delivery" className="hover:underline">Доставка и оплата</Link></li>
-              <li><Link href="/guarantees" className="hover:underline">Гарантии</Link></li>
-              <li><Link href="/contacts" className="hover:underline">Контакты</Link></li>
-              <li><Link href="/privacy" className="hover:underline">Политика конфиденциальности</Link></li>
+            <ul className="space-y-2 text-neutral-100">
+              <li><Link href="/about" className="hover:underline text-neutral-100">О компании</Link></li>
+              <li><Link href="/delivery" className="hover:underline text-neutral-100">Доставка и оплата</Link></li>
+              <li><Link href="/guarantees" className="hover:underline text-neutral-100">Гарантии</Link></li>
+              <li><Link href="/contacts" className="hover:underline text-neutral-100">Контакты</Link></li>
+              <li><Link href="/privacy" className="hover:underline text-neutral-100">Политика конфиденциальности</Link></li>
             </ul>
           </div>
           
           {/* Каталог */}
           <div>
             <h3 className="text-xl font-semibold mb-4">Каталог</h3>
-            <ul className="space-y-2">
-              <li><Link href="/products?category=mattresses" className="hover:underline">Матрасы</Link></li>
-              <li><Link href="/products?category=beds" className="hover:underline">Кровати</Link></li>
-              <li><Link href="/products?category=accessories" className="hover:underline">Аксессуары</Link></li>
-              <li><Link href="/products?category=pillows" className="hover:underline">Подушки</Link></li>
-              <li><Link href="/products?category=linens" className="hover:underline">Постельное белье</Link></li>
+            <ul className="space-y-2 text-neutral-100">
+              <li><Link href="/products?category=mattresses" className="hover:underline text-neutral-100">Матрасы</Link></li>
+              <li><Link href="/products?category=beds" className="hover:underline text-neutral-100">Кровати</Link></li>
+              <li><Link href="/products?category=accessories" className="hover:underline text-neutral-100">Аксессуары</Link></li>
+              <li><Link href="/products?category=pillows" className="hover:underline text-neutral-100">Подушки</Link></li>
+              <li><Link href="/products?category=linens" className="hover:underline text-neutral-100">Постельное белье</Link></li>
             </ul>
           </div>
         </div>
         
         <div className="mt-10 pt-6 border-t border-gray-700">
-          <p className="text-center text-white font-medium">© {new Date().getFullYear()} {!isLoading && settings ? settings.shopName : 'Матрасовъ'}. Все права защищены.</p>
+          <p className="text-center text-neutral-100 font-medium">© {new Date().getFullYear()} {!isLoading && settings ? settings.shopName : 'Матрасовъ'}. Все права защищены.</p>
         </div>
       </div>
     </footer>
