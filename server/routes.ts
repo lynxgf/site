@@ -578,6 +578,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           deliveryPrice: orderData.deliveryPrice?.toString() || (orderData.deliveryMethod === 'courier' ? '500' : '0'),
           paymentMethod: orderData.paymentMethod,
           paymentMethodText: orderData.paymentMethodText || (orderData.paymentMethod === 'card' ? 'Банковской картой' : 'Наличными'),
+          comment: orderData.comment || null,
           totalAmount: String(orderData.totalAmount),
           status: "pending"
         },

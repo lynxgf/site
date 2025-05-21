@@ -108,6 +108,7 @@ export const orders = pgTable("orders", {
   deliveryPrice: numeric("delivery_price", { precision: 10, scale: 2 }).default("0"),
   paymentMethod: text("payment_method").notNull(),
   paymentMethodText: text("payment_method_text").notNull(),
+  comment: text("comment"),
   totalAmount: numeric("total_amount", { precision: 10, scale: 2 }).notNull(),
   status: text("status").notNull().default("pending"), // pending, processing, completed, cancelled
   createdAt: timestamp("created_at").defaultNow().notNull()
