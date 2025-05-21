@@ -595,7 +595,7 @@ export default function AdminOrders() {
                 </div>
                 
                 <div className="pt-4 border-t text-right">
-                  <span className="font-bold">{formatPrice(selectedOrder.totalAmount)} ₽</span>
+                  <span className="font-bold">{selectedOrder.totalAmount ? formatPrice(selectedOrder.totalAmount) + " ₽" : "-"}</span>
                 </div>
               </TabsContent>
               
