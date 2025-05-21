@@ -501,7 +501,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Order routes
   app.post("/api/orders", async (req, res) => {
     try {
-      const sessionId = req.session.sessionId || "";
+      // Приоритетно используем sessionId из тела запроса, если он есть
+      // В противном случае используем sessionId из сессии
+      const sessionIdFromBody = req.body.sessionId;
+      const sessionIdFromSession = req.session.sessionId || "";
+      const sessionId = sessionIdFromBody || sessionIdFromSession;
+      
+      console.log("Session ID from body:", sessionIdFromBody);
+      console.log("Session ID from session:", sessionIdFromSession);
+      console.log("Using session ID:", sessionId);
       
       if (!sessionId) {
         return res.status(400).json({ message: "Invalid session ID" });
@@ -523,7 +531,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
           paymentMethodText: z.string().optional(),
           comment: z.string().optional().nullable(),
           totalAmount: z.union([z.number(), z.string()]),
-          sessionId: z.string(),
           items: z.array(z.object({
             productId: z.number(),
             quantity: z.number(),
@@ -538,11 +545,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
           }))
         });
         
-        // Парсим и валидируем данные, добавляем sessionId
-        const orderData = orderSchema.parse({
-          ...req.body,
-          sessionId: sessionId
-        });
+        // Парсим и валидируем данные, но НЕ добавляем sessionId,
+        // так как будем использовать уже определенный выше
+        const orderData = orderSchema.parse(req.body);
         
         // Проверяем наличие товаров в корзине
         const cartItems = await storage.getCartItems(sessionId);
@@ -579,7 +584,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         
         // Подготавливаем данные заказа
         const orderToCreate = {
-          session_id: sessionId,
+          session_id: sessionId, // Используем сессию, которую определили выше
           customer_name: orderData.customerName,
           customer_email: orderData.customerEmail,
           customer_phone: orderData.customerPhone,
