@@ -475,7 +475,10 @@ export default function ProductPageModern() {
                           </div>
                         </div>
                       `;
-                      document.querySelector('.reviews-container').appendChild(form);
+                      // Добавляем класс для контейнера отзывов, если его нет
+                      const container = document.querySelector('.bg-white.p-8.border.border-gray-200.rounded-sm.mb-16');
+                      container.classList.add('reviews-container');
+                      container.appendChild(form);
                       
                       // Настраиваем функциональность формы
                       document.querySelectorAll('.star-btn').forEach(btn => {
