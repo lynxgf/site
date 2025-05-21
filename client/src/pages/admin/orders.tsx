@@ -441,7 +441,7 @@ export default function AdminOrders() {
                           </div>
                         </TableCell>
                         <TableCell className="text-right font-medium">
-                          {order.totalAmount ? formatPrice(order.totalAmount) + " ₽" : "-"}
+                          {order.totalAmount ? formatPrice(order.totalAmount) + " ₽" : "0 ₽"}
                         </TableCell>
                         <TableCell>{getStatusBadge(order.status || 'pending')}</TableCell>
                         <TableCell className="text-right">
@@ -569,7 +569,7 @@ export default function AdminOrders() {
                 <div className="pt-4 border-t">
                   <div className="flex justify-between mb-2">
                     <span className="font-medium">Итого:</span>
-                    <span className="font-bold">{selectedOrder.totalAmount ? formatPrice(selectedOrder.totalAmount) + " ₽" : "-"}</span>
+                    <span className="font-bold">{selectedOrder.totalAmount ? formatPrice(selectedOrder.totalAmount) + " ₽" : "0 ₽"}</span>
                   </div>
                   <div className="flex justify-between">
                     <span>Статус заказа:</span>
