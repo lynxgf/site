@@ -204,25 +204,48 @@ export default function AdminOrders() {
     );
   };
   
-  // Get order items
-  const getOrderItems = (order: Order) => {
-    // This would come from the API in a real application
-    return [
-      {
-        id: 1,
-        productName: 'Кровать "Аврора"',
-        quantity: 1,
-        price: '39800',
-        options: 'Размер: 160×200, Ткань: Бежевый велюр'
-      },
-      {
-        id: 2,
-        productName: 'Матрас "Комфорт Люкс"',
-        quantity: 1,
-        price: '12600',
-        options: 'Размер: 160×200'
+  // Получаем данные о товарах заказа
+  const [orderItems, setOrderItems] = useState<any[]>([]);
+  
+  // Функция для загрузки товаров заказа
+  const fetchOrderItems = async (orderId: number) => {
+    try {
+      const response = await fetch(`/api/orders/${orderId}`);
+      if (!response.ok) {
+        throw new Error('Не удалось загрузить товары заказа');
       }
-    ];
+      
+      const data = await response.json();
+      console.log("Полученные данные заказа:", data);
+      
+      if (data.items && Array.isArray(data.items)) {
+        setOrderItems(data.items);
+        return data.items;
+      } else {
+        console.error("Товары заказа отсутствуют в ответе API", data);
+        setOrderItems([]);
+        return [];
+      }
+    } catch (error) {
+      console.error("Ошибка при загрузке товаров:", error);
+      setOrderItems([]);
+      return [];
+    }
+  };
+  
+  // Функция для получения товаров заказа
+  const getOrderItems = (order: Order) => {
+    // Если у нас уже загружены товары, возвращаем их
+    if (orderItems.length > 0) {
+      return orderItems;
+    }
+    
+    // Загружаем товары, если открыт диалог деталей заказа и есть ID заказа
+    if (isDetailsOpen && order && order.id) {
+      fetchOrderItems(order.id);
+    }
+    
+    return orderItems;
   };
   
   // Calculate totals for dashboard
