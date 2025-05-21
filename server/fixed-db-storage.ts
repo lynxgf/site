@@ -1,10 +1,11 @@
 import { 
-  users, products, cartItems, orders, orderItems,
+  users, products, cartItems, orders, orderItems, reviews,
   type User, type InsertUser, 
   type Product, type InsertProduct,
   type CartItem, type InsertCartItem,
   type Order, type InsertOrder,
-  type OrderItem, type InsertOrderItem
+  type OrderItem, type InsertOrderItem,
+  type Review, type InsertReview
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, and, sql } from "drizzle-orm";
@@ -347,5 +348,28 @@ export class DatabaseStorage implements IStorage {
   // Admin methods - for dashboard
   async getAllOrders(): Promise<Order[]> {
     return db.select().from(orders);
+  }
+  
+  // Review methods
+  async getReviewsByProductId(productId: number): Promise<Review[]> {
+    return db.select().from(reviews).where(eq(reviews.productId, productId));
+  }
+  
+  async createReview(review: InsertReview): Promise<Review> {
+    const [newReview] = await db
+      .insert(reviews)
+      .values(review)
+      .returning();
+    return newReview;
+  }
+  
+  async getReviewById(id: number): Promise<Review | undefined> {
+    const [review] = await db.select().from(reviews).where(eq(reviews.id, id));
+    return review || undefined;
+  }
+  
+  async deleteReview(id: number): Promise<boolean> {
+    const result = await db.delete(reviews).where(eq(reviews.id, id));
+    return !!result;
   }
 }
