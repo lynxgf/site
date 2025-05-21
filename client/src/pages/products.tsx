@@ -31,11 +31,7 @@ export default function ProductsPage() {
     } else {
       setCategory(null);
     }
-
-    // Логирование для отладки
-    console.log("Current location:", location);
-    console.log("Set category to:", category);
-  }, [location, category]);
+  }, [location]);
 
   // Filter products by category and price
   const filteredProducts = products
@@ -44,11 +40,15 @@ export default function ProductsPage() {
       if (!product.inStock) return false;
       
       // Filter by category
-      // Исправление для совместимости "bed" и "beds"
-      if (category === "bed" && (product.category === "bed" || product.category === "beds")) {
-        // категория подходит, не фильтруем
-      } else if (category && product.category !== category) {
-        return false;
+      if (category) {
+        if (category === "bed") {
+          // Проверяем вариации названия категории
+          if (product.category !== "bed" && product.category !== "beds") {
+            return false;
+          }
+        } else if (product.category !== category) {
+          return false;
+        }
       }
       
       // Filter by price
