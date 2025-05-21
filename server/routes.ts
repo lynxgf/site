@@ -618,7 +618,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Admin-only routes for order management
   app.get("/api/admin/orders", requireAdmin, async (req, res) => {
     // This would typically include pagination, filtering, etc.
-    const orders = Array.from((await storage.getAllOrders()) || []);
+    const orders = await storage.getAllOrders();
+    console.log("Получены заказы для админ-панели:", orders);
     res.json(orders);
   });
   

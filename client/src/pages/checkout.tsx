@@ -127,8 +127,8 @@ export default function CheckoutPage() {
       setOrderComplete(true);
       setOrderId(orderData.order.id);
       
-      // Принудительно остаемся на странице заказа
-      navigate('/checkout', { replace: true });
+      // Здесь мы не делаем никакого перенаправления, 
+      // так как ниже в компоненте есть условный рендеринг для orderComplete
       
     } catch (error) {
       toast({
