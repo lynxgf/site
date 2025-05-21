@@ -11,7 +11,8 @@ import {
   Settings, 
   FileText, 
   Users,
-  Star
+  Star,
+  Menu
 } from "lucide-react";
 
 interface AdminLayoutProps {
@@ -49,13 +50,13 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   }, [session, sessionLoading, toast]);
 
   const navItems = [
-    { path: "/admin", label: "Панель управления", icon: <LayoutDashboard className="mr-2 h-4 w-4" /> },
-    { path: "/admin/products", label: "Товары", icon: <ShoppingBag className="mr-2 h-4 w-4" /> },
-    { path: "/admin/orders", label: "Заказы", icon: <Package className="mr-2 h-4 w-4" /> },
-    { path: "/admin/users", label: "Пользователи", icon: <Users className="mr-2 h-4 w-4" /> },
-    { path: "/admin/reviews", label: "Отзывы", icon: <Star className="mr-2 h-4 w-4" /> },
-    { path: "/admin/export", label: "Экспорт данных", icon: <FileText className="mr-2 h-4 w-4" /> },
-    { path: "/admin/settings", label: "Настройки", icon: <Settings className="mr-2 h-4 w-4" /> },
+    { path: "/admin", label: "Панель управления", icon: <LayoutDashboard className="h-5 w-5" /> },
+    { path: "/admin/products", label: "Товары", icon: <ShoppingBag className="h-5 w-5" /> },
+    { path: "/admin/orders", label: "Заказы", icon: <Package className="h-5 w-5" /> },
+    { path: "/admin/users", label: "Пользователи", icon: <Users className="h-5 w-5" /> },
+    { path: "/admin/reviews", label: "Отзывы", icon: <Star className="h-5 w-5" /> },
+    { path: "/admin/export", label: "Экспорт данных", icon: <FileText className="h-5 w-5" /> },
+    { path: "/admin/settings", label: "Настройки", icon: <Settings className="h-5 w-5" /> },
   ];
 
   if (sessionLoading) {
@@ -77,11 +78,11 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   }
 
   return (
-    <div className="flex min-h-screen bg-gray-100">
+    <div className="flex min-h-screen bg-white">
       {/* Сайдбар */}
       <aside 
-        className={`fixed lg:static lg:block z-40 bg-white shadow-md transition-all duration-300 h-full lg:w-64 ${
-          isMenuOpen ? "w-64" : "w-0 -translate-x-full lg:translate-x-0"
+        className={`fixed lg:static lg:block z-40 bg-white border-r transition-all duration-300 h-full lg:w-60 ${
+          isMenuOpen ? "w-60" : "w-0 -translate-x-full lg:translate-x-0"
         }`}
       >
         <div className="p-4 border-b flex justify-between items-center">
@@ -94,16 +95,16 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
           </button>
         </div>
 
-        <nav className="p-4">
-          <ul className="space-y-2">
+        <nav className="py-6">
+          <ul className="space-y-1 px-2">
             {navItems.map((item) => (
               <li key={item.path}>
                 <Link 
                   to={item.path}
-                  className={`flex items-center p-2 rounded hover:bg-gray-100 transition-colors
-                    ${location === item.path ? "bg-purple-100 text-purple-800" : ""}`}
+                  className={`flex items-center py-2 px-3 rounded-md hover:bg-gray-100 transition-colors
+                    ${location === item.path ? "bg-gray-100 font-medium" : "text-gray-600"}`}
                 >
-                  {item.icon}
+                  <span className="mr-3">{item.icon}</span>
                   {item.label}
                 </Link>
               </li>
@@ -117,7 +118,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
         className="fixed bottom-4 right-4 z-50 bg-purple-600 text-white p-3 rounded-full shadow-lg lg:hidden"
         onClick={() => setIsMenuOpen(true)}
       >
-        <LayoutDashboard size={20} />
+        <Menu size={20} />
       </button>
 
       {/* Основной контент */}
