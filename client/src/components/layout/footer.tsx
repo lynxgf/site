@@ -3,7 +3,7 @@ import { Link } from 'wouter';
 import { useEffect, useState } from 'react';
 import { ShopSettings, useSettingsStore } from '@/lib/store';
 
-export function Footer() {
+export default function Footer() {
   const { settings, fetchSettings } = useSettingsStore();
   const [isLoading, setIsLoading] = useState(true);
   
