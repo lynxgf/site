@@ -80,17 +80,7 @@ export default function CheckoutPage() {
     }
   }, [orderComplete, fetchCart]);
   
-  // Calculate totals
-  const subtotal = cartItems.reduce((sum, item) => sum + (Number(item.price) * item.quantity), 0);
-  const discount = cartItems.reduce((sum, item) => {
-    if (item.product?.discount) {
-      const itemPrice = Number(item.price) * item.quantity;
-      return sum + (itemPrice * (item.product.discount / 100));
-    }
-    return sum;
-  }, 0);
-  
-  // Initialize form
+  // Initialize form first
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -103,6 +93,23 @@ export default function CheckoutPage() {
       comment: '',
     },
   });
+  
+  // Get current delivery method
+  const deliveryMethod = form.watch('deliveryMethod');
+  
+  // Calculate totals
+  const subtotal = cartItems.reduce((sum, item) => sum + (Number(item.price) * item.quantity), 0);
+  const discount = cartItems.reduce((sum, item) => {
+    if (item.product?.discount) {
+      const itemPrice = Number(item.price) * item.quantity;
+      return sum + (itemPrice * (item.product.discount / 100));
+    }
+    return sum;
+  }, 0);
+  
+  // Стоимость доставки зависит от выбранного метода
+  const deliveryCost = deliveryMethod === 'courier' ? 500 : 0;
+  const total = subtotal - discount + deliveryCost;
   
   // Удаляем автоматический запрос корзины при монтировании компонента,
   // т.к. он уже происходит в основном эффекте выше
@@ -130,6 +137,13 @@ export default function CheckoutPage() {
     setIsSubmitting(true);
     
     try {
+      // Получаем текущий метод доставки из формы 
+      const currentDeliveryMethod = data.deliveryMethod;
+      // Рассчитываем стоимость доставки на основе выбранного метода
+      const currentDeliveryCost = currentDeliveryMethod === 'courier' ? 500 : 0;
+      // Рассчитываем общую сумму заказа
+      const orderTotal = subtotal - discount + currentDeliveryCost;
+      
       // Prepare order items
       const orderItems = cartItems.map(item => ({
         productId: item.productId,
@@ -148,9 +162,9 @@ export default function CheckoutPage() {
       console.log("Данные заказа перед отправкой:", {
         ...data,
         sessionId,
-        totalAmount: total,
-        deliveryMethodText: data.deliveryMethod === 'courier' ? 'Курьером' : 'Самовывоз',
-        deliveryPrice: data.deliveryMethod === 'courier' ? deliveryCost : 0, 
+        totalAmount: orderTotal,
+        deliveryMethodText: currentDeliveryMethod === 'courier' ? 'Курьером' : 'Самовывоз',
+        deliveryPrice: currentDeliveryCost, 
         paymentMethodText: data.paymentMethod === 'card' ? 'Банковской картой' : 'Наличными',
         items: orderItems
       });
@@ -164,9 +178,9 @@ export default function CheckoutPage() {
         body: JSON.stringify({
           ...data,
           sessionId: sessionId, // Передаем ID сессии
-          totalAmount: total,
-          deliveryMethodText: data.deliveryMethod === 'courier' ? 'Курьером' : 'Самовывоз',
-          deliveryPrice: data.deliveryMethod === 'courier' ? deliveryCost : 0, 
+          totalAmount: orderTotal,
+          deliveryMethodText: currentDeliveryMethod === 'courier' ? 'Курьером' : 'Самовывоз',
+          deliveryPrice: currentDeliveryCost, 
           paymentMethodText: data.paymentMethod === 'card' ? 'Банковской картой' : 'Наличными',
           items: orderItems
         }),
