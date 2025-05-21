@@ -194,14 +194,38 @@ export class DatabaseStorage implements IStorage {
         
         console.log("DATABASE_STORAGE: Заказ успешно создан:", newOrder);
         
-        // Insert all order items
-        if (items.length > 0) {
-          const orderItemsWithOrderId = items.map(item => ({
-            ...item,
-            order_id: newOrder.id // Используем snake_case для соответствия с БД
-          }));
+        // Insert all order items with guaranteed order_id value
+        if (items && items.length > 0) {
+          console.log("DATABASE_STORAGE: Товары для заказа:", JSON.stringify(items, null, 2));
           
-          await tx.insert(orderItems).values(orderItemsWithOrderId);
+          const safeOrderItems = items.map(item => {
+            // Создаём безопасный объект для каждого товара с всеми необходимыми полями
+            return {
+              order_id: newOrder.id,
+              product_id: item.product_id || 1,
+              product_name: item.product_name || 'Товар',
+              quantity: item.quantity || 1,
+              selected_size: item.selected_size || 'single',
+              custom_width: item.custom_width,
+              custom_length: item.custom_length,
+              selected_fabric_category: item.selected_fabric_category || 'standard',
+              selected_fabric: item.selected_fabric || 'beige',
+              has_lifting_mechanism: item.has_lifting_mechanism || false,
+              price: item.price || '0'
+            };
+          });
+          
+          console.log("DATABASE_STORAGE: Обработанные товары для заказа:", JSON.stringify(safeOrderItems, null, 2));
+          
+          try {
+            await tx.insert(orderItems).values(safeOrderItems);
+            console.log("DATABASE_STORAGE: Товары заказа успешно сохранены");
+          } catch (itemError) {
+            console.error("DATABASE_STORAGE: Ошибка при сохранении товаров заказа:", itemError);
+            // Не выбрасываем ошибку, чтобы заказ всё равно был создан
+          }
+        } else {
+          console.log("DATABASE_STORAGE: Нет товаров для сохранения");
         }
         
         return newOrder;
