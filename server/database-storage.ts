@@ -160,6 +160,12 @@ export class DatabaseStorage implements IStorage {
     // Логируем данные для отладки
     console.log("DATABASE_STORAGE: Данные заказа для сохранения:", JSON.stringify(order, null, 2));
     
+    // Проверяем наличие session_id и устанавливаем запасной вариант
+    if (!order.session_id || order.session_id === 'null' || order.session_id === 'undefined') {
+      console.log("ВНИМАНИЕ: Отсутствует session_id, устанавливаем значение по умолчанию");
+      order.session_id = 'default-session-' + Date.now();
+    }
+    
     // Use a transaction to ensure all operations succeed or fail together
     return db.transaction(async (tx) => {
       try {
