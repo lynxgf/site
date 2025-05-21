@@ -648,14 +648,14 @@ export default function CheckoutPage() {
                   
                   <div className="flex justify-between text-gray-700">
                     <span>Доставка:</span>
-                    <span className="font-medium">{formatPrice(deliveryCost)} ₽</span>
+                    <span className="font-medium">{formatPrice(form.watch('deliveryMethod') === 'courier' ? 500 : 0)} ₽</span>
                   </div>
                   
                   <Separator className="my-4 bg-gray-100" />
                   
                   <div className="flex justify-between font-semibold text-lg text-gray-900">
                     <span>Итого:</span>
-                    <span>{formatPrice(total)} ₽</span>
+                    <span>{formatPrice(subtotal - discount + (form.watch('deliveryMethod') === 'courier' ? 500 : 0))} ₽</span>
                   </div>
                 </div>
                 
