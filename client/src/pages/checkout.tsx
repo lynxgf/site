@@ -27,10 +27,21 @@ const formSchema = z.object({
   customerName: z.string().min(3, 'Введите ваше полное имя'),
   customerEmail: z.string().email('Введите корректный email'),
   customerPhone: z.string().min(10, 'Введите корректный номер телефона'),
-  address: z.string().min(10, 'Введите полный адрес доставки'),
   deliveryMethod: z.enum(['courier', 'pickup']),
   paymentMethod: z.enum(['card', 'cash']),
   comment: z.string().optional(),
+  address: z.string().superRefine((val, ctx) => {
+    // Проверяем адрес только если выбрана доставка курьером
+    if (ctx.path[0] === 'address' && ctx.data.deliveryMethod === 'courier' && (!val || val.length < 10)) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.too_small,
+        minimum: 10,
+        type: "string",
+        inclusive: true,
+        message: "Для доставки курьером, пожалуйста, введите полный адрес (минимум 10 символов)"
+      });
+    }
+  }),
 });
 
 type FormValues = z.infer<typeof formSchema>;
