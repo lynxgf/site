@@ -81,9 +81,10 @@ export default function CheckoutPage() {
     fetchCart();
   }, [fetchCart]);
   
-  // Redirect to cart if empty
+  // Redirect to cart if empty (но только если заказ не завершен)
   useEffect(() => {
     if (!isCartLoading && cartItems.length === 0 && !orderComplete) {
+      // Перенаправляем на корзину только если нет товаров и заказ не был завершен
       navigate('/cart');
     }
   }, [cartItems, isCartLoading, navigate, orderComplete]);
@@ -131,11 +132,14 @@ export default function CheckoutPage() {
       
       // Clear cart and show success message
       await clearCart();
-      setOrderComplete(true);
-      setOrderId(orderData.order.id);
       
-      // Здесь мы не делаем никакого перенаправления, 
-      // так как ниже в компоненте есть условный рендеринг для orderComplete
+      // Устанавливаем ID заказа и отмечаем заказ как завершенный
+      // Это важно делать ПОСЛЕ очистки корзины и ДО редиректа
+      setOrderId(orderData.order.id);
+      setOrderComplete(true);
+      
+      // Важно: мы не делаем немедленного перенаправления здесь,
+      // а используем условный рендеринг для страницы подтверждения заказа
       
     } catch (error) {
       toast({
