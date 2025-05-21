@@ -1048,5 +1048,49 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Create HTTP server
   const httpServer = createServer(app);
+  // Маршруты для отзывов
+  app.get("/api/admin/reviews", requireAdmin, async (req, res) => {
+    try {
+      // Получаем все отзывы из всех продуктов
+      const products = await storage.getAllProducts();
+      let allReviews = [];
+      
+      for (const product of products) {
+        const productReviews = await storage.getReviewsByProductId(product.id);
+        allReviews = [...allReviews, ...productReviews];
+      }
+      
+      // Сортируем отзывы, самые новые - вверху
+      allReviews.sort((a, b) => {
+        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+      });
+      
+      res.json(allReviews);
+    } catch (error) {
+      console.error("Error retrieving reviews:", error);
+      res.status(500).json({ message: "Ошибка при получении отзывов" });
+    }
+  });
+  
+  app.delete("/api/admin/reviews/:id", requireAdmin, async (req, res) => {
+    try {
+      const reviewId = parseInt(req.params.id);
+      if (isNaN(reviewId)) {
+        return res.status(400).json({ message: "Неверный ID отзыва" });
+      }
+      
+      const success = await storage.deleteReview(reviewId);
+      
+      if (!success) {
+        return res.status(404).json({ message: "Отзыв не найден" });
+      }
+      
+      res.json({ message: "Отзыв успешно удален" });
+    } catch (error) {
+      console.error("Error deleting review:", error);
+      res.status(500).json({ message: "Ошибка при удалении отзыва" });
+    }
+  });
+
   return httpServer;
 }
