@@ -5,13 +5,14 @@ import { useAuthStore } from '@/lib/store';
 import { 
   LayoutDashboard, 
   Package, 
-  ShoppingBasket, 
+  ShoppingBag, 
   Users, 
   Settings, 
   LogOut,
   Menu,
   X,
-  DownloadCloud
+  FileText,
+  Star
 } from 'lucide-react';
 
 export default function AdminSidebar() {
@@ -23,32 +24,37 @@ export default function AdminSidebar() {
     { 
       name: 'Панель управления', 
       href: '/admin/dashboard', 
-      icon: <LayoutDashboard size={20} /> 
+      icon: <LayoutDashboard className="h-5 w-5" /> 
     },
     { 
       name: 'Товары', 
       href: '/admin/products', 
-      icon: <Package size={20} /> 
+      icon: <ShoppingBag className="h-5 w-5" /> 
     },
     { 
       name: 'Заказы', 
       href: '/admin/orders', 
-      icon: <ShoppingBasket size={20} /> 
+      icon: <Package className="h-5 w-5" /> 
     },
     { 
       name: 'Пользователи', 
       href: '/admin/users', 
-      icon: <Users size={20} /> 
+      icon: <Users className="h-5 w-5" /> 
+    },
+    { 
+      name: 'Отзывы', 
+      href: '/admin/reviews', 
+      icon: <Star className="h-5 w-5" /> 
     },
     { 
       name: 'Экспорт данных', 
       href: '/admin/export', 
-      icon: <DownloadCloud size={20} /> 
+      icon: <FileText className="h-5 w-5" /> 
     },
     { 
       name: 'Настройки', 
       href: '/admin/settings', 
-      icon: <Settings size={20} /> 
+      icon: <Settings className="h-5 w-5" /> 
     },
   ];
   
@@ -73,31 +79,28 @@ export default function AdminSidebar() {
         >
           {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
         </Button>
-        <span className="ml-2 font-semibold text-lg">Admin Panel</span>
+        <span className="ml-2 font-semibold text-lg">LuxBed Admin</span>
       </div>
       
       {/* Sidebar for desktop */}
       <aside className={`
-        fixed inset-y-0 left-0 z-50 w-64 bg-white border-r shadow-sm transition-transform duration-300 transform
+        fixed inset-y-0 left-0 z-50 w-60 bg-white border-r transition-transform duration-300 transform
         ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
       `}>
         <div className="flex flex-col h-full">
-          <div className="p-6 border-b">
-            <h1 className="text-2xl font-bold text-primary-900">LuxBed Admin</h1>
+          <div className="p-4 border-b">
+            <h1 className="text-xl font-bold">LuxBed Admin</h1>
           </div>
           
-          <nav className="flex-1 overflow-y-auto p-4">
-            <ul className="space-y-1">
+          <nav className="py-6">
+            <ul className="space-y-1 px-2">
               {navigationItems.map((item) => (
                 <li key={item.href}>
                   <Link 
                     href={item.href}
                     className={`
-                      flex items-center px-4 py-3 rounded-md text-sm font-medium transition-colors
-                      ${location === item.href
-                        ? 'bg-primary-50 text-primary-900'
-                        : 'text-gray-700 hover:bg-gray-100'
-                      }
+                      flex items-center py-2 px-3 rounded-md hover:bg-gray-100 transition-colors
+                      ${location === item.href ? 'bg-gray-100 font-medium' : 'text-gray-600'}
                     `}
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
@@ -109,13 +112,13 @@ export default function AdminSidebar() {
             </ul>
           </nav>
           
-          <div className="p-4 border-t">
+          <div className="p-4 mt-auto border-t">
             <Button 
               variant="ghost" 
               className="w-full justify-start text-red-600 hover:text-red-700 hover:bg-red-50"
               onClick={handleLogout}
             >
-              <LogOut size={20} className="mr-3" />
+              <LogOut className="h-5 w-5 mr-3" />
               Выйти
             </Button>
           </div>
