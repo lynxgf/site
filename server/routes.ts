@@ -1092,5 +1092,84 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // API для получения отзывов по ID продукта
+  app.get("/api/products/:id/reviews", async (req, res) => {
+    try {
+      const productId = parseInt(req.params.id);
+      
+      if (isNaN(productId)) {
+        return res.status(400).json({ message: "Неверный ID продукта" });
+      }
+      
+      const reviews = await storage.getReviewsByProductId(productId);
+      res.json(reviews);
+    } catch (error) {
+      console.error("Error retrieving product reviews:", error);
+      res.status(500).json({ message: "Ошибка при получении отзывов о продукте" });
+    }
+  });
+  
+  // API для добавления нового отзыва к продукту
+  app.post("/api/products/:id/reviews", async (req, res) => {
+    try {
+      const productId = parseInt(req.params.id);
+      
+      if (isNaN(productId)) {
+        return res.status(400).json({ message: "Неверный ID продукта" });
+      }
+      
+      const { customerName, rating, comment } = req.body;
+      
+      if (!customerName || !rating || !comment) {
+        return res.status(400).json({ message: "Все поля обязательны для заполнения" });
+      }
+      
+      // Проверяем, что рейтинг от 1 до 5
+      if (rating < 1 || rating > 5) {
+        return res.status(400).json({ message: "Рейтинг должен быть от 1 до 5" });
+      }
+      
+      const review = await storage.createReview({
+        productId,
+        customerName,
+        rating,
+        comment
+      });
+      
+      res.status(201).json(review);
+    } catch (error) {
+      console.error("Error creating review:", error);
+      res.status(500).json({ message: "Ошибка при добавлении отзыва" });
+    }
+  });
+  
+  // API для удаления отзыва к продукту
+  app.delete("/api/products/:productId/reviews/:reviewId", async (req, res) => {
+    try {
+      const productId = parseInt(req.params.productId);
+      const reviewId = parseInt(req.params.reviewId);
+      
+      if (isNaN(productId) || isNaN(reviewId)) {
+        return res.status(400).json({ message: "Неверный ID продукта или отзыва" });
+      }
+      
+      // Проверяем, что есть права администратора либо это владелец отзыва
+      if (!req.session.isAdmin) {
+        return res.status(401).json({ message: "Недостаточно прав для удаления отзыва" });
+      }
+      
+      const success = await storage.deleteReview(reviewId);
+      
+      if (!success) {
+        return res.status(404).json({ message: "Отзыв не найден" });
+      }
+      
+      res.json({ message: "Отзыв успешно удален" });
+    } catch (error) {
+      console.error("Error deleting review:", error);
+      res.status(500).json({ message: "Ошибка при удалении отзыва" });
+    }
+  });
+
   return httpServer;
 }

@@ -1,13 +1,14 @@
 import { 
-  users, products, cartItems, orders, orderItems,
+  users, products, cartItems, orders, orderItems, reviews,
   type User, type InsertUser, 
   type Product, type InsertProduct,
   type CartItem, type InsertCartItem,
   type Order, type InsertOrder,
-  type OrderItem, type InsertOrderItem
+  type OrderItem, type InsertOrderItem,
+  type Review, type InsertReview
 } from "@shared/schema";
 import { db } from "./db";
-import { eq, and } from "drizzle-orm";
+import { eq, and, desc } from "drizzle-orm";
 import { IStorage } from "./storage";
 
 export class DatabaseStorage implements IStorage {
@@ -267,7 +268,6 @@ export class DatabaseStorage implements IStorage {
     const [order] = await db.select().from(orders).where(eq(orders.id, id));
     return order || undefined;
   }
-  }
   
   async getOrderItems(orderId: number): Promise<OrderItem[]> {
     return db.select().from(orderItems).where(eq(orderItems.orderId, orderId));
@@ -289,5 +289,31 @@ export class DatabaseStorage implements IStorage {
   // Admin methods - for dashboard
   async getAllOrders(): Promise<Order[]> {
     return db.select().from(orders);
+  }
+  
+  // Методы для работы с отзывами
+  async getReviewsByProductId(productId: number): Promise<Review[]> {
+    return db.select()
+      .from(reviews)
+      .where(eq(reviews.productId, productId))
+      .orderBy(reviews.createdAt, 'desc');
+  }
+  
+  async createReview(reviewData: InsertReview): Promise<Review> {
+    const [review] = await db
+      .insert(reviews)
+      .values(reviewData)
+      .returning();
+    return review;
+  }
+  
+  async getReviewById(id: number): Promise<Review | undefined> {
+    const [review] = await db.select().from(reviews).where(eq(reviews.id, id));
+    return review || undefined;
+  }
+  
+  async deleteReview(id: number): Promise<boolean> {
+    const result = await db.delete(reviews).where(eq(reviews.id, id));
+    return result.count > 0;
   }
 }
