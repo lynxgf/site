@@ -12,7 +12,7 @@ interface ReviewsProps {
   isAdmin?: boolean;
 }
 
-export default function ProductReviews({ productId }: ReviewsProps) {
+export default function ProductReviews({ productId, isAdmin = false }: ReviewsProps) {
   const queryClient = useQueryClient();
   const [isAddingReview, setIsAddingReview] = useState(false);
   const [customerName, setCustomerName] = useState("");
@@ -22,6 +22,35 @@ export default function ProductReviews({ productId }: ReviewsProps) {
   const { data: reviews = [], isLoading } = useQuery<Review[]>({
     queryKey: [`/api/products/${productId}/reviews`],
     enabled: !!productId,
+  });
+  
+  const deleteReviewMutation = useMutation({
+    mutationFn: async (reviewId: number) => {
+      const response = await fetch(`/api/products/${productId}/reviews/${reviewId}`, {
+        method: "DELETE",
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Ошибка при удалении отзыва");
+      }
+      
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [`/api/products/${productId}/reviews`] });
+      toast({
+        title: "Отзыв удален",
+        description: "Отзыв был успешно удален",
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Ошибка",
+        description: error.message || "Не удалось удалить отзыв",
+        variant: "destructive",
+      });
+    }
   });
 
   const createReviewMutation = useMutation({
