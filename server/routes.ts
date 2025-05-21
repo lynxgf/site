@@ -584,9 +584,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
           };
         });
         
+        // Проверяем sessionId еще раз перед созданием заказа и устанавливаем запасной вариант
+        let finalSessionId = sessionId;
+        if (!finalSessionId || finalSessionId === 'null' || finalSessionId === 'undefined') {
+          console.log("ОШИБКА: Перед созданием заказа идентификатор сессии отсутствует или недействителен.");
+          console.log("Создаем резервный идентификатор сессии на основе текущего времени.");
+          finalSessionId = 'fallback-session-' + Date.now();
+        }
+        
         // Подготавливаем данные заказа
         const orderToCreate = {
-          session_id: sessionId, // Используем сессию, которую определили выше
+          session_id: finalSessionId, // Используем проверенный идентификатор
           customer_name: orderData.customerName,
           customer_email: orderData.customerEmail,
           customer_phone: orderData.customerPhone,

@@ -146,6 +146,17 @@ export default function CheckoutPage() {
         price: item.price
       }));
       
+      // Выведем полную информацию о заказе перед отправкой
+      console.log("Данные заказа перед отправкой:", {
+        ...data,
+        sessionId,
+        totalAmount: total,
+        deliveryMethodText: data.deliveryMethod === 'courier' ? 'Курьером' : 'Самовывоз',
+        deliveryPrice: data.deliveryMethod === 'courier' ? deliveryCost : 0, 
+        paymentMethodText: data.paymentMethod === 'card' ? 'Банковской картой' : 'Наличными',
+        items: orderItems
+      });
+      
       // Send order to server
       const response = await fetch('/api/orders', {
         method: 'POST',
