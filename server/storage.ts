@@ -446,4 +446,6 @@ export class MemStorage implements IStorage {
 import { DatabaseStorage } from "./database-storage";
 
 // Use the database storage implementation instead of in-memory storage
-export const storage = new DatabaseStorage();
+//export const storage = new DatabaseStorage();
+import { DatabaseStorage as FixedDatabaseStorage } from "./fixed-db-storage";
+export const storage = new FixedDatabaseStorage();

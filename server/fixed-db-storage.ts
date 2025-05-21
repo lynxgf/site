@@ -7,7 +7,7 @@ import {
   type OrderItem, type InsertOrderItem
 } from "@shared/schema";
 import { db } from "./db";
-import { eq, and } from "drizzle-orm";
+import { eq, and, sql } from "drizzle-orm";
 import { IStorage } from "./storage";
 
 export class DatabaseStorage implements IStorage {
@@ -106,26 +106,34 @@ export class DatabaseStorage implements IStorage {
       eq(cartItems.sessionId, sessionId)
     ];
     
-    if (selectedSize !== undefined) {
-      conditions.push(eq(cartItems.selectedSize, selectedSize));
+    // Вместо прямого сравнения и проверки всех условий сразу
+    // Мы получим все элементы корзины и затем отфильтруем их вручную
+    const items = await db
+      .select()
+      .from(cartItems)
+      .where(and(...conditions));
+    
+    // Ручная фильтрация без использования eq()
+    for (const item of items) {
+      let match = true;
+      
+      if (selectedSize && item.selectedSize !== selectedSize) match = false;
+      if (selectedFabricCategory && item.selectedFabricCategory !== selectedFabricCategory) match = false;
+      if (selectedFabric && item.selectedFabric !== selectedFabric) match = false;
+      
+      // Более безопасная проверка boolean-полей
+      if (hasLiftingMechanism !== undefined) {
+        // Преобразуем оба значения в boolean для безопасного сравнения
+        const itemHasLifting = !!item.hasLiftingMechanism;
+        const configHasLifting = !!hasLiftingMechanism;
+        
+        if (itemHasLifting !== configHasLifting) match = false;
+      }
+      
+      if (match) return item;
     }
     
-    if (selectedFabricCategory !== undefined) {
-      conditions.push(eq(cartItems.selectedFabricCategory, selectedFabricCategory));
-    }
-    
-    if (selectedFabric !== undefined) {
-      conditions.push(eq(cartItems.selectedFabric, selectedFabric));
-    }
-    
-    // Handle the hasLiftingMechanism field differently because it can be null
-    if (hasLiftingMechanism !== undefined) {
-      conditions.push(eq(cartItems.hasLiftingMechanism, hasLiftingMechanism === null ? null : Boolean(hasLiftingMechanism)));
-    }
-    
-    const [item] = await db.select().from(cartItems).where(and(...conditions));
-    
-    return item || undefined;
+    return undefined;
   }
   
   async addToCart(cartItem: InsertCartItem): Promise<CartItem> {
@@ -183,7 +191,7 @@ export class DatabaseStorage implements IStorage {
     
     console.log("DATABASE_STORAGE: Финальный объект заказа:", JSON.stringify(safeOrder, null, 2));
     
-    // Сначала создаем заказ без транзакции
+    // Создаем заказ, но не в транзакции
     try {
       // Insert the order
       const [newOrder] = await db
@@ -228,15 +236,28 @@ export class DatabaseStorage implements IStorage {
                 custom_length: item.customLength || item.custom_length || null,
                 selected_fabric_category: item.selectedFabricCategory || item.selected_fabric_category || 'standard',
                 selected_fabric: item.selectedFabric || item.selected_fabric || 'beige',
-                has_lifting_mechanism: item.hasLiftingMechanism || item.has_lifting_mechanism || false,
+                has_lifting_mechanism: !!item.hasLiftingMechanism || !!item.has_lifting_mechanism,
                 price: item.price || '0'
               };
               
               console.log("DATABASE_STORAGE: Сохранение товара заказа:", JSON.stringify(safeOrderItem, null, 2));
               
-              // Выполняем вставку с явным указанием свойств для соответствия схеме БД
+              // Используем SQL для прямой вставки, избегая проблем с типами
               try {
-                await db.insert(orderItems).values(safeOrderItem);
+                await db.execute(sql`
+                  INSERT INTO order_items (
+                    order_id, product_id, product_name, quantity, 
+                    selected_size, custom_width, custom_length, 
+                    selected_fabric_category, selected_fabric, 
+                    has_lifting_mechanism, price
+                  ) VALUES (
+                    ${safeOrderItem.order_id}, ${safeOrderItem.product_id}, ${safeOrderItem.product_name}, 
+                    ${safeOrderItem.quantity}, ${safeOrderItem.selected_size}, 
+                    ${safeOrderItem.custom_width}, ${safeOrderItem.custom_length}, 
+                    ${safeOrderItem.selected_fabric_category}, ${safeOrderItem.selected_fabric}, 
+                    ${safeOrderItem.has_lifting_mechanism}, ${safeOrderItem.price}
+                  )
+                `);
                 console.log("DATABASE_STORAGE: Товар заказа успешно сохранен");
               } catch (insertError) {
                 console.error("DATABASE_STORAGE: Ошибка при вставке товара:", insertError);
@@ -266,7 +287,6 @@ export class DatabaseStorage implements IStorage {
   async getOrderById(id: number): Promise<Order | undefined> {
     const [order] = await db.select().from(orders).where(eq(orders.id, id));
     return order || undefined;
-  }
   }
   
   async getOrderItems(orderId: number): Promise<OrderItem[]> {
