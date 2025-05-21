@@ -103,6 +103,11 @@ export const orders = pgTable("orders", {
   customerEmail: text("customer_email").notNull(),
   customerPhone: text("customer_phone").notNull(),
   address: text("address").notNull(),
+  deliveryMethod: text("delivery_method").notNull(),
+  deliveryMethodText: text("delivery_method_text").notNull(),
+  deliveryPrice: numeric("delivery_price", { precision: 10, scale: 2 }).default("0"),
+  paymentMethod: text("payment_method").notNull(),
+  paymentMethodText: text("payment_method_text").notNull(),
   totalAmount: numeric("total_amount", { precision: 10, scale: 2 }).notNull(),
   status: text("status").notNull().default("pending"), // pending, processing, completed, cancelled
   createdAt: timestamp("created_at").defaultNow().notNull()

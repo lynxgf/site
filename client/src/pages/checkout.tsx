@@ -127,6 +127,9 @@ export default function CheckoutPage() {
         body: JSON.stringify({
           ...data,
           totalAmount: total,
+          deliveryMethodText: data.deliveryMethod === 'courier' ? 'Курьером' : 'Самовывоз',
+          deliveryPrice: data.deliveryMethod === 'courier' ? deliveryCost : 0, 
+          paymentMethodText: data.paymentMethod === 'card' ? 'Банковской картой' : 'Наличными',
           items: orderItems
         }),
       });
@@ -382,23 +385,34 @@ export default function CheckoutPage() {
                           )}
                         />
                         
-                        <FormField
-                          control={form.control}
-                          name="address"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel className="text-gray-700 font-medium">Адрес доставки</FormLabel>
-                              <FormControl>
-                                <Textarea
-                                  placeholder="Город, улица, дом, квартира, индекс"
-                                  className="resize-none min-h-[100px] border-gray-200 focus:border-[#8e2b85] focus:ring-[#8e2b85]"
-                                  {...field}
-                                />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
+                        {form.watch('deliveryMethod') === 'courier' && (
+                          <FormField
+                            control={form.control}
+                            name="address"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel className="text-gray-700 font-medium">Адрес доставки</FormLabel>
+                                <FormControl>
+                                  <Textarea
+                                    placeholder="Город, улица, дом, квартира, индекс"
+                                    className="resize-none min-h-[100px] border-gray-200 focus:border-[#8e2b85] focus:ring-[#8e2b85]"
+                                    {...field}
+                                  />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                        )}
+                        
+                        {form.watch('deliveryMethod') === 'pickup' && (
+                          <div className="p-4 bg-gray-50 rounded-md mt-4">
+                            <div className="text-gray-700 font-medium mb-2">Адрес самовывоза:</div>
+                            <p className="text-gray-900">г. Москва, ул. Тверская, д. 15</p>
+                            <p className="text-gray-500 text-sm mt-1">Ежедневно с 10:00 до 20:00</p>
+                            <p className="text-gray-500 text-sm">Заказ будет доступен после подтверждения по телефону или email</p>
+                          </div>
+                        )}
                       </CardContent>
                     </Card>
                   </div>
