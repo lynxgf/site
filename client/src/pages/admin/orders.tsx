@@ -518,15 +518,18 @@ export default function AdminOrders() {
                       <h5 className="text-xs font-medium text-gray-500">Способ доставки</h5>
                       <p className="mt-1 text-sm">
                         {selectedOrder.deliveryMethodText || 
-                         (selectedOrder.deliveryMethod === 'courier' ? 'Курьером' : 
-                          selectedOrder.deliveryMethod === 'pickup' ? 'Самовывоз' : 'Не указано')}
+                         (selectedOrder.deliveryMethod ? 
+                            (selectedOrder.deliveryMethod === 'courier' ? 'Курьером' : 
+                             selectedOrder.deliveryMethod === 'pickup' ? 'Самовывоз' : 'Не указано')
+                          : 'Не указано')}
                       </p>
                     </div>
                     
                     <div>
                       <h5 className="text-xs font-medium text-gray-500">Стоимость доставки</h5>
                       <p className="mt-1 text-sm">
-                        {selectedOrder.deliveryPrice ? `${formatPrice(selectedOrder.deliveryPrice)} ₽` : 'Бесплатно'}
+                        {selectedOrder.deliveryPrice ? `${formatPrice(selectedOrder.deliveryPrice)} ₽` : 
+                         (selectedOrder.deliveryMethod === 'courier' ? '500 ₽' : 'Бесплатно')}
                       </p>
                     </div>
                   </div>
@@ -543,8 +546,10 @@ export default function AdminOrders() {
                     <h5 className="text-xs font-medium text-gray-500">Способ оплаты</h5>
                     <p className="mt-1 text-sm">
                       {selectedOrder.paymentMethodText || 
-                       (selectedOrder.paymentMethod === 'card' ? 'Банковской картой' : 
-                        selectedOrder.paymentMethod === 'cash' ? 'Наличными' : 'Не указано')}
+                       (selectedOrder.paymentMethod ? 
+                         (selectedOrder.paymentMethod === 'card' ? 'Банковской картой' : 
+                          selectedOrder.paymentMethod === 'cash' ? 'Наличными' : 'Не указано')
+                        : 'Не указано')}
                     </p>
                   </div>
                 </div>
