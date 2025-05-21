@@ -51,8 +51,8 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     { path: "/admin", label: "Панель управления", icon: <LayoutDashboard className="mr-2 h-4 w-4" /> },
     { path: "/admin/products", label: "Товары", icon: <ShoppingBag className="mr-2 h-4 w-4" /> },
     { path: "/admin/orders", label: "Заказы", icon: <Package className="mr-2 h-4 w-4" /> },
-    { path: "/admin/customers", label: "Клиенты", icon: <Users className="mr-2 h-4 w-4" /> },
-    { path: "/admin/import-export", label: "Импорт/Экспорт", icon: <FileText className="mr-2 h-4 w-4" /> },
+    { path: "/admin/users", label: "Пользователи", icon: <Users className="mr-2 h-4 w-4" /> },
+    { path: "/admin/export", label: "Экспорт данных", icon: <FileText className="mr-2 h-4 w-4" /> },
     { path: "/admin/settings", label: "Настройки", icon: <Settings className="mr-2 h-4 w-4" /> },
   ];
 
@@ -83,7 +83,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
         }`}
       >
         <div className="p-4 border-b flex justify-between items-center">
-          <h1 className="text-xl font-bold">Админ-панель</h1>
+          <h1 className="text-xl font-bold">LuxBed Admin</h1>
           <button 
             className="lg:hidden" 
             onClick={() => setIsMenuOpen(false)}
