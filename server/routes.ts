@@ -572,7 +572,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
           customerName: orderData.customerName,
           customerEmail: orderData.customerEmail,
           customerPhone: orderData.customerPhone,
-          address: orderData.address,
+          address: orderData.address || '',
+          deliveryMethod: orderData.deliveryMethod,
+          deliveryMethodText: orderData.deliveryMethodText || (orderData.deliveryMethod === 'courier' ? 'Курьером' : 'Самовывоз'),
+          deliveryPrice: orderData.deliveryPrice?.toString() || (orderData.deliveryMethod === 'courier' ? '500' : '0'),
+          paymentMethod: orderData.paymentMethod,
+          paymentMethodText: orderData.paymentMethodText || (orderData.paymentMethod === 'card' ? 'Банковской картой' : 'Наличными'),
           totalAmount: String(orderData.totalAmount),
           status: "pending"
         },
@@ -771,12 +776,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
           customerEmail: order.customerEmail || "import@example.com",
           customerPhone: order.customerPhone || "+7 (000) 000-00-00",
           address: order.address || "Адрес импортированного заказа",
+          deliveryMethod: order.deliveryMethod || "courier",
+          deliveryMethodText: order.deliveryMethodText || "Курьером",
+          deliveryPrice: order.deliveryPrice || "500",
+          paymentMethod: order.paymentMethod || "card",
+          paymentMethodText: order.paymentMethodText || "Банковской картой",
           totalAmount: order.totalAmount || "0",
           status: order.status || "pending"
         };
         
         // Подготовка товаров заказа
-        const orderItems = order.items.map((item) => ({
+        const orderItems = order.items.map((item: any) => ({
           productId: item.productId || 1,
           productName: item.productName || "Импортированный товар",
           quantity: item.quantity || 1,

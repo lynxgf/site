@@ -510,9 +510,43 @@ export default function AdminOrders() {
                   </div>
                 </div>
                 
-                <div>
-                  <h4 className="text-sm font-medium text-gray-500">Адрес доставки</h4>
-                  <p className="mt-1">{selectedOrder.address}</p>
+                <div className="border p-4 rounded-md bg-gray-50 mb-2">
+                  <h4 className="text-sm font-medium text-gray-500 mb-3">Информация о доставке</h4>
+                  
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <h5 className="text-xs font-medium text-gray-500">Способ доставки</h5>
+                      <p className="mt-1 text-sm">
+                        {selectedOrder.deliveryMethodText || 
+                         (selectedOrder.deliveryMethod === 'courier' ? 'Курьером' : 
+                          selectedOrder.deliveryMethod === 'pickup' ? 'Самовывоз' : 'Не указано')}
+                      </p>
+                    </div>
+                    
+                    <div>
+                      <h5 className="text-xs font-medium text-gray-500">Стоимость доставки</h5>
+                      <p className="mt-1 text-sm">
+                        {selectedOrder.deliveryPrice ? `${formatPrice(selectedOrder.deliveryPrice)} ₽` : 'Бесплатно'}
+                      </p>
+                    </div>
+                  </div>
+                  
+                  <div className="mt-3">
+                    <h5 className="text-xs font-medium text-gray-500">Адрес</h5>
+                    <p className="mt-1 text-sm">{selectedOrder.address || 'Самовывоз из магазина'}</p>
+                  </div>
+                </div>
+                
+                <div className="border p-4 rounded-md bg-gray-50 mb-2">
+                  <h4 className="text-sm font-medium text-gray-500 mb-3">Информация об оплате</h4>
+                  <div>
+                    <h5 className="text-xs font-medium text-gray-500">Способ оплаты</h5>
+                    <p className="mt-1 text-sm">
+                      {selectedOrder.paymentMethodText || 
+                       (selectedOrder.paymentMethod === 'card' ? 'Банковской картой' : 
+                        selectedOrder.paymentMethod === 'cash' ? 'Наличными' : 'Не указано')}
+                    </p>
+                  </div>
                 </div>
                 
                 <div className="pt-4 border-t">
