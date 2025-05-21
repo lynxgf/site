@@ -18,7 +18,7 @@ export default function ProductReviews({ productId }: ReviewsProps) {
   const [rating, setRating] = useState(5);
   const [comment, setComment] = useState("");
 
-  const { data: reviews, isLoading } = useQuery({
+  const { data: reviews = [], isLoading } = useQuery<Review[]>({
     queryKey: [`/api/products/${productId}/reviews`],
     enabled: !!productId,
   });

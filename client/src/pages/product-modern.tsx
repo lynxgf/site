@@ -262,6 +262,11 @@ export default function ProductPageModern() {
                   />
                 </div>
                 
+                {/* Product Reviews */}
+                <div className="bg-white p-6 border border-gray-200 rounded-sm mb-8">
+                  <ProductReviews productId={productId} />
+                </div>
+                
                 {/* Share and Wishlist */}
                 <div className="flex items-center justify-between mt-6">
                   <div className="flex items-center space-x-4">
