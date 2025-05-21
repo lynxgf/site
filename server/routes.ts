@@ -572,7 +572,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       // Подготавливаем позиции заказа для БД
-      const dbOrderItems = orderItems.map((item, index) => {
+      let dbOrderItems = orderItems.map((item, index) => {
         const productInfo = productsInfo[index];
         return {
           order_id: 0, // Будет заполнено после создания заказа
@@ -590,23 +590,35 @@ export async function registerRoutes(app: Express): Promise<Server> {
         };
       });
       
+      // Устанавливаем цену доставки автоматически в зависимости от выбранного способа
+      const deliveryMethod = req.body.deliveryMethod || 'pickup';
+      const deliveryPrice = deliveryMethod === 'courier' ? '500.00' : '0.00';
+      
+      // Добавляем доставку как отдельный товар заказа, если это курьерская доставка с ненулевой стоимостью
+      if (deliveryMethod === 'courier') {
+        dbOrderItems.push({
+          order_id: 0, // Будет заполнено после создания заказа
+          product_id: 999999, // Специальный ID для доставки
+          product_name: 'Доставка курьером',
+          quantity: 1,
+          selected_size: 'standard',
+          custom_width: null,
+          custom_length: null,
+          selected_fabric_category: 'standard',
+          selected_fabric: 'standard',
+          fabric_name: 'Стандартная',
+          has_lifting_mechanism: false,
+          price: deliveryPrice
+        });
+      }
+      
       // 5. Формирование объекта заказа для БД
       const totalAmount = typeof req.body.totalAmount === 'number' 
         ? req.body.totalAmount.toString() 
         : (req.body.totalAmount || "0");
       
-      // Устанавливаем цену доставки автоматически в зависимости от выбранного способа
-      const deliveryMethod = req.body.deliveryMethod || 'pickup';
-      const deliveryPrice = deliveryMethod === 'courier' ? '500.00' : '0.00';
-      
-      // Если общая сумма заказа указана, то добавляем к ней стоимость доставки
-      let finalTotalAmount = totalAmount;
-      if (deliveryMethod === 'courier' && typeof finalTotalAmount === 'string' && finalTotalAmount !== '0') {
-        // Преобразуем строки в числа для правильного сложения
-        const numericTotal = parseFloat(finalTotalAmount);
-        const numericDelivery = 500.00;
-        finalTotalAmount = (numericTotal + numericDelivery).toString();
-      }
+      // Мы уже добавили доставку как отдельный товар, поэтому сохраняем исходную сумму
+      const finalTotalAmount = totalAmount;
       
       const orderToCreate = {
         session_id: sessionId,
