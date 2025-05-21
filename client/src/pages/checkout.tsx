@@ -89,8 +89,6 @@ export default function CheckoutPage() {
     }
     return sum;
   }, 0);
-  const deliveryCost = 500; // Fixed delivery cost
-  const total = subtotal - discount + deliveryCost;
   
   // Initialize form
   const form = useForm<FormValues>({
