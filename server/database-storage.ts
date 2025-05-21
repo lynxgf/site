@@ -161,25 +161,52 @@ export class DatabaseStorage implements IStorage {
   
   // Order methods
   async createOrder(order: InsertOrder, items: InsertOrderItem[]): Promise<Order> {
+    // Логируем данные для отладки
+    console.log("DATABASE_STORAGE: Данные заказа для сохранения:", JSON.stringify(order, null, 2));
+    
     // Use a transaction to ensure all operations succeed or fail together
     return db.transaction(async (tx) => {
-      // Insert the order
-      const [newOrder] = await tx
-        .insert(orders)
-        .values(order)
-        .returning();
-      
-      // Insert all order items
-      if (items.length > 0) {
-        const orderItemsWithOrderId = items.map(item => ({
-          ...item,
-          orderId: newOrder.id
-        }));
+      try {
+        // Insert the order
+        const [newOrder] = await tx
+          .insert(orders)
+          .values({
+            sessionId: order.sessionId,
+            customerName: order.customerName,
+            customerEmail: order.customerEmail,
+            customerPhone: order.customerPhone,
+            address: order.address || '',
+            // Явно указываем поля доставки
+            delivery_method: order.deliveryMethod,
+            delivery_method_text: order.deliveryMethodText,
+            delivery_price: order.deliveryPrice,
+            // Явно указываем поля оплаты
+            payment_method: order.paymentMethod,
+            payment_method_text: order.paymentMethodText,
+            // Комментарий
+            comment: order.comment,
+            totalAmount: order.totalAmount,
+            status: order.status
+          })
+          .returning();
         
-        await tx.insert(orderItems).values(orderItemsWithOrderId);
+        console.log("DATABASE_STORAGE: Заказ успешно создан:", newOrder);
+        
+        // Insert all order items
+        if (items.length > 0) {
+          const orderItemsWithOrderId = items.map(item => ({
+            ...item,
+            orderId: newOrder.id
+          }));
+          
+          await tx.insert(orderItems).values(orderItemsWithOrderId);
+        }
+        
+        return newOrder;
+      } catch (error) {
+        console.error("DATABASE_STORAGE: Ошибка при создании заказа:", error);
+        throw error;
       }
-      
-      return newOrder;
     });
   }
   

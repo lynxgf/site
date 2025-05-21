@@ -565,25 +565,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
         };
       });
       
+      // Подготовим объект для создания заказа
+      const orderToCreate = {
+        sessionId,
+        customerName: orderData.customerName,
+        customerEmail: orderData.customerEmail,
+        customerPhone: orderData.customerPhone,
+        address: orderData.address || '',
+        deliveryMethod: orderData.deliveryMethod,
+        deliveryMethodText: orderData.deliveryMethodText || (orderData.deliveryMethod === 'courier' ? 'Курьером' : 'Самовывоз'),
+        deliveryPrice: orderData.deliveryPrice?.toString() || (orderData.deliveryMethod === 'courier' ? '500' : '0'),
+        paymentMethod: orderData.paymentMethod,
+        paymentMethodText: orderData.paymentMethodText || (orderData.paymentMethod === 'card' ? 'Банковской картой' : 'Наличными'),
+        comment: orderData.comment || null,
+        totalAmount: String(orderData.totalAmount),
+        status: "pending"
+      };
+      
+      console.log("Создаем заказ с данными:", orderToCreate);
+      
       // Create order
-      const order = await storage.createOrder(
-        {
-          sessionId,
-          customerName: orderData.customerName,
-          customerEmail: orderData.customerEmail,
-          customerPhone: orderData.customerPhone,
-          address: orderData.address || '',
-          deliveryMethod: orderData.deliveryMethod,
-          deliveryMethodText: orderData.deliveryMethodText || (orderData.deliveryMethod === 'courier' ? 'Курьером' : 'Самовывоз'),
-          deliveryPrice: orderData.deliveryPrice?.toString() || (orderData.deliveryMethod === 'courier' ? '500' : '0'),
-          paymentMethod: orderData.paymentMethod,
-          paymentMethodText: orderData.paymentMethodText || (orderData.paymentMethod === 'card' ? 'Банковской картой' : 'Наличными'),
-          comment: orderData.comment || null,
-          totalAmount: String(orderData.totalAmount),
-          status: "pending"
-        },
-        orderItems
-      );
+      const order = await storage.createOrder(orderToCreate, orderItems);
       
       // Clear cart after successful order
       await storage.clearCart(sessionId);

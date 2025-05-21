@@ -557,7 +557,7 @@ export default function AdminOrders() {
                 {selectedOrder.comment && (
                   <div className="border p-4 rounded-md bg-gray-50 mb-2">
                     <h4 className="text-sm font-medium text-gray-500 mb-1 flex items-center">
-                      <MessageSquare className="h-4 w-4 mr-2" />
+                      <div className="h-4 w-4 mr-2">💬</div>
                       Комментарий к заказу
                     </h4>
                     <p className="text-sm bg-white p-3 rounded mt-2 border border-gray-100">
