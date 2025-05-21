@@ -7,13 +7,24 @@ export default function Footer() {
   const { settings, fetchSettings } = useSettingsStore();
   const [isLoading, setIsLoading] = useState(true);
   
+  // Важно: добавляем периодический опрос API для обновления настроек
   useEffect(() => {
     async function loadSettings() {
       await fetchSettings();
       setIsLoading(false);
     }
     
+    // Загружаем настройки сразу
     loadSettings();
+    
+    // Создаем интервал для периодического обновления
+    const intervalId = setInterval(() => {
+      console.log("Обновляем настройки магазина...");
+      fetchSettings();
+    }, 3000); // Проверяем обновления каждые 3 секунды
+    
+    // Очищаем интервал при размонтировании компонента
+    return () => clearInterval(intervalId);
   }, [fetchSettings]);
   
   return (
