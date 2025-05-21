@@ -500,111 +500,118 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Order routes
   app.post("/api/orders", async (req, res) => {
-    const sessionId = req.session.sessionId || "";
-    
-    if (!sessionId) {
-      return res.status(400).json({ message: "Invalid session ID" });
-    }
-    
     try {
-      console.log("Данные заказа:", JSON.stringify(req.body, null, 2));
+      const sessionId = req.session.sessionId || "";
       
-      // Validate order data
-      const orderSchema = z.object({
-        customerName: z.string(),
-        customerEmail: z.string().email(),
-        customerPhone: z.string(), 
-        address: z.string().optional().default(""),
-        deliveryMethod: z.enum(['courier', 'pickup']),
-        paymentMethod: z.enum(['card', 'cash']),
-        comment: z.string().optional().nullable(),
-        totalAmount: z.union([z.number(), z.string()]),
-        items: z.array(z.object({
-          productId: z.number(),
-          quantity: z.number(),
-          selectedSize: z.string(),
-          customWidth: z.number().nullable().optional(),
-          customLength: z.number().nullable().optional(),
-          selectedFabricCategory: z.string(),
-          selectedFabric: z.string(),
-          fabricName: z.string().optional().default(""), // Делаем необязательным
-          hasLiftingMechanism: z.boolean().default(false),
-          price: z.union([z.number(), z.string()]) // Поддержка как числового, так и строкового формата цены
-        }))
-      });
-      
-      const orderData = orderSchema.parse({
-        ...req.body,
-        sessionId
-      });
-      
-      // Get cart items and calculate total
-      const cartItems = await storage.getCartItems(sessionId);
-      
-      if (cartItems.length === 0) {
-        return res.status(400).json({ message: "Cart is empty" });
+      if (!sessionId) {
+        return res.status(400).json({ message: "Invalid session ID" });
       }
       
-      // Сначала получим данные о продуктах
-      const productPromises = orderData.items.map(item => 
-        storage.getProductById(item.productId)
-      );
-      const products = await Promise.all(productPromises);
+      console.log("Данные заказа:", JSON.stringify(req.body, null, 2));
       
-      // Create order items - используем snake_case для соответствия колонкам БД
-      const orderItems = orderData.items.map((item, index) => {
-        // Получаем информацию о продукте
-        const productInfo = products[index];
+      try {
+        // Validate order data
+        const orderSchema = z.object({
+          customerName: z.string(),
+          customerEmail: z.string().email(),
+          customerPhone: z.string(), 
+          address: z.string().optional().default(""),
+          deliveryMethod: z.enum(['courier', 'pickup']),
+          deliveryMethodText: z.string().optional(),
+          deliveryPrice: z.union([z.number(), z.string()]).optional(),
+          paymentMethod: z.enum(['card', 'cash']),
+          paymentMethodText: z.string().optional(),
+          comment: z.string().optional().nullable(),
+          totalAmount: z.union([z.number(), z.string()]),
+          items: z.array(z.object({
+            productId: z.number(),
+            quantity: z.number(),
+            selectedSize: z.string(),
+            customWidth: z.number().nullable().optional(),
+            customLength: z.number().nullable().optional(),
+            selectedFabricCategory: z.string(),
+            selectedFabric: z.string(),
+            fabricName: z.string().optional().default(""),
+            hasLiftingMechanism: z.boolean().default(false),
+            price: z.union([z.number(), z.string()])
+          }))
+        });
         
-        return {
-          order_id: 0, // Will be set after order creation
-          product_id: item.productId,
-          quantity: item.quantity,
-          selected_size: item.selectedSize,
-          custom_width: item.customWidth || null,
-          custom_length: item.customLength || null,
-          selected_fabric_category: item.selectedFabricCategory,
-          selected_fabric: item.selectedFabric,
-          // Необходимые поля для соответствия схеме
-          product_name: productInfo?.name || "Неизвестный товар",
-          fabric_name: item.fabricName || item.selectedFabric || "",
-          has_lifting_mechanism: !!item.hasLiftingMechanism,
-          // Убедимся, что цена всегда преобразуется в строку правильно
-          price: typeof item.price === 'number' ? item.price.toString() : item.price
+        // Парсим и валидируем данные
+        const orderData = orderSchema.parse(req.body);
+        
+        // Проверяем наличие товаров в корзине
+        const cartItems = await storage.getCartItems(sessionId);
+        
+        if (cartItems.length === 0) {
+          return res.status(400).json({ message: "Cart is empty" });
+        }
+        
+        // Получаем данные о продуктах
+        const productPromises = orderData.items.map(item => 
+          storage.getProductById(item.productId)
+        );
+        const products = await Promise.all(productPromises);
+        
+        // Подготавливаем позиции заказа
+        const orderItems = orderData.items.map((item, index) => {
+          const productInfo = products[index];
+          
+          return {
+            order_id: 0, // Будет установлено после создания заказа
+            product_id: item.productId,
+            quantity: item.quantity,
+            selected_size: item.selectedSize,
+            custom_width: item.customWidth || null,
+            custom_length: item.customLength || null,
+            selected_fabric_category: item.selectedFabricCategory,
+            selected_fabric: item.selectedFabric,
+            product_name: productInfo?.name || "Неизвестный товар",
+            fabric_name: item.fabricName || item.selectedFabric || "",
+            has_lifting_mechanism: !!item.hasLiftingMechanism,
+            price: typeof item.price === 'number' ? item.price.toString() : item.price
+          };
+        });
+        
+        // Подготавливаем данные заказа
+        const orderToCreate = {
+          session_id: sessionId,
+          customer_name: orderData.customerName,
+          customer_email: orderData.customerEmail,
+          customer_phone: orderData.customerPhone,
+          address: orderData.address || '',
+          delivery_method: orderData.deliveryMethod,
+          delivery_method_text: orderData.deliveryMethodText || (orderData.deliveryMethod === 'courier' ? 'Курьером' : 'Самовывоз'),
+          delivery_price: orderData.deliveryPrice?.toString() || (orderData.deliveryMethod === 'courier' ? '500' : '0'),
+          payment_method: orderData.paymentMethod,
+          payment_method_text: orderData.paymentMethodText || (orderData.paymentMethod === 'card' ? 'Банковской картой' : 'Наличными'),
+          comment: orderData.comment || null,
+          total_amount: String(orderData.totalAmount),
+          status: "pending"
         };
-      });
-      
-      // Подготовим объект для создания заказа, используя прямое соответствие с колонками в БД
-      const orderToCreate = {
-        session_id: sessionId,
-        customer_name: orderData.customerName,
-        customer_email: orderData.customerEmail,
-        customer_phone: orderData.customerPhone,
-        address: orderData.address || '',
-        delivery_method: orderData.deliveryMethod,
-        delivery_method_text: orderData.deliveryMethodText || (orderData.deliveryMethod === 'courier' ? 'Курьером' : 'Самовывоз'),
-        delivery_price: orderData.deliveryPrice?.toString() || (orderData.deliveryMethod === 'courier' ? '500' : '0'),
-        payment_method: orderData.paymentMethod,
-        payment_method_text: orderData.paymentMethodText || (orderData.paymentMethod === 'card' ? 'Банковской картой' : 'Наличными'),
-        comment: orderData.comment || null,
-        total_amount: String(orderData.totalAmount),
-        status: "pending"
-      };
-      
-      console.log("Создаем заказ с данными:", orderToCreate);
-      
-      // Create order
-      const order = await storage.createOrder(orderToCreate, orderItems);
-      
-      // Clear cart after successful order
-      await storage.clearCart(sessionId);
-      
-      res.status(201).json({ 
-        order,
-        message: "Order placed successfully" 
-      });
+        
+        console.log("Создаем заказ с данными:", orderToCreate);
+        
+        // Создаем заказ
+        const order = await storage.createOrder(orderToCreate, orderItems);
+        
+        // Очищаем корзину после успешного оформления заказа
+        await storage.clearCart(sessionId);
+        
+        res.status(201).json({ 
+          order,
+          message: "Order placed successfully" 
+        });
+      } catch (validationError) {
+        console.error("Ошибка валидации:", validationError);
+        return res.status(400).json({ 
+          message: "Invalid order data", 
+          error: validationError 
+        });
+      }
     } catch (error) {
-      res.status(400).json({ message: "Invalid order data", error });
+      console.error("Ошибка при создании заказа:", error);
+      res.status(500).json({ message: "Server error", error });
     }
   });
   
