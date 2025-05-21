@@ -43,10 +43,13 @@ export default function ProductsPage() {
       // Показывать только товары в наличии
       if (!product.inStock) return false;
       
-      // Filter by category с логированием
-      console.log("Filtering product:", product.name, "Category:", product.category, "Expected:", category);
-      
-      if (category && product.category !== category) return false;
+      // Filter by category
+      // Исправление для совместимости "bed" и "beds"
+      if (category === "bed" && (product.category === "bed" || product.category === "beds")) {
+        // категория подходит, не фильтруем
+      } else if (category && product.category !== category) {
+        return false;
+      }
       
       // Filter by price
       const price = product.discount 
