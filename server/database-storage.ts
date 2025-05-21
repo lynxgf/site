@@ -166,13 +166,30 @@ export class DatabaseStorage implements IStorage {
       order.session_id = 'default-session-' + Date.now();
     }
     
+    // Обеспечиваем наличие всех обязательных полей с запасными значениями
+    const safeOrder = {
+      ...order,
+      customer_name: order.customer_name || 'Гость',
+      customer_email: order.customer_email || 'guest@example.com',
+      customer_phone: order.customer_phone || '0000000000',
+      address: order.address || '',
+      delivery_method: order.delivery_method || 'pickup',
+      delivery_method_text: order.delivery_method_text || 'Самовывоз',
+      payment_method: order.payment_method || 'cash',
+      payment_method_text: order.payment_method_text || 'Наличными',
+      total_amount: order.total_amount || '0',
+      status: order.status || 'pending'
+    };
+    
+    console.log("DATABASE_STORAGE: Финальный объект заказа:", JSON.stringify(safeOrder, null, 2));
+    
     // Use a transaction to ensure all operations succeed or fail together
     return db.transaction(async (tx) => {
       try {
         // Insert the order
         const [newOrder] = await tx
           .insert(orders)
-          .values(order)
+          .values(safeOrder)
           .returning();
         
         console.log("DATABASE_STORAGE: Заказ успешно создан:", newOrder);
