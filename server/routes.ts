@@ -551,21 +551,36 @@ export async function registerRoutes(app: Express): Promise<Server> {
         // так как будем использовать уже определенный выше
         const orderData = orderSchema.parse(req.body);
         
-        // Проверяем наличие товаров в корзине
-        const cartItems = await storage.getCartItems(sessionId);
-        
-        if (cartItems.length === 0) {
-          return res.status(400).json({ message: "Cart is empty" });
-        }
-        
-        console.log("Товары в корзине:", cartItems);
-        
-        // Используем товары из тела запроса, а не из корзины
+        // Сначала проверяем наличие товаров в запросе
         if (!orderData.items || orderData.items.length === 0) {
-          return res.status(400).json({ message: "В заказе отсутствуют товары" });
+          // Если в запросе нет товаров, проверяем товары в корзине
+          const cartItems = await storage.getCartItems(sessionId);
+          
+          if (cartItems.length === 0) {
+            return res.status(400).json({ message: "Корзина пуста и в запросе нет товаров" });
+          }
+          
+          console.log("В запросе нет товаров, используем товары из корзины:", cartItems);
+          
+          // Преобразуем товары из корзины в формат для заказа
+          orderData.items = cartItems.map(item => ({
+            productId: item.productId,
+            quantity: item.quantity,
+            selectedSize: item.selectedSize,
+            customWidth: item.customWidth,
+            customLength: item.customLength,
+            selectedFabricCategory: item.selectedFabricCategory,
+            selectedFabric: item.selectedFabric,
+            fabricName: item.selectedFabric, // Используем ID ткани как имя
+            hasLiftingMechanism: !!item.hasLiftingMechanism,
+            price: item.price
+          }));
         }
         
-        console.log("Товары из запроса:", orderData.items);
+        console.log("Итоговые товары для заказа:", orderData.items);
+        
+        // Удаляем дублирующееся логирование
+        console.log("Подготавливаем товары для заказа из:", orderData.items);
         
         // Получаем данные о продуктах из товаров запроса
         const productPromises = orderData.items.map(item => 

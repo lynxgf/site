@@ -193,20 +193,20 @@ export class DatabaseStorage implements IStorage {
     
     // Создаем заказ, но не в транзакции
     try {
-      // Убедимся, что данные сохраняются правильно (запасные варианты для всех полей)
+      // Правильно обрабатываем входящие данные заказа, избегая сохранения пустых значений
       const orderData = {
         session_id: safeOrder.session_id || null,
-        customer_name: safeOrder.customer_name || 'Гость',
-        customer_email: safeOrder.customer_email || 'guest@example.com',
-        customer_phone: safeOrder.customer_phone || '0000000000',
+        customer_name: safeOrder.customer_name || null,
+        customer_email: safeOrder.customer_email || null,
+        customer_phone: safeOrder.customer_phone || null,
         address: safeOrder.address || '',
-        delivery_method: safeOrder.delivery_method || 'pickup',
-        delivery_method_text: safeOrder.delivery_method_text || 'Самовывоз',
-        delivery_price: safeOrder.delivery_price || '0',
-        payment_method: safeOrder.payment_method || 'cash',
-        payment_method_text: safeOrder.payment_method_text || 'Наличными',
-        comment: safeOrder.comment || '',
-        total_amount: safeOrder.total_amount || '0',
+        delivery_method: safeOrder.delivery_method || null,
+        delivery_method_text: safeOrder.delivery_method_text || null,
+        delivery_price: safeOrder.delivery_price || '0.00',
+        payment_method: safeOrder.payment_method || null,
+        payment_method_text: safeOrder.payment_method_text || null,
+        comment: safeOrder.comment || null,
+        total_amount: safeOrder.total_amount || '0.00',
         status: safeOrder.status || 'pending'
       };
       
