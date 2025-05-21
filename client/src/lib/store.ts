@@ -572,8 +572,7 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
       set({ settings: updatedSettings, isLoading: false });
       
       // Инвалидируем кеш настроек, чтобы все компоненты обновились
-      queryClient.invalidateQueries({queryKey: ['/api/settings']});
-      queryClient.invalidateQueries({queryKey: ['/api/admin/settings']});
+      // В будущем можем добавить инвалидацию кеша для React Query
       
       return true;
     } catch (error) {

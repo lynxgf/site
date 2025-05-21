@@ -1,262 +1,138 @@
 import { useState, useEffect } from 'react';
-import { useMutation, useQuery } from '@tanstack/react-query';
-import { queryClient, apiRequest } from '@/lib/queryClient';
-import AdminSidebar from '@/components/admin/sidebar';
 import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Switch } from '@/components/ui/switch';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { useToast } from '@/hooks/use-toast';
-import { 
-  Store, 
-  Truck, 
-  CreditCard, 
-  Mail, 
-  MessageSquare, 
-  PhoneCall,
-  Save,
-  Globe,
-  Instagram,
-  Facebook,
-  Twitter,
-  Smartphone
-} from 'lucide-react';
-
-// Interface for shop settings
-interface ShopSettings {
-  // General settings
-  shopName: string;
-  shopDescription: string;
-  contactEmail: string;
-  contactPhone: string;
-  address: string;
-  workingHours: string;
-  
-  // Social media
-  instagramUrl: string;
-  facebookUrl: string;
-  twitterUrl: string;
-  
-  // Delivery settings
-  enableFreeDelivery: boolean;
-  freeDeliveryThreshold: number;
-  deliveryPriceLocal: number;
-  deliveryPriceRegional: number;
-  
-  // Payment settings
-  enableCashPayment: boolean;
-  enableCardPayment: boolean;
-  enableOnlinePayment: boolean;
-  
-  // Email notifications
-  sendOrderConfirmation: boolean;
-  sendOrderStatusUpdates: boolean;
-  sendOrderShipped: boolean;
-  
-  // SMS notifications
-  enableSmsNotifications: boolean;
-  smsOrderConfirmation: boolean;
-  smsOrderStatusUpdate: boolean;
-}
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useToast } from "@/hooks/use-toast";
+import AdminLayout from '@/components/admin/layout';
+import { ShopSettings, useSettingsStore } from '@/lib/store';
 
 export default function AdminSettings() {
   const { toast } = useToast();
+  const { settings, isLoading, error, fetchSettings, updateSettings } = useSettingsStore();
+  const [formValues, setFormValues] = useState<ShopSettings | null>(null);
   
-  // Fetch settings
-  const { data: settings, isLoading } = useQuery<ShopSettings>({
-    queryKey: ['/api/admin/settings'],
-    queryFn: async () => {
-      try {
-        const response = await apiRequest('GET', '/api/admin/settings');
-        const data = response as any;
-        return data as ShopSettings;
-      } catch (error) {
-        // Для демонстрации используем мок-данные
-        return {
-          // General settings
-          shopName: 'Матрасовъ',
-          shopDescription: 'Магазин высококачественных матрасов и кроватей',
-          contactEmail: 'info@матрасовъ.рф',
-          contactPhone: '+7 (495) 123-45-67',
-          address: 'г. Москва, ул. Матрасная, д. 1',
-          workingHours: 'ПН-ВС: 10:00 - 20:00',
-          
-          // Social media
-          instagramUrl: 'https://instagram.com/matrasov',
-          facebookUrl: 'https://facebook.com/matrasov',
-          twitterUrl: '',
-          
-          // Delivery settings
-          enableFreeDelivery: true,
-          freeDeliveryThreshold: 20000,
-          deliveryPriceLocal: 1000,
-          deliveryPriceRegional: 3000,
-          
-          // Payment settings
-          enableCashPayment: true,
-          enableCardPayment: true,
-          enableOnlinePayment: true,
-          
-          // Email notifications
-          sendOrderConfirmation: true,
-          sendOrderStatusUpdates: true,
-          sendOrderShipped: true,
-          
-          // SMS notifications
-          enableSmsNotifications: true,
-          smsOrderConfirmation: true,
-          smsOrderStatusUpdate: false,
-        };
-      }
-    },
-  });
+  // Загружаем настройки при монтировании компонента
+  useEffect(() => {
+    async function loadSettings() {
+      await fetchSettings();
+    }
+    loadSettings();
+  }, [fetchSettings]);
   
-  // Создаем начальные значения для формы
-  const defaultSettings: ShopSettings = {
-    shopName: '',
-    shopDescription: '',
-    contactEmail: '',
-    contactPhone: '',
-    address: '',
-    workingHours: '',
-    instagramUrl: '',
-    facebookUrl: '',
-    twitterUrl: '',
-    enableFreeDelivery: false,
-    freeDeliveryThreshold: 0,
-    deliveryPriceLocal: 0,
-    deliveryPriceRegional: 0,
-    enableCashPayment: false,
-    enableCardPayment: false,
-    enableOnlinePayment: false,
-    sendOrderConfirmation: false,
-    sendOrderStatusUpdates: false,
-    sendOrderShipped: false,
-    enableSmsNotifications: false,
-    smsOrderConfirmation: false,
-    smsOrderStatusUpdate: false,
-  };
-  
-  // State for form values
-  const [formValues, setFormValues] = useState<ShopSettings>(defaultSettings);
-  
-  // Update form when settings are loaded
+  // Обновляем форму когда настройки загружены
   useEffect(() => {
     if (settings) {
       setFormValues(settings);
     }
   }, [settings]);
   
-  // Update settings mutation
-  const updateSettingsMutation = useMutation({
-    mutationFn: async (newSettings: ShopSettings) => {
-      return apiRequest('PUT', '/api/admin/settings', newSettings);
-    },
-    onSuccess: () => {
-      toast({
-        title: 'Успех',
-        description: 'Настройки магазина успешно обновлены',
-      });
-      
-      // Invalidate settings query
-      queryClient.invalidateQueries({ queryKey: ['/api/admin/settings'] });
-    },
-    onError: (error) => {
-      toast({
-        title: 'Ошибка',
-        description: error instanceof Error ? error.message : 'Не удалось обновить настройки магазина',
-        variant: 'destructive',
-      });
-    },
-  });
-  
-  // Handle form submission
-  const handleSubmit = async (event: React.FormEvent) => {
-    event.preventDefault();
-    updateSettingsMutation.mutate(formValues);
+  // Обработчик изменения полей формы
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    if (!formValues) return;
+    
+    const { name, value } = e.target;
+    setFormValues({
+      ...formValues,
+      [name]: value,
+    });
   };
   
-  // Handle input change
-  const handleInputChange = (
-    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    const { name, value } = event.target;
-    setFormValues(prev => ({ ...prev, [name]: value }));
-  };
-  
-  // Handle number input change
-  const handleNumberInputChange = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const { name, value } = event.target;
-    setFormValues(prev => ({ ...prev, [name]: Number(value) }));
-  };
-  
-  // Handle switch change
+  // Обработчик изменения переключателей
   const handleSwitchChange = (name: string, checked: boolean) => {
-    setFormValues(prev => ({ ...prev, [name]: checked }));
+    if (!formValues) return;
+    
+    setFormValues({
+      ...formValues,
+      [name]: checked,
+    });
   };
   
-  if (isLoading) {
+  // Обработчик изменения числовых полей
+  const handleNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!formValues) return;
+    
+    const { name, value } = e.target;
+    setFormValues({
+      ...formValues,
+      [name]: parseInt(value, 10),
+    });
+  };
+  
+  // Сохранение настроек
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!formValues) return;
+    
+    try {
+      const success = await updateSettings(formValues);
+      
+      if (success) {
+        toast({
+          title: "Настройки обновлены",
+          description: "Настройки магазина успешно сохранены",
+        });
+      } else {
+        toast({
+          title: "Ошибка",
+          description: "Не удалось сохранить настройки",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Ошибка",
+        description: "Произошла ошибка при сохранении настроек",
+        variant: "destructive",
+      });
+    }
+  };
+  
+  if (isLoading || !formValues) {
     return (
-      <div className="flex min-h-screen bg-gray-100">
-        <AdminSidebar />
-        <div className="flex-1 p-6 lg:p-8 lg:ml-64">
-          <div className="bg-white rounded-lg p-8 text-center">
-            <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-primary border-r-transparent">
-              <span className="sr-only">Загрузка...</span>
-            </div>
-            <p className="mt-4 text-gray-500">Загрузка настроек...</p>
+      <AdminLayout>
+        <div className="container mx-auto p-4">
+          <h1 className="text-2xl font-bold mb-6">Настройки магазина</h1>
+          <div className="flex items-center justify-center h-40">
+            <p>Загрузка настроек...</p>
           </div>
         </div>
-      </div>
+      </AdminLayout>
     );
   }
   
   return (
-    <div className="flex min-h-screen bg-gray-100">
-      <AdminSidebar />
-      
-      <div className="flex-1 p-6 lg:p-8 lg:ml-64">
-        <div className="mb-6">
-          <h1 className="text-3xl font-bold">Настройки магазина</h1>
-          <p className="text-gray-600 mt-2">Управление общими настройками вашего магазина</p>
-        </div>
+    <AdminLayout>
+      <div className="container mx-auto p-4">
+        <h1 className="text-2xl font-bold mb-6">Настройки магазина</h1>
+        
+        {error && (
+          <div className="bg-red-100 border border-red-300 text-red-700 p-4 mb-6 rounded">
+            {error}
+          </div>
+        )}
         
         <form onSubmit={handleSubmit}>
-          <Tabs defaultValue="general" className="mb-8">
+          <Tabs defaultValue="general">
             <TabsList className="mb-6">
-              <TabsTrigger value="general" className="px-4 py-2">
-                <Store className="h-4 w-4 mr-2" />
-                Общие настройки
-              </TabsTrigger>
-              <TabsTrigger value="delivery" className="px-4 py-2">
-                <Truck className="h-4 w-4 mr-2" />
-                Доставка
-              </TabsTrigger>
-              <TabsTrigger value="payment" className="px-4 py-2">
-                <CreditCard className="h-4 w-4 mr-2" />
-                Оплата
-              </TabsTrigger>
-              <TabsTrigger value="notifications" className="px-4 py-2">
-                <Mail className="h-4 w-4 mr-2" />
-                Уведомления
-              </TabsTrigger>
+              <TabsTrigger value="general">Общие настройки</TabsTrigger>
+              <TabsTrigger value="delivery">Доставка</TabsTrigger>
+              <TabsTrigger value="payment">Оплата</TabsTrigger>
+              <TabsTrigger value="notifications">Уведомления</TabsTrigger>
             </TabsList>
             
-            {/* General Settings */}
             <TabsContent value="general">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                 <Card>
                   <CardHeader>
                     <CardTitle>Информация о магазине</CardTitle>
@@ -264,26 +140,28 @@ export default function AdminSettings() {
                       Основная информация о вашем магазине, которая отображается на сайте
                     </CardDescription>
                   </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="shopName">Название магазина</Label>
-                      <Input
-                        id="shopName"
-                        name="shopName"
-                        value={formValues.shopName}
-                        onChange={handleInputChange}
-                      />
-                    </div>
-                    
-                    <div className="space-y-2">
-                      <Label htmlFor="shopDescription">Описание магазина</Label>
-                      <Textarea
-                        id="shopDescription"
-                        name="shopDescription"
-                        value={formValues.shopDescription}
-                        onChange={handleInputChange}
-                        rows={4}
-                      />
+                  <CardContent>
+                    <div className="grid gap-4">
+                      <div className="grid gap-2">
+                        <Label htmlFor="shopName">Название магазина</Label>
+                        <Input 
+                          id="shopName" 
+                          name="shopName" 
+                          value={formValues.shopName} 
+                          onChange={handleChange} 
+                        />
+                      </div>
+                      
+                      <div className="grid gap-2">
+                        <Label htmlFor="shopDescription">Описание магазина</Label>
+                        <Textarea 
+                          id="shopDescription" 
+                          name="shopDescription" 
+                          value={formValues.shopDescription} 
+                          onChange={handleChange} 
+                          rows={3}
+                        />
+                      </div>
                     </div>
                   </CardContent>
                 </Card>
@@ -295,105 +173,88 @@ export default function AdminSettings() {
                       Контактные данные для связи с вашим магазином
                     </CardDescription>
                   </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="contactEmail">Email</Label>
-                      <div className="flex">
-                        <Mail className="h-4 w-4 mr-2 mt-3 text-gray-400" />
-                        <Input
-                          id="contactEmail"
-                          name="contactEmail"
-                          type="email"
-                          value={formValues.contactEmail}
-                          onChange={handleInputChange}
+                  <CardContent>
+                    <div className="grid gap-4">
+                      <div className="grid gap-2">
+                        <Label htmlFor="contactEmail">Email</Label>
+                        <Input 
+                          id="contactEmail" 
+                          name="contactEmail" 
+                          value={formValues.contactEmail} 
+                          onChange={handleChange} 
                         />
                       </div>
-                    </div>
-                    
-                    <div className="space-y-2">
-                      <Label htmlFor="contactPhone">Телефон</Label>
-                      <div className="flex">
-                        <PhoneCall className="h-4 w-4 mr-2 mt-3 text-gray-400" />
-                        <Input
-                          id="contactPhone"
-                          name="contactPhone"
-                          value={formValues.contactPhone}
-                          onChange={handleInputChange}
+                      
+                      <div className="grid gap-2">
+                        <Label htmlFor="contactPhone">Телефон</Label>
+                        <Input 
+                          id="contactPhone" 
+                          name="contactPhone" 
+                          value={formValues.contactPhone} 
+                          onChange={handleChange} 
                         />
                       </div>
-                    </div>
-                    
-                    <div className="space-y-2">
-                      <Label htmlFor="address">Адрес</Label>
-                      <Input
-                        id="address"
-                        name="address"
-                        value={formValues.address}
-                        onChange={handleInputChange}
-                      />
-                    </div>
-                    
-                    <div className="space-y-2">
-                      <Label htmlFor="workingHours">Часы работы</Label>
-                      <Input
-                        id="workingHours"
-                        name="workingHours"
-                        value={formValues.workingHours}
-                        onChange={handleInputChange}
-                      />
+                      
+                      <div className="grid gap-2">
+                        <Label htmlFor="address">Адрес</Label>
+                        <Input 
+                          id="address" 
+                          name="address" 
+                          value={formValues.address} 
+                          onChange={handleChange} 
+                        />
+                      </div>
+                      
+                      <div className="grid gap-2">
+                        <Label htmlFor="workingHours">Часы работы</Label>
+                        <Input 
+                          id="workingHours" 
+                          name="workingHours" 
+                          value={formValues.workingHours} 
+                          onChange={handleChange} 
+                        />
+                      </div>
                     </div>
                   </CardContent>
                 </Card>
                 
-                <Card className="md:col-span-2">
+                <Card>
                   <CardHeader>
                     <CardTitle>Социальные сети</CardTitle>
                     <CardDescription>
                       Ссылки на ваши страницы в социальных сетях
                     </CardDescription>
                   </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      <div className="space-y-2">
+                  <CardContent>
+                    <div className="grid gap-4">
+                      <div className="grid gap-2">
                         <Label htmlFor="instagramUrl">Instagram</Label>
-                        <div className="flex">
-                          <Instagram className="h-4 w-4 mr-2 mt-3 text-gray-400" />
-                          <Input
-                            id="instagramUrl"
-                            name="instagramUrl"
-                            value={formValues.instagramUrl}
-                            onChange={handleInputChange}
-                            placeholder="URL профиля Instagram"
-                          />
-                        </div>
+                        <Input 
+                          id="instagramUrl" 
+                          name="instagramUrl" 
+                          value={formValues.instagramUrl} 
+                          onChange={handleChange} 
+                        />
                       </div>
                       
-                      <div className="space-y-2">
+                      <div className="grid gap-2">
                         <Label htmlFor="facebookUrl">Facebook</Label>
-                        <div className="flex">
-                          <Facebook className="h-4 w-4 mr-2 mt-3 text-gray-400" />
-                          <Input
-                            id="facebookUrl"
-                            name="facebookUrl"
-                            value={formValues.facebookUrl}
-                            onChange={handleInputChange}
-                            placeholder="URL страницы Facebook"
-                          />
-                        </div>
+                        <Input 
+                          id="facebookUrl" 
+                          name="facebookUrl" 
+                          value={formValues.facebookUrl} 
+                          onChange={handleChange} 
+                        />
                       </div>
                       
-                      <div className="space-y-2">
+                      <div className="grid gap-2">
                         <Label htmlFor="twitterUrl">Twitter</Label>
-                        <div className="flex">
-                          <Twitter className="h-4 w-4 mr-2 mt-3 text-gray-400" />
-                          <Input
-                            id="twitterUrl"
-                            name="twitterUrl"
-                            value={formValues.twitterUrl}
-                            onChange={handleInputChange}
-                            placeholder="URL профиля Twitter"
-                          />
-                        </div>
+                        <Input 
+                          id="twitterUrl" 
+                          name="twitterUrl" 
+                          value={formValues.twitterUrl} 
+                          onChange={handleChange} 
+                        />
                       </div>
                     </div>
                   </CardContent>
@@ -401,252 +262,241 @@ export default function AdminSettings() {
               </div>
             </TabsContent>
             
-            {/* Delivery Settings */}
             <TabsContent value="delivery">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Настройки доставки</CardTitle>
-                  <CardDescription>
-                    Настройки условий доставки товаров
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  <div className="flex items-center justify-between">
-                    <div className="space-y-1">
-                      <Label htmlFor="enableFreeDelivery" className="text-base">Бесплатная доставка</Label>
-                      <p className="text-sm text-gray-500">
-                        Включить бесплатную доставку при достижении пороговой суммы заказа
-                      </p>
-                    </div>
-                    <Switch
-                      id="enableFreeDelivery"
-                      checked={formValues.enableFreeDelivery}
-                      onCheckedChange={(checked) => handleSwitchChange('enableFreeDelivery', checked)}
-                    />
-                  </div>
-                  
-                  {formValues.enableFreeDelivery && (
-                    <div className="space-y-2">
-                      <Label htmlFor="freeDeliveryThreshold">Минимальная сумма для бесплатной доставки (₽)</Label>
-                      <Input
-                        id="freeDeliveryThreshold"
-                        name="freeDeliveryThreshold"
-                        type="number"
-                        min="0"
-                        value={formValues.freeDeliveryThreshold}
-                        onChange={handleNumberInputChange}
-                      />
-                    </div>
-                  )}
-                  
-                  <div className="space-y-2">
-                    <Label htmlFor="deliveryPriceLocal">Стоимость доставки по городу (₽)</Label>
-                    <Input
-                      id="deliveryPriceLocal"
-                      name="deliveryPriceLocal"
-                      type="number"
-                      min="0"
-                      value={formValues.deliveryPriceLocal}
-                      onChange={handleNumberInputChange}
-                    />
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <Label htmlFor="deliveryPriceRegional">Стоимость доставки по области (₽)</Label>
-                    <Input
-                      id="deliveryPriceRegional"
-                      name="deliveryPriceRegional"
-                      type="number"
-                      min="0"
-                      value={formValues.deliveryPriceRegional}
-                      onChange={handleNumberInputChange}
-                    />
-                  </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
-            
-            {/* Payment Settings */}
-            <TabsContent value="payment">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Способы оплаты</CardTitle>
-                  <CardDescription>
-                    Настройка доступных способов оплаты
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  <div className="flex items-center justify-between">
-                    <div className="space-y-1">
-                      <Label htmlFor="enableCashPayment" className="text-base">Оплата наличными</Label>
-                      <p className="text-sm text-gray-500">
-                        Разрешить оплату наличными при доставке
-                      </p>
-                    </div>
-                    <Switch
-                      id="enableCashPayment"
-                      checked={formValues.enableCashPayment}
-                      onCheckedChange={(checked) => handleSwitchChange('enableCashPayment', checked)}
-                    />
-                  </div>
-                  
-                  <div className="flex items-center justify-between">
-                    <div className="space-y-1">
-                      <Label htmlFor="enableCardPayment" className="text-base">Оплата картой при получении</Label>
-                      <p className="text-sm text-gray-500">
-                        Разрешить оплату банковской картой при доставке
-                      </p>
-                    </div>
-                    <Switch
-                      id="enableCardPayment"
-                      checked={formValues.enableCardPayment}
-                      onCheckedChange={(checked) => handleSwitchChange('enableCardPayment', checked)}
-                    />
-                  </div>
-                  
-                  <div className="flex items-center justify-between">
-                    <div className="space-y-1">
-                      <Label htmlFor="enableOnlinePayment" className="text-base">Онлайн-оплата</Label>
-                      <p className="text-sm text-gray-500">
-                        Разрешить онлайн-оплату заказа на сайте
-                      </p>
-                    </div>
-                    <Switch
-                      id="enableOnlinePayment"
-                      checked={formValues.enableOnlinePayment}
-                      onCheckedChange={(checked) => handleSwitchChange('enableOnlinePayment', checked)}
-                    />
-                  </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
-            
-            {/* Notification Settings */}
-            <TabsContent value="notifications">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 gap-6">
                 <Card>
                   <CardHeader>
-                    <CardTitle>Email-уведомления</CardTitle>
+                    <CardTitle>Настройки доставки</CardTitle>
                     <CardDescription>
-                      Настройка автоматических email-уведомлений
+                      Настройте параметры доставки для вашего магазина
                     </CardDescription>
                   </CardHeader>
-                  <CardContent className="space-y-6">
-                    <div className="flex items-center justify-between">
-                      <div className="space-y-1">
-                        <Label htmlFor="sendOrderConfirmation" className="text-base">Подтверждение заказа</Label>
-                        <p className="text-sm text-gray-500">
-                          Отправлять email-уведомление при оформлении заказа
-                        </p>
+                  <CardContent>
+                    <div className="grid gap-6">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <Label>Бесплатная доставка</Label>
+                          <p className="text-sm text-muted-foreground">
+                            Включить бесплатную доставку при определенной сумме заказа
+                          </p>
+                        </div>
+                        <Switch 
+                          checked={formValues.enableFreeDelivery} 
+                          onCheckedChange={(checked) => handleSwitchChange('enableFreeDelivery', checked)} 
+                        />
                       </div>
-                      <Switch
-                        id="sendOrderConfirmation"
-                        checked={formValues.sendOrderConfirmation}
-                        onCheckedChange={(checked) => handleSwitchChange('sendOrderConfirmation', checked)}
-                      />
+                      
+                      {formValues.enableFreeDelivery && (
+                        <div className="grid gap-2">
+                          <Label htmlFor="freeDeliveryThreshold">Сумма для бесплатной доставки (руб.)</Label>
+                          <Input 
+                            id="freeDeliveryThreshold" 
+                            name="freeDeliveryThreshold" 
+                            type="number" 
+                            value={formValues.freeDeliveryThreshold} 
+                            onChange={handleNumberChange} 
+                          />
+                        </div>
+                      )}
+                      
+                      <div className="grid gap-2">
+                        <Label htmlFor="deliveryPriceLocal">Стоимость доставки по городу (руб.)</Label>
+                        <Input 
+                          id="deliveryPriceLocal" 
+                          name="deliveryPriceLocal" 
+                          type="number" 
+                          value={formValues.deliveryPriceLocal} 
+                          onChange={handleNumberChange} 
+                        />
+                      </div>
+                      
+                      <div className="grid gap-2">
+                        <Label htmlFor="deliveryPriceRegional">Стоимость доставки по региону (руб.)</Label>
+                        <Input 
+                          id="deliveryPriceRegional" 
+                          name="deliveryPriceRegional" 
+                          type="number" 
+                          value={formValues.deliveryPriceRegional} 
+                          onChange={handleNumberChange} 
+                        />
+                      </div>
                     </div>
-                    
-                    <div className="flex items-center justify-between">
-                      <div className="space-y-1">
-                        <Label htmlFor="sendOrderStatusUpdates" className="text-base">Обновление статуса</Label>
-                        <p className="text-sm text-gray-500">
-                          Отправлять email-уведомление при изменении статуса заказа
-                        </p>
+                  </CardContent>
+                </Card>
+              </div>
+            </TabsContent>
+            
+            <TabsContent value="payment">
+              <div className="grid grid-cols-1 gap-6">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Способы оплаты</CardTitle>
+                    <CardDescription>
+                      Настройте доступные способы оплаты
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="grid gap-6">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <Label>Оплата наличными</Label>
+                          <p className="text-sm text-muted-foreground">
+                            Разрешить оплату наличными при получении
+                          </p>
+                        </div>
+                        <Switch 
+                          checked={formValues.enableCashPayment} 
+                          onCheckedChange={(checked) => handleSwitchChange('enableCashPayment', checked)} 
+                        />
                       </div>
-                      <Switch
-                        id="sendOrderStatusUpdates"
-                        checked={formValues.sendOrderStatusUpdates}
-                        onCheckedChange={(checked) => handleSwitchChange('sendOrderStatusUpdates', checked)}
-                      />
+                      
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <Label>Оплата картой</Label>
+                          <p className="text-sm text-muted-foreground">
+                            Разрешить оплату картой при получении
+                          </p>
+                        </div>
+                        <Switch 
+                          checked={formValues.enableCardPayment} 
+                          onCheckedChange={(checked) => handleSwitchChange('enableCardPayment', checked)} 
+                        />
+                      </div>
+                      
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <Label>Онлайн оплата</Label>
+                          <p className="text-sm text-muted-foreground">
+                            Разрешить онлайн оплату на сайте
+                          </p>
+                        </div>
+                        <Switch 
+                          checked={formValues.enableOnlinePayment} 
+                          onCheckedChange={(checked) => handleSwitchChange('enableOnlinePayment', checked)} 
+                        />
+                      </div>
                     </div>
-                    
-                    <div className="flex items-center justify-between">
-                      <div className="space-y-1">
-                        <Label htmlFor="sendOrderShipped" className="text-base">Отправка заказа</Label>
-                        <p className="text-sm text-gray-500">
-                          Отправлять email-уведомление при отправке заказа
-                        </p>
+                  </CardContent>
+                </Card>
+              </div>
+            </TabsContent>
+            
+            <TabsContent value="notifications">
+              <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Email уведомления</CardTitle>
+                    <CardDescription>
+                      Настройте email уведомления для клиентов
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="grid gap-4">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <Label>Подтверждение заказа</Label>
+                          <p className="text-sm text-muted-foreground">
+                            Отправлять email с подтверждением заказа
+                          </p>
+                        </div>
+                        <Switch 
+                          checked={formValues.sendOrderConfirmation} 
+                          onCheckedChange={(checked) => handleSwitchChange('sendOrderConfirmation', checked)} 
+                        />
                       </div>
-                      <Switch
-                        id="sendOrderShipped"
-                        checked={formValues.sendOrderShipped}
-                        onCheckedChange={(checked) => handleSwitchChange('sendOrderShipped', checked)}
-                      />
+                      
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <Label>Обновления статуса</Label>
+                          <p className="text-sm text-muted-foreground">
+                            Отправлять email при изменении статуса заказа
+                          </p>
+                        </div>
+                        <Switch 
+                          checked={formValues.sendOrderStatusUpdates} 
+                          onCheckedChange={(checked) => handleSwitchChange('sendOrderStatusUpdates', checked)} 
+                        />
+                      </div>
+                      
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <Label>Уведомление об отправке</Label>
+                          <p className="text-sm text-muted-foreground">
+                            Отправлять email когда заказ отправлен
+                          </p>
+                        </div>
+                        <Switch 
+                          checked={formValues.sendOrderShipped} 
+                          onCheckedChange={(checked) => handleSwitchChange('sendOrderShipped', checked)} 
+                        />
+                      </div>
                     </div>
                   </CardContent>
                 </Card>
                 
                 <Card>
                   <CardHeader>
-                    <CardTitle>SMS-уведомления</CardTitle>
+                    <CardTitle>SMS уведомления</CardTitle>
                     <CardDescription>
-                      Настройка автоматических SMS-уведомлений
+                      Настройте SMS уведомления для клиентов
                     </CardDescription>
                   </CardHeader>
-                  <CardContent className="space-y-6">
-                    <div className="flex items-center justify-between">
-                      <div className="space-y-1">
-                        <Label htmlFor="enableSmsNotifications" className="text-base">Включить SMS-уведомления</Label>
-                        <p className="text-sm text-gray-500">
-                          Разрешить отправку SMS-уведомлений клиентам
-                        </p>
+                  <CardContent>
+                    <div className="grid gap-4">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <Label>Включить SMS уведомления</Label>
+                          <p className="text-sm text-muted-foreground">
+                            Отправлять SMS уведомления клиентам
+                          </p>
+                        </div>
+                        <Switch 
+                          checked={formValues.enableSmsNotifications} 
+                          onCheckedChange={(checked) => handleSwitchChange('enableSmsNotifications', checked)} 
+                        />
                       </div>
-                      <Switch
-                        id="enableSmsNotifications"
-                        checked={formValues.enableSmsNotifications}
-                        onCheckedChange={(checked) => handleSwitchChange('enableSmsNotifications', checked)}
-                      />
+                      
+                      {formValues.enableSmsNotifications && (
+                        <>
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <Label>Подтверждение заказа</Label>
+                              <p className="text-sm text-muted-foreground">
+                                Отправлять SMS с подтверждением заказа
+                              </p>
+                            </div>
+                            <Switch 
+                              checked={formValues.smsOrderConfirmation} 
+                              onCheckedChange={(checked) => handleSwitchChange('smsOrderConfirmation', checked)} 
+                            />
+                          </div>
+                          
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <Label>Обновления статуса</Label>
+                              <p className="text-sm text-muted-foreground">
+                                Отправлять SMS при изменении статуса заказа
+                              </p>
+                            </div>
+                            <Switch 
+                              checked={formValues.smsOrderStatusUpdate} 
+                              onCheckedChange={(checked) => handleSwitchChange('smsOrderStatusUpdate', checked)} 
+                            />
+                          </div>
+                        </>
+                      )}
                     </div>
-                    
-                    {formValues.enableSmsNotifications && (
-                      <>
-                        <div className="flex items-center justify-between">
-                          <div className="space-y-1">
-                            <Label htmlFor="smsOrderConfirmation" className="text-base">Подтверждение заказа</Label>
-                            <p className="text-sm text-gray-500">
-                              Отправлять SMS при оформлении заказа
-                            </p>
-                          </div>
-                          <Switch
-                            id="smsOrderConfirmation"
-                            checked={formValues.smsOrderConfirmation}
-                            onCheckedChange={(checked) => handleSwitchChange('smsOrderConfirmation', checked)}
-                          />
-                        </div>
-                        
-                        <div className="flex items-center justify-between">
-                          <div className="space-y-1">
-                            <Label htmlFor="smsOrderStatusUpdate" className="text-base">Обновление статуса</Label>
-                            <p className="text-sm text-gray-500">
-                              Отправлять SMS при изменении статуса заказа
-                            </p>
-                          </div>
-                          <Switch
-                            id="smsOrderStatusUpdate"
-                            checked={formValues.smsOrderStatusUpdate}
-                            onCheckedChange={(checked) => handleSwitchChange('smsOrderStatusUpdate', checked)}
-                          />
-                        </div>
-                      </>
-                    )}
                   </CardContent>
                 </Card>
               </div>
             </TabsContent>
           </Tabs>
           
-          <div className="flex justify-end">
-            <Button 
-              type="submit"
-              className="px-6"
-              disabled={updateSettingsMutation.isPending}
-            >
-              <Save className="h-4 w-4 mr-2" />
-              {updateSettingsMutation.isPending ? 'Сохранение...' : 'Сохранить настройки'}
-            </Button>
+          <div className="mt-6 flex justify-end">
+            <Button type="submit">Сохранить настройки</Button>
           </div>
         </form>
       </div>
-    </div>
+    </AdminLayout>
   );
 }
