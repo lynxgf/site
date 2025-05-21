@@ -23,6 +23,11 @@ export default function ProductPageModern() {
     enabled: !!productId,
   });
   
+  // Получаем информацию о пользователе для проверки прав администратора
+  const { data: session } = useQuery({
+    queryKey: ['/api/session'],
+  });
+  
   const { data: allProducts } = useQuery<Product[]>({
     queryKey: ["/api/products"],
   });
@@ -269,7 +274,10 @@ export default function ProductPageModern() {
                 
                 {/* Product Reviews */}
                 <div className="bg-white p-6 border border-gray-200 rounded-sm mb-8">
-                  <ProductReviews productId={productId} />
+                  <ProductReviews 
+                    productId={productId} 
+                    isAdmin={session?.isAdmin === true} 
+                  />
                 </div>
                 
                 {/* Share and Wishlist */}

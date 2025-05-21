@@ -160,8 +160,21 @@ export default function ProductReviews({ productId, isAdmin = false }: ReviewsPr
                     {renderStars(review.rating)}
                   </div>
                 </div>
-                <div className="text-sm text-gray-500">
-                  {new Date(review.createdAt).toLocaleDateString('ru-RU')}
+                <div className="flex items-center gap-3">
+                  <div className="text-sm text-gray-500">
+                    {new Date(review.createdAt).toLocaleDateString('ru-RU')}
+                  </div>
+                  {isAdmin && (
+                    <button
+                      onClick={() => deleteReviewMutation.mutate(review.id)}
+                      disabled={deleteReviewMutation.isPending}
+                      className="text-red-500 hover:text-red-700 transition-colors"
+                      title="Удалить отзыв"
+                      aria-label="Удалить отзыв"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  )}
                 </div>
               </div>
               <p className="mt-2">{review.comment}</p>
