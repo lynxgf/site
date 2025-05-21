@@ -428,22 +428,22 @@ export default function AdminOrders() {
                       <TableRow key={order.id}>
                         <TableCell className="font-medium">#{order.id}</TableCell>
                         <TableCell>
-                          <div className="font-medium">{order.customerName}</div>
+                          <div className="font-medium">{order.customerName || 'Гость'}</div>
                         </TableCell>
                         <TableCell>
-                          <div className="text-sm">{order.customerEmail}</div>
-                          <div className="text-sm text-gray-500">{order.customerPhone}</div>
+                          <div className="text-sm">{order.customerEmail || '-'}</div>
+                          <div className="text-sm text-gray-500">{order.customerPhone || '-'}</div>
                         </TableCell>
                         <TableCell>
                           <div className="flex items-center">
                             <Calendar className="mr-2 h-4 w-4 text-gray-400" />
-                            <span>{new Date(order.createdAt).toLocaleDateString()}</span>
+                            <span>{order.createdAt ? new Date(order.createdAt).toLocaleDateString() : '-'}</span>
                           </div>
                         </TableCell>
                         <TableCell className="text-right font-medium">
-                          {formatPrice(order.totalAmount)} ₽
+                          {order.totalAmount ? formatPrice(order.totalAmount) + " ₽" : "-"}
                         </TableCell>
-                        <TableCell>{getStatusBadge(order.status)}</TableCell>
+                        <TableCell>{getStatusBadge(order.status || 'pending')}</TableCell>
                         <TableCell className="text-right">
                           <Button
                             variant="ghost"
@@ -569,11 +569,11 @@ export default function AdminOrders() {
                 <div className="pt-4 border-t">
                   <div className="flex justify-between mb-2">
                     <span className="font-medium">Итого:</span>
-                    <span className="font-bold">{formatPrice(selectedOrder.totalAmount)} ₽</span>
+                    <span className="font-bold">{selectedOrder.totalAmount ? formatPrice(selectedOrder.totalAmount) + " ₽" : "-"}</span>
                   </div>
                   <div className="flex justify-between">
                     <span>Статус заказа:</span>
-                    {getStatusBadge(selectedOrder.status)}
+                    {getStatusBadge(selectedOrder.status || 'pending')}
                   </div>
                 </div>
               </TabsContent>
