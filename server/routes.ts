@@ -776,7 +776,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         };
         
         // Подготовка товаров заказа
-        const orderItems = order.items.map(item => ({
+        const orderItems = order.items.map((item) => ({
           productId: item.productId || 1,
           productName: item.productName || "Импортированный товар",
           quantity: item.quantity || 1,
