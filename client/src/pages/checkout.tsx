@@ -43,6 +43,13 @@ export default function CheckoutPage() {
   const [orderComplete, setOrderComplete] = useState(false);
   const [orderId, setOrderId] = useState<number | null>(null);
   
+  // Важно: Если корзина пуста и заказ завершен, не нужно делать запрос на получение корзины
+  useEffect(() => {
+    if (!orderComplete && !isCartLoading && cartItems.length === 0) {
+      fetchCart();
+    }
+  }, [orderComplete, isCartLoading, cartItems.length, fetchCart]);
+  
   // Calculate totals
   const subtotal = cartItems.reduce((sum, item) => sum + (Number(item.price) * item.quantity), 0);
   const discount = cartItems.reduce((sum, item) => {

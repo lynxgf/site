@@ -75,6 +75,17 @@ export default function AdminOrders() {
     refetchInterval: 5000, // Обновление каждые 5 секунд
     refetchOnWindowFocus: true, // Обновление при фокусе окна
     staleTime: 3000, // Данные считаются устаревшими через 3 секунды
+    
+    // Явно указываем функцию для получения данных
+    queryFn: async () => {
+      try {
+        // Получаем данные с сервера
+        return await apiRequest('GET', '/api/admin/orders');
+      } catch (error) {
+        console.error("Ошибка при получении заказов:", error);
+        return []; // Возвращаем пустой массив в случае ошибки
+      }
+    }
   });
   
   // Update order status mutation
@@ -218,7 +229,11 @@ export default function AdminOrders() {
   const cancelledCount = Array.isArray(orders) ? orders.filter(o => o.status === 'cancelled').length : 0;
   const totalSales = Array.isArray(orders) ? orders.reduce((sum, order) => {
     if (order.status !== 'cancelled') {
-      return sum + Number(order.totalAmount);
+      // Преобразуем строку в число перед вычислениями
+      const amount = typeof order.totalAmount === 'string' 
+        ? parseFloat(order.totalAmount) 
+        : Number(order.totalAmount);
+      return sum + (isNaN(amount) ? 0 : amount);
     }
     return sum;
   }, 0) : 0;
