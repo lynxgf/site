@@ -799,6 +799,68 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
     }
   });
+  
+  // API для настроек магазина
+  app.get("/api/admin/settings", requireAdmin, async (req, res) => {
+    try {
+      // В реальном приложении эти данные будут храниться в БД
+      // Для демонстрации используем статические настройки
+      const settings = {
+        // General settings
+        shopName: 'Матрасовъ',
+        shopDescription: 'Магазин высококачественных матрасов и кроватей',
+        contactEmail: 'info@матрасовъ.рф',
+        contactPhone: '+7 (495) 123-45-67',
+        address: 'г. Москва, ул. Матрасная, д. 1',
+        workingHours: 'ПН-ВС: 10:00 - 20:00',
+        
+        // Social media
+        instagramUrl: 'https://instagram.com/matrasov',
+        facebookUrl: 'https://facebook.com/matrasov',
+        twitterUrl: '',
+        
+        // Delivery settings
+        enableFreeDelivery: true,
+        freeDeliveryThreshold: 20000,
+        deliveryPriceLocal: 1000,
+        deliveryPriceRegional: 3000,
+        
+        // Payment settings
+        enableCashPayment: true,
+        enableCardPayment: true,
+        enableOnlinePayment: true,
+        
+        // Email notifications
+        sendOrderConfirmation: true,
+        sendOrderStatusUpdates: true,
+        sendOrderShipped: true,
+        
+        // SMS notifications
+        enableSmsNotifications: true,
+        smsOrderConfirmation: true,
+        smsOrderStatusUpdate: false,
+      };
+      
+      res.json(settings);
+    } catch (error) {
+      console.error("Ошибка при получении настроек:", error);
+      res.status(500).json({ message: "Ошибка при получении настроек" });
+    }
+  });
+  
+  app.put("/api/admin/settings", requireAdmin, async (req, res) => {
+    try {
+      // В реальном приложении эти данные сохранялись бы в БД
+      // Для демонстрации просто возвращаем успешный ответ
+      console.log("Получены новые настройки:", req.body);
+      
+      // Просто возвращаем те же настройки, что прислал клиент
+      res.json(req.body);
+    } catch (error) {
+      console.error("Ошибка при сохранении настроек:", error);
+      res.status(500).json({ message: "Ошибка при сохранении настроек" });
+    }
+  });
 
   // Create HTTP server
   const httpServer = createServer(app);

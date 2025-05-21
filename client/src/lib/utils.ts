@@ -6,8 +6,10 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 // Format price with thousand separators
-export function formatPrice(price: number): string {
-  return new Intl.NumberFormat('ru-RU').format(Math.round(price));
+export function formatPrice(price: number | string): string {
+  const numericPrice = typeof price === 'string' ? parseFloat(price) : price;
+  // Проверяем на NaN, чтобы избежать ошибок
+  return isNaN(numericPrice) ? '0' : new Intl.NumberFormat('ru-RU').format(Math.round(numericPrice));
 }
 
 // Calculate size price difference based on selected size and custom dimensions
