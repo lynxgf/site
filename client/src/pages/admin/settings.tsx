@@ -412,27 +412,27 @@ export default function AdminSettings() {
                       
                       <div className="flex items-center justify-between">
                         <div>
-                          <Label>Обновления статуса</Label>
-                          <p className="text-sm text-muted-foreground">
-                            Отправлять email при изменении статуса заказа
-                          </p>
-                        </div>
-                        <Switch 
-                          checked={formValues.sendOrderStatusUpdates} 
-                          onCheckedChange={(checked) => handleSwitchChange('sendOrderStatusUpdates', checked)} 
-                        />
-                      </div>
-                      
-                      <div className="flex items-center justify-between">
-                        <div>
                           <Label>Уведомление об отправке</Label>
                           <p className="text-sm text-muted-foreground">
                             Отправлять email когда заказ отправлен
                           </p>
                         </div>
                         <Switch 
-                          checked={formValues.sendOrderShipped} 
-                          onCheckedChange={(checked) => handleSwitchChange('sendOrderShipped', checked)} 
+                          checked={formValues.sendShippingNotification} 
+                          onCheckedChange={(checked) => handleSwitchChange('sendShippingNotification', checked)} 
+                        />
+                      </div>
+                      
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <Label>Напоминания о брошенной корзине</Label>
+                          <p className="text-sm text-muted-foreground">
+                            Отправлять напоминания о товарах в корзине
+                          </p>
+                        </div>
+                        <Switch 
+                          checked={formValues.sendAbandonedCartReminder} 
+                          onCheckedChange={(checked) => handleSwitchChange('sendAbandonedCartReminder', checked)} 
                         />
                       </div>
                     </div>
@@ -441,55 +441,38 @@ export default function AdminSettings() {
                 
                 <Card>
                   <CardHeader>
-                    <CardTitle>SMS уведомления</CardTitle>
+                    <CardTitle>Настройки маркетинговых писем</CardTitle>
                     <CardDescription>
-                      Настройте SMS уведомления для клиентов
+                      Настройте маркетинговые email-рассылки
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
                     <div className="grid gap-4">
                       <div className="flex items-center justify-between">
                         <div>
-                          <Label>Включить SMS уведомления</Label>
+                          <Label>Рассылка новостей</Label>
                           <p className="text-sm text-muted-foreground">
-                            Отправлять SMS уведомления клиентам
+                            Отправлять новости и обновления клиентам
                           </p>
                         </div>
                         <Switch 
-                          checked={formValues.enableSmsNotifications} 
-                          onCheckedChange={(checked) => handleSwitchChange('enableSmsNotifications', checked)} 
+                          checked={formValues.sendNewsletter} 
+                          onCheckedChange={(checked) => handleSwitchChange('sendNewsletter', checked)} 
                         />
                       </div>
                       
-                      {formValues.enableSmsNotifications && (
-                        <>
-                          <div className="flex items-center justify-between">
-                            <div>
-                              <Label>Подтверждение заказа</Label>
-                              <p className="text-sm text-muted-foreground">
-                                Отправлять SMS с подтверждением заказа
-                              </p>
-                            </div>
-                            <Switch 
-                              checked={formValues.smsOrderConfirmation} 
-                              onCheckedChange={(checked) => handleSwitchChange('smsOrderConfirmation', checked)} 
-                            />
-                          </div>
-                          
-                          <div className="flex items-center justify-between">
-                            <div>
-                              <Label>Обновления статуса</Label>
-                              <p className="text-sm text-muted-foreground">
-                                Отправлять SMS при изменении статуса заказа
-                              </p>
-                            </div>
-                            <Switch 
-                              checked={formValues.smsOrderStatusUpdate} 
-                              onCheckedChange={(checked) => handleSwitchChange('smsOrderStatusUpdate', checked)} 
-                            />
-                          </div>
-                        </>
-                      )}
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <Label>Уведомления о скидках</Label>
+                          <p className="text-sm text-muted-foreground">
+                            Отправлять уведомления о скидках и акциях
+                          </p>
+                        </div>
+                        <Switch 
+                          checked={formValues.sendPromotions} 
+                          onCheckedChange={(checked) => handleSwitchChange('sendPromotions', checked)} 
+                        />
+                      </div>
                     </div>
                   </CardContent>
                 </Card>
@@ -501,7 +484,8 @@ export default function AdminSettings() {
             <Button type="submit">Сохранить настройки</Button>
           </div>
         </form>
-      </div>
-    </AdminLayout>
+        </div>
+      </main>
+    </div>
   );
 }
