@@ -7,7 +7,7 @@ export default function Footer() {
   const { settings, fetchSettings } = useSettingsStore();
   const [isLoading, setIsLoading] = useState(true);
   
-  // Важно: добавляем периодический опрос API для обновления настроек
+  // Загружаем настройки при монтировании и периодически обновляем их
   useEffect(() => {
     async function loadSettings() {
       await fetchSettings();
@@ -19,17 +19,16 @@ export default function Footer() {
     
     // Создаем интервал для периодического обновления
     const intervalId = setInterval(() => {
-      console.log("Обновляем настройки магазина...");
       fetchSettings();
-    }, 3000); // Проверяем обновления каждые 3 секунды
+    }, 5000); // Проверяем обновления каждые 5 секунд (увеличено время)
     
     // Очищаем интервал при размонтировании компонента
     return () => clearInterval(intervalId);
   }, [fetchSettings]);
   
   return (
-    <footer className="bg-primary text-white mt-auto">
-      <div className="container mx-auto py-10">
+    <footer className="bg-primary mt-auto">
+      <div className="container mx-auto py-10 text-neutral-100">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Контактная информация */}
           <div>
@@ -93,7 +92,7 @@ export default function Footer() {
         </div>
         
         <div className="mt-10 pt-6 border-t border-gray-700">
-          <p className="text-center">© {new Date().getFullYear()} {!isLoading && settings ? settings.shopName : 'Матрасовъ'}. Все права защищены.</p>
+          <p className="text-center text-white font-medium">© {new Date().getFullYear()} {!isLoading && settings ? settings.shopName : 'Матрасовъ'}. Все права защищены.</p>
         </div>
       </div>
     </footer>

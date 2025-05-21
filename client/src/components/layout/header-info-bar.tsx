@@ -26,7 +26,7 @@ export default function HeaderInfoBar() {
   
   return (
     <div className="bg-gray-900 py-2 px-4 text-sm hidden md:block">
-      <div className="container mx-auto flex justify-between">
+      <div className="container mx-auto flex justify-between text-neutral-100">
         <div className="flex space-x-6">
           <a href={`tel:${!isLoading && settings ? settings.contactPhone : '+7 (495) 123-45-67'}`} className="flex items-center text-gray-300 hover:text-white">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4 mr-2">
