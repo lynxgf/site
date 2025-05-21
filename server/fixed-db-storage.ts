@@ -193,11 +193,44 @@ export class DatabaseStorage implements IStorage {
     
     // Создаем заказ, но не в транзакции
     try {
-      // Insert the order
-      const [newOrder] = await db
-        .insert(orders)
-        .values(safeOrder)
-        .returning();
+      // Убедимся, что данные сохраняются правильно (запасные варианты для всех полей)
+      const orderData = {
+        session_id: safeOrder.session_id || null,
+        customer_name: safeOrder.customer_name || 'Гость',
+        customer_email: safeOrder.customer_email || 'guest@example.com',
+        customer_phone: safeOrder.customer_phone || '0000000000',
+        address: safeOrder.address || '',
+        delivery_method: safeOrder.delivery_method || 'pickup',
+        delivery_method_text: safeOrder.delivery_method_text || 'Самовывоз',
+        delivery_price: safeOrder.delivery_price || '0',
+        payment_method: safeOrder.payment_method || 'cash',
+        payment_method_text: safeOrder.payment_method_text || 'Наличными',
+        comment: safeOrder.comment || '',
+        total_amount: safeOrder.total_amount || '0',
+        status: safeOrder.status || 'pending'
+      };
+      
+      console.log("FINAL_ORDER_DATA:", orderData);
+      
+      // Insert the order with correct column mapping
+      const result = await db.execute(sql`
+        INSERT INTO orders (
+          session_id, customer_name, customer_email, customer_phone,
+          address, delivery_method, delivery_method_text, delivery_price,
+          payment_method, payment_method_text, comment, total_amount, status
+        ) VALUES (
+          ${orderData.session_id}, ${orderData.customer_name}, ${orderData.customer_email}, ${orderData.customer_phone},
+          ${orderData.address}, ${orderData.delivery_method}, ${orderData.delivery_method_text}, ${orderData.delivery_price},
+          ${orderData.payment_method}, ${orderData.payment_method_text}, ${orderData.comment}, ${orderData.total_amount}, ${orderData.status}
+        ) RETURNING *
+      `);
+      
+      // Преобразуем результат в объект заказа
+      const newOrder = result.rows?.[0];
+      
+      if (!newOrder) {
+        throw new Error('Не удалось создать заказ');
+      }
       
       console.log("DATABASE_STORAGE: Заказ успешно создан:", newOrder);
       
@@ -226,6 +259,10 @@ export class DatabaseStorage implements IStorage {
               }
               
               // Создаём безопасный объект элемента заказа с преобразованием ключей для соответствия схеме БД
+              // Явно устанавливаем название ткани на основе кода ткани
+              const fabricCode = item.selectedFabric || item.selected_fabric || 'beige';
+              const fabricName = fabricCode; // По умолчанию используем код как имя
+              
               const safeOrderItem = {
                 order_id: newOrder.id,
                 product_id: productId || null,
@@ -235,7 +272,8 @@ export class DatabaseStorage implements IStorage {
                 custom_width: item.customWidth || item.custom_width || null,
                 custom_length: item.customLength || item.custom_length || null,
                 selected_fabric_category: item.selectedFabricCategory || item.selected_fabric_category || 'standard',
-                selected_fabric: item.selectedFabric || item.selected_fabric || 'beige',
+                selected_fabric: fabricCode,
+                fabric_name: fabricName, // Обязательное поле, которое ранее отсутствовало
                 has_lifting_mechanism: !!item.hasLiftingMechanism || !!item.has_lifting_mechanism,
                 price: item.price || '0'
               };
