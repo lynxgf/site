@@ -57,13 +57,26 @@ export default function CheckoutPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [orderComplete, setOrderComplete] = useState(false);
   const [orderId, setOrderId] = useState<number | null>(null);
+  const [sessionId, setSessionId] = useState<string>('');
   
-  // Загружаем корзину при первой загрузке страницы
+  // Загружаем корзину и получаем ID сессии при первой загрузке страницы
   // но только если заказ еще не был успешно завершен
   useEffect(() => {
     // Загружаем корзину только если заказ еще не был оформлен
     if (!orderComplete) {
       fetchCart();
+      
+      // Получаем ID сессии
+      fetch('/api/session')
+        .then(res => res.json())
+        .then(data => {
+          if (data.sessionId) {
+            setSessionId(data.sessionId);
+          }
+        })
+        .catch(error => {
+          console.error('Ошибка при получении ID сессии:', error);
+        });
     }
   }, [orderComplete, fetchCart]);
   
@@ -141,6 +154,7 @@ export default function CheckoutPage() {
         },
         body: JSON.stringify({
           ...data,
+          sessionId: sessionId, // Передаем ID сессии
           totalAmount: total,
           deliveryMethodText: data.deliveryMethod === 'courier' ? 'Курьером' : 'Самовывоз',
           deliveryPrice: data.deliveryMethod === 'courier' ? deliveryCost : 0, 
