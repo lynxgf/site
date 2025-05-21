@@ -1129,8 +1129,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Рейтинг должен быть от 1 до 5" });
       }
       
+      // Используем текущий sessionId для привязки отзыва к сессии
+      const sessionId = req.session.sessionId;
+      
       const review = await storage.createReview({
         productId,
+        sessionId,
         customerName,
         rating,
         comment
