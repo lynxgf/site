@@ -19,6 +19,11 @@ declare module "express-session" {
     userId?: number;
     isAdmin?: boolean;
     sessionId: string;
+    cartProducts?: Array<{
+      id: number;
+      name: string;
+      price: string;
+    }>;
   }
 }
 
@@ -568,7 +573,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           customerEmail: orderData.customerEmail,
           customerPhone: orderData.customerPhone,
           address: orderData.address,
-          totalAmount: orderData.totalAmount,
+          totalAmount: String(orderData.totalAmount),
           status: "pending"
         },
         orderItems
@@ -588,6 +593,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   app.get("/api/orders", async (req, res) => {
     const sessionId = req.session.sessionId;
+    if (!sessionId) {
+      return res.status(400).json({ message: "Отсутствует идентификатор сессии" });
+    }
     const orders = await storage.getOrdersBySessionId(sessionId);
     res.json(orders);
   });
