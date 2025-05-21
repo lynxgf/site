@@ -91,9 +91,11 @@ export default function AdminOrders() {
   // Update order status mutation
   const updateOrderStatusMutation = useMutation({
     mutationFn: async ({ orderId, status }: { orderId: number; status: string }) => {
+      console.log(`Обновление статуса заказа #${orderId} на ${status}`);
       return apiRequest('PATCH', `/api/admin/orders/${orderId}`, { status });
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
+      console.log("Статус заказа успешно обновлен:", data);
       toast({
         title: 'Успех',
         description: 'Статус заказа успешно обновлен',
@@ -105,6 +107,7 @@ export default function AdminOrders() {
       queryClient.invalidateQueries({ queryKey: ['/api/admin/orders'] });
     },
     onError: (error) => {
+      console.error("Ошибка при обновлении статуса:", error);
       toast({
         title: 'Ошибка',
         description: error instanceof Error ? error.message : 'Не удалось обновить статус заказа',

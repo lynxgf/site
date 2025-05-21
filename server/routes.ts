@@ -623,25 +623,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json(orders);
   });
   
-  app.patch("/api/admin/orders/:id/status", requireAdmin, async (req, res) => {
-    const id = parseInt(req.params.id);
-    const { status } = req.body;
-    
-    if (isNaN(id)) {
-      return res.status(400).json({ message: "Invalid order ID" });
+  app.patch("/api/admin/orders/:id", requireAdmin, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const { status } = req.body;
+      
+      if (isNaN(id)) {
+        return res.status(400).json({ message: "Неверный ID заказа" });
+      }
+      
+      if (!status || !["pending", "processing", "shipped", "delivered", "completed", "cancelled"].includes(status)) {
+        return res.status(400).json({ message: "Неверный статус заказа" });
+      }
+      
+      const updatedOrder = await storage.updateOrderStatus(id, status);
+      
+      if (!updatedOrder) {
+        return res.status(404).json({ message: "Заказ не найден" });
+      }
+      
+      console.log("Статус заказа обновлен:", id, status);
+      res.json(updatedOrder);
+    } catch (error) {
+      console.error("Ошибка при обновлении статуса заказа:", error);
+      res.status(500).json({ message: "Ошибка при обновлении статуса заказа" });
     }
-    
-    if (!status || !["pending", "processing", "completed", "cancelled"].includes(status)) {
-      return res.status(400).json({ message: "Invalid status" });
-    }
-    
-    const updatedOrder = await storage.updateOrderStatus(id, status);
-    
-    if (!updatedOrder) {
-      return res.status(404).json({ message: "Order not found" });
-    }
-    
-    res.json(updatedOrder);
   });
   
   // API для импорта товаров
