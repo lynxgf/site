@@ -286,13 +286,13 @@ export class DatabaseStorage implements IStorage {
                   INSERT INTO order_items (
                     order_id, product_id, product_name, quantity, 
                     selected_size, custom_width, custom_length, 
-                    selected_fabric_category, selected_fabric, 
+                    selected_fabric_category, selected_fabric, fabric_name,
                     has_lifting_mechanism, price
                   ) VALUES (
                     ${safeOrderItem.order_id}, ${safeOrderItem.product_id}, ${safeOrderItem.product_name}, 
                     ${safeOrderItem.quantity}, ${safeOrderItem.selected_size}, 
                     ${safeOrderItem.custom_width}, ${safeOrderItem.custom_length}, 
-                    ${safeOrderItem.selected_fabric_category}, ${safeOrderItem.selected_fabric}, 
+                    ${safeOrderItem.selected_fabric_category}, ${safeOrderItem.selected_fabric}, ${safeOrderItem.fabric_name},
                     ${safeOrderItem.has_lifting_mechanism}, ${safeOrderItem.price}
                   )
                 `);
