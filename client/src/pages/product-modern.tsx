@@ -333,189 +333,119 @@ export default function ProductPageModern() {
               </div>
             </div>
             
-            {/* Reviews Section */}
+            {/* Reviews Section - простая версия */}
             <div className="bg-white p-8 border border-gray-200 rounded-sm mb-16">
-              <h2 className="text-2xl font-medium text-gray-900 mb-6">Отзывы клиентов</h2>
+              <h2 className="text-2xl font-medium text-gray-900 mb-6">Отзывы</h2>
               
-              {/* Простой блок с отзывами */}
-              {reviews?.length > 0 ? (
-                <div className="mb-10 space-y-6">
+              {/* Отображение отзывов или сообщение об их отсутствии */}
+              {reviews && reviews.length > 0 ? (
+                <div className="space-y-4 mb-8">
                   {reviews.map((review) => (
-                    <div key={review.id} className="border border-gray-200 rounded-lg p-4">
+                    <div key={review.id} className="border-b border-gray-100 pb-4">
                       <div className="flex justify-between">
-                        <div>
-                          <p className="font-semibold text-lg">{review.customerName}</p>
-                          <div className="flex mt-1">
-                            {Array.from({ length: 5 }).map((_, i) => (
-                              <svg 
-                                key={i}
-                                xmlns="http://www.w3.org/2000/svg" 
-                                viewBox="0 0 24 24" 
-                                className={`w-5 h-5 ${i < review.rating ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'}`}
-                              >
-                                <path fillRule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.007 5.404.433c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.433 2.082-5.006z" clipRule="evenodd" />
-                              </svg>
-                            ))}
-                            <span className="ml-2 text-sm text-gray-500">
-                              {new Date(review.createdAt).toLocaleDateString('ru-RU')}
-                            </span>
-                          </div>
-                        </div>
-                        
-                        {session?.isAdmin && (
-                          <button
-                            onClick={() => {
-                              if (confirm('Вы уверены, что хотите удалить этот отзыв?')) {
-                                fetch(`/api/products/${productId}/reviews/${review.id}`, {
-                                  method: "DELETE",
-                                }).then(() => {
-                                  window.location.reload();
-                                });
-                              }
-                            }}
-                            className="text-red-500 hover:text-red-700"
-                          >
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
-                              <path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
-                            </svg>
-                          </button>
-                        )}
+                        <strong>{review.customerName}</strong>
+                        <span>{new Date(review.createdAt).toLocaleDateString()}</span>
                       </div>
-                      <p className="mt-2 text-gray-700">{review.comment}</p>
+                      <div className="flex items-center my-2">
+                        {[...Array(5)].map((_, i) => (
+                          <span key={i} className={i < review.rating ? "text-yellow-400" : "text-gray-300"}>★</span>
+                        ))}
+                      </div>
+                      <p>{review.comment}</p>
                     </div>
                   ))}
                 </div>
               ) : (
-                <p className="text-gray-500 italic mb-6">У этого товара пока нет отзывов. Будьте первым!</p>
+                <p className="text-gray-500 mb-8">У этого товара пока нет отзывов.</p>
               )}
               
-              {/* Форма добавления отзыва */}
-              <div className="border-t border-gray-200 pt-6 mt-6">
-                <h3 className="text-xl font-medium text-gray-900 mb-4">Оставить отзыв</h3>
-                
-                <div className="space-y-4">
-                  <div>
-                    <label htmlFor="reviewName" className="block text-sm font-medium text-gray-700 mb-1">
-                      Ваше имя *
-                    </label>
+              {/* Форма для добавления отзыва */}
+              <div className="border-t border-gray-200 pt-6">
+                <h3 className="text-xl font-medium mb-4">Оставить отзыв</h3>
+                <form onSubmit={(e) => {
+                  e.preventDefault();
+                  const form = e.target as HTMLFormElement;
+                  const formData = new FormData(form);
+                  
+                  fetch(`/api/products/${productId}/reviews`, {
+                    method: "POST",
+                    headers: {
+                      "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                      customerName: formData.get("name"),
+                      rating: parseInt(formData.get("rating") as string),
+                      comment: formData.get("comment")
+                    })
+                  })
+                  .then(response => {
+                    if (response.ok) {
+                      alert("Спасибо за ваш отзыв!");
+                      window.location.reload();
+                    } else {
+                      alert("Произошла ошибка при отправке отзыва");
+                    }
+                  })
+                  .catch(error => {
+                    console.error("Ошибка:", error);
+                    alert("Произошла ошибка при отправке отзыва");
+                  });
+                }}>
+                  <div className="mb-4">
+                    <label htmlFor="name" className="block mb-1">Ваше имя*</label>
                     <input 
                       type="text" 
-                      id="reviewName" 
-                      className="w-full p-2 border border-gray-300 rounded-md focus:ring-[#8e2b85] focus:border-[#8e2b85]"
-                      placeholder="Введите ваше имя"
+                      id="name" 
+                      name="name" 
+                      required
+                      className="w-full p-2 border border-gray-300 rounded"
                     />
                   </div>
                   
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Оценка *
-                    </label>
-                    <div className="flex gap-1">
-                      {Array.from({ length: 5 }).map((_, i) => (
-                        <button 
-                          key={i}
-                          type="button"
-                          className="rating-star"
-                          data-rating={i + 1}
-                          onClick={(e) => {
-                            const stars = document.querySelectorAll('.rating-star svg');
-                            const rating = parseInt((e.currentTarget as HTMLButtonElement).getAttribute('data-rating') || '5');
-                            
-                            stars.forEach((star, index) => {
-                              if (index < rating) {
-                                star.classList.add('text-yellow-400');
-                                star.classList.add('fill-yellow-400');
-                              } else {
-                                star.classList.remove('text-yellow-400');
-                                star.classList.remove('fill-yellow-400');
-                                star.classList.add('text-gray-300');
-                              }
-                            });
-                            
-                            // Сохраняем значение рейтинга
-                            const hiddenInput = document.getElementById('rating-value') as HTMLInputElement;
-                            if (hiddenInput) hiddenInput.value = rating.toString();
-                          }}
-                        >
-                          <svg 
-                            xmlns="http://www.w3.org/2000/svg" 
-                            viewBox="0 0 24 24" 
-                            className={`w-8 h-8 ${i === 0 ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'}`}
-                          >
-                            <path fillRule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.007 5.404.433c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.433 2.082-5.006z" clipRule="evenodd" />
-                          </svg>
-                        </button>
-                      ))}
+                  <div className="mb-4">
+                    <label className="block mb-1">Оценка*</label>
+                    <div className="flex gap-2">
+                      <label className="flex items-center">
+                        <input type="radio" name="rating" value="1" />
+                        <span className="ml-1">1</span>
+                      </label>
+                      <label className="flex items-center">
+                        <input type="radio" name="rating" value="2" />
+                        <span className="ml-1">2</span>
+                      </label>
+                      <label className="flex items-center">
+                        <input type="radio" name="rating" value="3" />
+                        <span className="ml-1">3</span>
+                      </label>
+                      <label className="flex items-center">
+                        <input type="radio" name="rating" value="4" />
+                        <span className="ml-1">4</span>
+                      </label>
+                      <label className="flex items-center">
+                        <input type="radio" name="rating" value="5" checked />
+                        <span className="ml-1">5</span>
+                      </label>
                     </div>
-                    <input type="hidden" id="rating-value" value="1" />
                   </div>
                   
-                  <div>
-                    <label htmlFor="reviewComment" className="block text-sm font-medium text-gray-700 mb-1">
-                      Ваш отзыв *
-                    </label>
+                  <div className="mb-4">
+                    <label htmlFor="comment" className="block mb-1">Ваш отзыв*</label>
                     <textarea
-                      id="reviewComment"
+                      id="comment"
+                      name="comment"
                       rows={4}
-                      className="w-full p-2 border border-gray-300 rounded-md focus:ring-[#8e2b85] focus:border-[#8e2b85]"
-                      placeholder="Расскажите о вашем опыте использования товара"
+                      required
+                      className="w-full p-2 border border-gray-300 rounded"
                     ></textarea>
                   </div>
                   
-                  <div className="pt-4">
-                    <button
-                      type="button"
-                      className="bg-[#8e2b85] text-white px-4 py-2 rounded-md hover:bg-opacity-90 transition-colors"
-                      onClick={() => {
-                        const nameInput = document.getElementById('reviewName') as HTMLInputElement;
-                        const commentTextarea = document.getElementById('reviewComment') as HTMLTextAreaElement;
-                        const ratingInput = document.getElementById('rating-value') as HTMLInputElement;
-                        
-                        const name = nameInput?.value;
-                        const comment = commentTextarea?.value;
-                        const rating = parseInt(ratingInput?.value || '5');
-                        
-                        if (!name || name.trim() === '') {
-                          alert('Пожалуйста, укажите ваше имя');
-                          return;
-                        }
-                        
-                        if (!comment || comment.trim() === '') {
-                          alert('Пожалуйста, напишите отзыв о товаре');
-                          return;
-                        }
-                        
-                        // Отправляем отзыв
-                        fetch(`/api/products/${productId}/reviews`, {
-                          method: 'POST',
-                          headers: {
-                            'Content-Type': 'application/json',
-                          },
-                          body: JSON.stringify({
-                            customerName: name,
-                            rating,
-                            comment
-                          })
-                        })
-                        .then(response => {
-                          if (response.ok) {
-                            alert('Спасибо за ваш отзыв!');
-                            // Перезагружаем страницу для отображения нового отзыва
-                            window.location.reload();
-                          } else {
-                            alert('Произошла ошибка при отправке отзыва');
-                          }
-                        })
-                        .catch(error => {
-                          console.error('Ошибка:', error);
-                          alert('Произошла ошибка при отправке отзыва');
-                        });
-                      }}
-                    >
-                      Отправить отзыв
-                    </button>
-                  </div>
-                </div>
+                  <button
+                    type="submit"
+                    className="px-4 py-2 bg-[#8e2b85] text-white rounded hover:bg-opacity-90"
+                  >
+                    Отправить отзыв
+                  </button>
+                </form>
               </div>
             </div>
             
