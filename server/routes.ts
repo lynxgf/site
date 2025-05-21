@@ -507,15 +507,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
     
     try {
+      console.log("Данные заказа:", JSON.stringify(req.body, null, 2));
+      
       // Validate order data
-      const orderSchema = insertOrderSchema.extend({
+      const orderSchema = z.object({
         customerName: z.string(),
         customerEmail: z.string().email(),
         customerPhone: z.string(), 
-        address: z.string(),
+        address: z.string().optional().default(""),
         deliveryMethod: z.enum(['courier', 'pickup']),
         paymentMethod: z.enum(['card', 'cash']),
-        comment: z.string().optional(),
+        comment: z.string().optional().nullable(),
         totalAmount: z.union([z.number(), z.string()]),
         items: z.array(z.object({
           productId: z.number(),
