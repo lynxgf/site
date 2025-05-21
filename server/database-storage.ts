@@ -170,24 +170,7 @@ export class DatabaseStorage implements IStorage {
         // Insert the order
         const [newOrder] = await tx
           .insert(orders)
-          .values({
-            sessionId: order.sessionId,
-            customerName: order.customerName,
-            customerEmail: order.customerEmail,
-            customerPhone: order.customerPhone,
-            address: order.address || '',
-            // Явно указываем поля доставки
-            delivery_method: order.deliveryMethod,
-            delivery_method_text: order.deliveryMethodText,
-            delivery_price: order.deliveryPrice,
-            // Явно указываем поля оплаты
-            payment_method: order.paymentMethod,
-            payment_method_text: order.paymentMethodText,
-            // Комментарий
-            comment: order.comment,
-            totalAmount: order.totalAmount,
-            status: order.status
-          })
+          .values(order)
           .returning();
         
         console.log("DATABASE_STORAGE: Заказ успешно создан:", newOrder);
