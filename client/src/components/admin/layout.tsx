@@ -50,7 +50,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   }, [session, sessionLoading, toast]);
 
   const navItems = [
-    { path: "/admin", label: "Панель управления", icon: <LayoutDashboard className="h-5 w-5" /> },
+    { path: "/admin/dashboard", label: "Панель управления", icon: <LayoutDashboard className="h-5 w-5" /> },
     { path: "/admin/products", label: "Товары", icon: <ShoppingBag className="h-5 w-5" /> },
     { path: "/admin/orders", label: "Заказы", icon: <Package className="h-5 w-5" /> },
     { path: "/admin/users", label: "Пользователи", icon: <Users className="h-5 w-5" /> },
