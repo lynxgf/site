@@ -445,3 +445,143 @@ export const useConfigurationStore = create<ConfigurationState>((set) => ({
   
   resetConfiguration: () => set(initialConfig)
 }));
+
+// Интерфейс для настроек магазина
+export interface ShopSettings {
+  // General settings
+  shopName: string;
+  shopDescription: string;
+  contactEmail: string;
+  contactPhone: string;
+  address: string;
+  workingHours: string;
+  
+  // Social media
+  instagramUrl: string;
+  facebookUrl: string;
+  twitterUrl: string;
+  
+  // Delivery settings
+  enableFreeDelivery: boolean;
+  freeDeliveryThreshold: number;
+  deliveryPriceLocal: number;
+  deliveryPriceRegional: number;
+  
+  // Payment settings
+  enableCashPayment: boolean;
+  enableCardPayment: boolean;
+  enableOnlinePayment: boolean;
+  
+  // Email notifications
+  sendOrderConfirmation: boolean;
+  sendOrderStatusUpdates: boolean;
+  sendOrderShipped: boolean;
+  
+  // SMS notifications
+  enableSmsNotifications: boolean;
+  smsOrderConfirmation: boolean;
+  smsOrderStatusUpdate: boolean;
+}
+
+// Состояние настроек магазина
+interface SettingsState {
+  settings: ShopSettings | null;
+  isLoading: boolean;
+  error: string | null;
+  fetchSettings: () => Promise<ShopSettings | null>;
+  updateSettings: (newSettings: ShopSettings) => Promise<boolean>;
+}
+
+// Значения по умолчанию для настроек
+const defaultSettings: ShopSettings = {
+  shopName: 'Матрасовъ',
+  shopDescription: 'Магазин высококачественных матрасов и кроватей',
+  contactEmail: 'info@матрасовъ.рф',
+  contactPhone: '+7 (495) 123-45-67',
+  address: 'г. Москва, ул. Матрасная, д. 1',
+  workingHours: 'ПН-ВС: 10:00 - 20:00',
+  instagramUrl: 'https://instagram.com/matrasov',
+  facebookUrl: 'https://facebook.com/matrasov',
+  twitterUrl: '',
+  enableFreeDelivery: true,
+  freeDeliveryThreshold: 20000,
+  deliveryPriceLocal: 1000,
+  deliveryPriceRegional: 3000,
+  enableCashPayment: true,
+  enableCardPayment: true,
+  enableOnlinePayment: true,
+  sendOrderConfirmation: true,
+  sendOrderStatusUpdates: true,
+  sendOrderShipped: true,
+  enableSmsNotifications: true,
+  smsOrderConfirmation: true,
+  smsOrderStatusUpdate: false,
+};
+
+// Создаем хранилище для настроек магазина
+export const useSettingsStore = create<SettingsState>((set, get) => ({
+  settings: null,
+  isLoading: false,
+  error: null,
+  
+  fetchSettings: async () => {
+    set({ isLoading: true, error: null });
+    try {
+      // Для обычных пользователей используем публичный эндпоинт
+      const url = '/api/settings';
+      const res = await fetch(url);
+      
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.message || 'Ошибка загрузки настроек');
+      }
+      
+      const settingsData = await res.json();
+      set({ settings: settingsData, isLoading: false });
+      return settingsData;
+    } catch (error) {
+      // Если настройки не были загружены, используем значения по умолчанию
+      set({ 
+        settings: defaultSettings,
+        error: error instanceof Error ? error.message : 'Ошибка загрузки настроек', 
+        isLoading: false 
+      });
+      return defaultSettings;
+    }
+  },
+  
+  updateSettings: async (newSettings: ShopSettings) => {
+    set({ isLoading: true, error: null });
+    try {
+      // Только для админов
+      const url = '/api/admin/settings';
+      const res = await fetch(url, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(newSettings)
+      });
+      
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.message || 'Ошибка обновления настроек');
+      }
+      
+      const updatedSettings = await res.json();
+      set({ settings: updatedSettings, isLoading: false });
+      
+      // Инвалидируем кеш настроек, чтобы все компоненты обновились
+      queryClient.invalidateQueries({queryKey: ['/api/settings']});
+      queryClient.invalidateQueries({queryKey: ['/api/admin/settings']});
+      
+      return true;
+    } catch (error) {
+      set({ 
+        error: error instanceof Error ? error.message : 'Ошибка обновления настроек', 
+        isLoading: false 
+      });
+      return false;
+    }
+  }
+}));
