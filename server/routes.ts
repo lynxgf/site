@@ -595,19 +595,32 @@ export async function registerRoutes(app: Express): Promise<Server> {
         ? req.body.totalAmount.toString() 
         : (req.body.totalAmount || "0");
       
+      // Устанавливаем цену доставки автоматически в зависимости от выбранного способа
+      const deliveryMethod = req.body.deliveryMethod || 'pickup';
+      const deliveryPrice = deliveryMethod === 'courier' ? '500.00' : '0.00';
+      
+      // Если общая сумма заказа указана, то добавляем к ней стоимость доставки
+      let finalTotalAmount = totalAmount;
+      if (deliveryMethod === 'courier' && typeof finalTotalAmount === 'string' && finalTotalAmount !== '0') {
+        // Преобразуем строки в числа для правильного сложения
+        const numericTotal = parseFloat(finalTotalAmount);
+        const numericDelivery = 500.00;
+        finalTotalAmount = (numericTotal + numericDelivery).toString();
+      }
+      
       const orderToCreate = {
         session_id: sessionId,
         customer_name: req.body.customerName,
         customer_email: req.body.customerEmail,
         customer_phone: req.body.customerPhone,
         address: req.body.address || '',
-        delivery_method: req.body.deliveryMethod || 'pickup',
-        delivery_method_text: req.body.deliveryMethodText || (req.body.deliveryMethod === 'courier' ? 'Курьером' : 'Самовывоз'),
-        delivery_price: req.body.deliveryPrice?.toString() || '0',
+        delivery_method: deliveryMethod,
+        delivery_method_text: deliveryMethod === 'courier' ? 'Курьером' : 'Самовывоз',
+        delivery_price: deliveryPrice,
         payment_method: req.body.paymentMethod || 'cash',
         payment_method_text: req.body.paymentMethodText || (req.body.paymentMethod === 'card' ? 'Банковской картой' : 'Наличными'),
         comment: req.body.comment || null,
-        total_amount: totalAmount,
+        total_amount: finalTotalAmount,
         status: "pending"
       };
       
