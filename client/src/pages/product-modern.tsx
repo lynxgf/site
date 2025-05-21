@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "wouter";
 import { useQuery } from "@tanstack/react-query";
-import { Product } from "@shared/schema";
+import { Product, Review } from "@shared/schema";
 import ProductConfigurator from "@/components/product/product-configurator";
 import ProductReviews from "@/components/product/reviews";
 import { Button } from "@/components/ui/button";
@@ -16,6 +16,11 @@ export default function ProductPageModern() {
   
   const { data: product, isLoading } = useQuery<Product>({
     queryKey: [`/api/products/${productId}`],
+  });
+  
+  const { data: reviews = [] } = useQuery<Review[]>({
+    queryKey: [`/api/products/${productId}/reviews`],
+    enabled: !!productId,
   });
   
   const { data: allProducts } = useQuery<Product[]>({
@@ -211,7 +216,7 @@ export default function ProductPageModern() {
                         </svg>
                       ))}
                     </div>
-                    <span className="text-sm text-gray-500">(24 отзыва)</span>
+                    <span className="text-sm text-gray-500">({reviews.length} {reviews.length === 1 ? 'отзыв' : reviews.length > 1 && reviews.length < 5 ? 'отзыва' : 'отзывов'})</span>
                   </div>
                   
                   <div className="px-2 py-1 bg-green-50 text-green-700 text-xs rounded flex items-center">
