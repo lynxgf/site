@@ -41,6 +41,12 @@ export interface IStorage {
   getOrderItems(orderId: number): Promise<OrderItem[]>;
   getOrdersBySessionId(sessionId: string): Promise<Order[]>;
   updateOrderStatus(id: number, status: string): Promise<Order | undefined>;
+  
+  // Review methods
+  getReviewsByProductId(productId: number): Promise<Review[]>;
+  createReview(review: InsertReview): Promise<Review>;
+  getReviewById(id: number): Promise<Review | undefined>;
+  deleteReview(id: number): Promise<boolean>;
 }
 
 // In-memory storage implementation

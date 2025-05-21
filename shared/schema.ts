@@ -1,4 +1,4 @@
-import { pgTable, text, serial, numeric, integer, boolean, jsonb, timestamp } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, numeric, integer, boolean, jsonb, timestamp, varchar } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -183,3 +183,22 @@ export type ProductSpecification = {
   key: string;
   value: string;
 };
+
+// Reviews schema
+export const reviews = pgTable("reviews", {
+  id: serial("id").primaryKey(),
+  productId: integer("product_id").notNull(),
+  sessionId: text("session_id").notNull(),
+  customerName: text("customer_name").notNull(),
+  rating: integer("rating").notNull(), // 1-5 stars
+  comment: text("comment").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull()
+});
+
+export const insertReviewSchema = createInsertSchema(reviews).omit({
+  id: true,
+  createdAt: true,
+});
+
+export type Review = typeof reviews.$inferSelect;
+export type InsertReview = z.infer<typeof insertReviewSchema>;
