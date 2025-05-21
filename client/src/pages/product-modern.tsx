@@ -335,9 +335,10 @@ export default function ProductPageModern() {
             
             {/* Reviews Section */}
             <div className="bg-white p-8 border border-gray-200 rounded-sm mb-16">
+              <h2 className="text-2xl font-medium text-gray-900 mb-6">Отзывы</h2>
               <ProductReviews 
                 productId={productId} 
-                isAdmin={session?.isAdmin} 
+                isAdmin={session?.isAdmin || false} 
               />
             </div>
             
