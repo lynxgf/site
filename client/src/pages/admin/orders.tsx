@@ -470,7 +470,17 @@ export default function AdminOrders() {
                         <TableCell className="text-right">
                           <Button
                             variant="ghost"
-                            onClick={() => viewOrderDetails(order)}
+                            onClick={async () => {
+                              // Очищаем ранее загруженные товары
+                              setOrderItems([]);
+                              // Устанавливаем выбранный заказ и открываем диалог
+                              setSelectedOrder(order);
+                              setIsDetailsOpen(true);
+                              // Загружаем товары этого заказа
+                              if (order && order.id) {
+                                await fetchOrderItems(order.id);
+                              }
+                            }}
                             size="icon"
                           >
                             <Eye className="h-4 w-4" />
@@ -602,20 +612,35 @@ export default function AdminOrders() {
               </TabsContent>
               
               <TabsContent value="items" className="space-y-4 mt-4">
-                <div className="divide-y">
-                  {getOrderItems(selectedOrder).map((item) => (
-                    <div key={item.id} className="py-3">
-                      <div className="flex justify-between">
-                        <span className="font-medium">{item.productName}</span>
-                        <span>{formatPrice(item.price)} ₽</span>
+                {orderItems.length > 0 ? (
+                  <div className="divide-y">
+                    {orderItems.map((item: any, index: number) => (
+                      <div key={index} className="py-3">
+                        <div className="flex justify-between">
+                          <span className="font-medium">{item.product_name || item.productName}</span>
+                          <span>{formatPrice(item.price)} ₽</span>
+                        </div>
+                        <div className="text-sm text-gray-500 mt-1">
+                          <div>Количество: {item.quantity}</div>
+                          <div>
+                            Размер: {item.selected_size || item.selectedSize}
+                            {item.custom_width && item.custom_length && ` (${item.custom_width}×${item.custom_length})`}
+                          </div>
+                          {(item.fabric_name || item.fabricName) && (
+                            <div>Ткань: {item.fabric_name || item.fabricName}</div>
+                          )}
+                          {(item.has_lifting_mechanism || item.hasLiftingMechanism) && (
+                            <div>С подъемным механизмом</div>
+                          )}
+                        </div>
                       </div>
-                      <div className="text-sm text-gray-500 mt-1">
-                        <div>Количество: {item.quantity}</div>
-                        <div>{item.options}</div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-6 text-gray-500">
+                    Загрузка товаров...
+                  </div>
+                )}
                 
                 <div className="pt-4 border-t text-right">
                   <span className="font-bold">{selectedOrder.totalAmount ? formatPrice(selectedOrder.totalAmount) + " ₽" : "-"}</span>
