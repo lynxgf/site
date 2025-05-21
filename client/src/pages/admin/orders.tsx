@@ -60,12 +60,19 @@ const orderStatuses = [
   { value: 'cancelled', label: 'Отменен', color: 'bg-red-100 text-red-800' },
 ];
 
+// Типы доставки
+const deliveryMethods = [
+  { value: 'courier', label: 'Курьером', color: 'bg-purple-100 text-purple-800', icon: Truck },
+  { value: 'pickup', label: 'Самовывоз', color: 'bg-blue-100 text-blue-800', icon: PackageCheck },
+];
+
 export default function AdminOrders() {
   const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState('');
   const [sortField, setSortField] = useState<string>('id');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
   const [statusFilter, setStatusFilter] = useState<string>('all');
+  const [deliveryFilter, setDeliveryFilter] = useState<string>('all');
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
   
@@ -126,7 +133,7 @@ export default function AdminOrders() {
     }
   };
   
-  // Status filter and search filter
+  // Status filter, delivery filter and search filter
   const filteredOrders = Array.isArray(orders) 
     ? orders.filter(order => {
         // Status filter
@@ -134,13 +141,18 @@ export default function AdminOrders() {
           return false;
         }
         
+        // Delivery method filter
+        if (deliveryFilter !== 'all' && order.deliveryMethod !== deliveryFilter) {
+          return false;
+        }
+        
         // Search term filter
         if (searchTerm) {
           const searchLower = searchTerm.toLowerCase();
           return (
-            order.customerName.toLowerCase().includes(searchLower) ||
-            order.customerEmail.toLowerCase().includes(searchLower) ||
-            order.customerPhone.includes(searchTerm) ||
+            (order.customerName?.toLowerCase() || '').includes(searchLower) ||
+            (order.customerEmail?.toLowerCase() || '').includes(searchLower) ||
+            (order.customerPhone || '').includes(searchTerm) ||
             order.id.toString().includes(searchTerm)
           );
         }
@@ -200,6 +212,26 @@ export default function AdminOrders() {
         {status === 'shipped' && <Truck className="h-3 w-3 mr-1" />}
         {status === 'delivered' || status === 'completed' ? <CheckCircle className="h-3 w-3 mr-1" /> : null}
         {statusObj.label}
+      </Badge>
+    );
+  };
+  
+  // Get delivery method badge
+  const getDeliveryBadge = (method: string) => {
+    const deliveryObj = deliveryMethods.find(m => m.value === method);
+    
+    if (!deliveryObj) {
+      return (
+        <Badge variant="outline" className="bg-gray-100 text-gray-800">
+          Неизвестно
+        </Badge>
+      );
+    }
+    
+    return (
+      <Badge variant="outline" className={deliveryObj.color}>
+        <deliveryObj.icon className="h-3 w-3 mr-1" />
+        {deliveryObj.label}
       </Badge>
     );
   };
@@ -364,13 +396,34 @@ export default function AdminOrders() {
                 </SelectContent>
               </Select>
               
+              <Select 
+                value={deliveryFilter} 
+                onValueChange={setDeliveryFilter}
+              >
+                <SelectTrigger className="w-[180px]">
+                  <SelectValue placeholder="Способ доставки" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Все способы</SelectItem>
+                  {deliveryMethods.map(method => (
+                    <SelectItem key={method.value} value={method.value}>
+                      <div className="flex items-center">
+                        <method.icon className="mr-2 h-4 w-4" />
+                        {method.label}
+                      </div>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              
               <Button 
                 variant="outline" 
                 onClick={() => {
                   setSearchTerm('');
                   setStatusFilter('all');
+                  setDeliveryFilter('all');
                 }}
-                disabled={!searchTerm && statusFilter === 'all'}
+                disabled={!searchTerm && statusFilter === 'all' && deliveryFilter === 'all'}
               >
                 Сбросить
               </Button>
@@ -430,6 +483,15 @@ export default function AdminOrders() {
                         onClick={() => handleSort('totalAmount')}
                       >
                         Сумма
+                        <ArrowUpDown className="ml-2 h-4 w-4" />
+                      </div>
+                    </TableHead>
+                    <TableHead>
+                      <div 
+                        className="flex items-center cursor-pointer"
+                        onClick={() => handleSort('deliveryMethod')}
+                      >
+                        Доставка
                         <ArrowUpDown className="ml-2 h-4 w-4" />
                       </div>
                     </TableHead>
