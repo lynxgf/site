@@ -3,6 +3,7 @@ import { useParams, Link } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import { Product } from "@shared/schema";
 import ProductConfigurator from "@/components/product/product-configurator";
+import ProductReviews from "@/components/product/reviews";
 import { Button } from "@/components/ui/button";
 import { useCartStore } from "@/lib/store";
 import { toast } from "@/hooks/use-toast";

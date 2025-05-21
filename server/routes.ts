@@ -688,6 +688,79 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json(orders);
   });
   
+  // Маршруты для работы с отзывами
+  app.get("/api/products/:id/reviews", async (req, res) => {
+    try {
+      const productId = parseInt(req.params.id);
+      if (isNaN(productId)) {
+        return res.status(400).json({ message: "Некорректный ID товара" });
+      }
+      
+      const reviews = await storage.getReviewsByProductId(productId);
+      res.json(reviews);
+    } catch (error) {
+      console.error("Ошибка при получении отзывов:", error);
+      res.status(500).json({ message: "Ошибка сервера при получении отзывов" });
+    }
+  });
+  
+  app.post("/api/products/:id/reviews", async (req, res) => {
+    try {
+      const productId = parseInt(req.params.id);
+      if (isNaN(productId)) {
+        return res.status(400).json({ message: "Некорректный ID товара" });
+      }
+      
+      const sessionId = req.session.sessionId;
+      if (!sessionId) {
+        return res.status(400).json({ message: "Отсутствует идентификатор сессии" });
+      }
+      
+      const { customerName, rating, comment } = req.body;
+      
+      if (!customerName || !rating || !comment) {
+        return res.status(400).json({ message: "Все поля обязательны для заполнения" });
+      }
+      
+      if (rating < 1 || rating > 5) {
+        return res.status(400).json({ message: "Оценка должна быть от 1 до 5" });
+      }
+      
+      const review = await storage.createReview({
+        productId,
+        sessionId,
+        customerName,
+        rating,
+        comment
+      });
+      
+      res.status(201).json(review);
+    } catch (error) {
+      console.error("Ошибка при создании отзыва:", error);
+      res.status(500).json({ message: "Ошибка сервера при создании отзыва" });
+    }
+  });
+  
+  app.delete("/api/reviews/:id", async (req, res) => {
+    try {
+      const reviewId = parseInt(req.params.id);
+      if (isNaN(reviewId)) {
+        return res.status(400).json({ message: "Некорректный ID отзыва" });
+      }
+      
+      const success = await storage.deleteReview(reviewId);
+      
+      if (success) {
+        res.status(204).send();
+      } else {
+        res.status(404).json({ message: "Отзыв не найден" });
+      }
+    } catch (error) {
+      console.error("Ошибка при удалении отзыва:", error);
+      res.status(500).json({ message: "Ошибка сервера при удалении отзыва" });
+    }
+  });
+  
   app.get("/api/orders/:id", async (req, res) => {
     const id = parseInt(req.params.id);
     const sessionId = req.session.sessionId;
