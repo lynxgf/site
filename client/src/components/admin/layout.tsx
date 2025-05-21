@@ -10,7 +10,8 @@ import {
   Package, 
   Settings, 
   FileText, 
-  Users
+  Users,
+  Star
 } from "lucide-react";
 
 interface AdminLayoutProps {
@@ -52,6 +53,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     { path: "/admin/products", label: "Товары", icon: <ShoppingBag className="mr-2 h-4 w-4" /> },
     { path: "/admin/orders", label: "Заказы", icon: <Package className="mr-2 h-4 w-4" /> },
     { path: "/admin/users", label: "Пользователи", icon: <Users className="mr-2 h-4 w-4" /> },
+    { path: "/admin/reviews", label: "Отзывы", icon: <Star className="mr-2 h-4 w-4" /> },
     { path: "/admin/export", label: "Экспорт данных", icon: <FileText className="mr-2 h-4 w-4" /> },
     { path: "/admin/settings", label: "Настройки", icon: <Settings className="mr-2 h-4 w-4" /> },
   ];

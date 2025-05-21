@@ -30,6 +30,7 @@ import AdminOrders from "@/pages/admin/orders";
 import AdminUsers from "@/pages/admin/users";
 import AdminSettings from "@/pages/admin/settings";
 import AdminExport from "@/pages/admin/export";
+import AdminReviews from "@/pages/admin/reviews";
 import NotFound from "@/pages/not-found";
 
 // Admin route guard
@@ -113,6 +114,9 @@ function Router() {
       </Route>
       <Route path="/admin/export">
         {(params) => <AdminRoute component={AdminExport} params={params} />}
+      </Route>
+      <Route path="/admin/reviews">
+        {(params) => <AdminRoute component={AdminReviews} params={params} />}
       </Route>
       
       {/* Fallback to 404 */}
