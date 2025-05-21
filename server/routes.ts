@@ -523,6 +523,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           paymentMethodText: z.string().optional(),
           comment: z.string().optional().nullable(),
           totalAmount: z.union([z.number(), z.string()]),
+          sessionId: z.string(),
           items: z.array(z.object({
             productId: z.number(),
             quantity: z.number(),
@@ -537,8 +538,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
           }))
         });
         
-        // Парсим и валидируем данные
-        const orderData = orderSchema.parse(req.body);
+        // Парсим и валидируем данные, добавляем sessionId
+        const orderData = orderSchema.parse({
+          ...req.body,
+          sessionId: sessionId
+        });
         
         // Проверяем наличие товаров в корзине
         const cartItems = await storage.getCartItems(sessionId);
