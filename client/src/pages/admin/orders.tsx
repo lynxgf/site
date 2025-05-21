@@ -72,74 +72,9 @@ export default function AdminOrders() {
   // Fetch orders
   const { data: orders = [], isLoading, error } = useQuery<Order[]>({
     queryKey: ['/api/admin/orders'],
-    queryFn: async () => {
-      try {
-        const response = await apiRequest('GET', '/api/admin/orders');
-        const data = response as any;
-        return data as Order[];
-      } catch (error) {
-        // В реальном приложении здесь будет использоваться API
-        // Для демонстрации используем мок-данные
-        const mockOrders: Order[] = [
-          {
-            id: 1,
-            sessionId: '123',
-            customerName: 'Иван Петров',
-            customerEmail: 'ivan@example.com',
-            customerPhone: '+7 900 123-45-67',
-            address: 'г. Москва, ул. Примерная, д. 1, кв. 123',
-            totalAmount: '52400',
-            status: 'completed',
-            createdAt: new Date('2023-08-15')
-          },
-          {
-            id: 2,
-            sessionId: '456',
-            customerName: 'Анна Смирнова',
-            customerEmail: 'anna@example.com',
-            customerPhone: '+7 900 987-65-43',
-            address: 'г. Санкт-Петербург, ул. Тестовая, д. 5, кв. 42',
-            totalAmount: '41900',
-            status: 'processing',
-            createdAt: new Date('2023-08-20')
-          },
-          {
-            id: 3,
-            sessionId: '789',
-            customerName: 'Сергей Иванов',
-            customerEmail: 'sergey@example.com',
-            customerPhone: '+7 900 111-22-33',
-            address: 'г. Екатеринбург, ул. Образцовая, д. 10, кв. 15',
-            totalAmount: '28900',
-            status: 'pending',
-            createdAt: new Date('2023-08-25')
-          },
-          {
-            id: 4,
-            sessionId: '101',
-            customerName: 'Мария Кузнецова',
-            customerEmail: 'maria@example.com',
-            customerPhone: '+7 900 444-55-66',
-            address: 'г. Новосибирск, ул. Пример, д. 7, кв. 33',
-            totalAmount: '35700',
-            status: 'shipped',
-            createdAt: new Date('2023-08-28')
-          },
-          {
-            id: 5,
-            sessionId: '102',
-            customerName: 'Алексей Соколов',
-            customerEmail: 'alexey@example.com',
-            customerPhone: '+7 900 777-88-99',
-            address: 'г. Казань, ул. Тестовая, д. 15, кв. 78',
-            totalAmount: '63200',
-            status: 'cancelled',
-            createdAt: new Date('2023-08-22')
-          }
-        ];
-        return mockOrders;
-      }
-    },
+    refetchInterval: 5000, // Обновление каждые 5 секунд
+    refetchOnWindowFocus: true, // Обновление при фокусе окна
+    staleTime: 3000, // Данные считаются устаревшими через 3 секунды
   });
   
   // Update order status mutation
@@ -478,30 +413,26 @@ export default function AdminOrders() {
                           <div className="font-medium">{order.customerName}</div>
                         </TableCell>
                         <TableCell>
-                          <div className="text-sm text-gray-600">{order.customerEmail}</div>
-                          <div className="text-sm">{order.customerPhone}</div>
+                          <div className="text-sm">{order.customerEmail}</div>
+                          <div className="text-sm text-gray-500">{order.customerPhone}</div>
                         </TableCell>
                         <TableCell>
                           <div className="flex items-center">
-                            <Calendar className="h-4 w-4 mr-2 text-gray-400" />
-                            {new Date(order.createdAt).toLocaleDateString('ru-RU')}
+                            <Calendar className="mr-2 h-4 w-4 text-gray-400" />
+                            <span>{new Date(order.createdAt).toLocaleDateString()}</span>
                           </div>
                         </TableCell>
                         <TableCell className="text-right font-medium">
-                          {formatPrice(Number(order.totalAmount))} ₽
+                          {formatPrice(order.totalAmount)} ₽
                         </TableCell>
-                        <TableCell>
-                          {getStatusBadge(order.status)}
-                        </TableCell>
+                        <TableCell>{getStatusBadge(order.status)}</TableCell>
                         <TableCell className="text-right">
                           <Button
                             variant="ghost"
-                            size="sm"
                             onClick={() => viewOrderDetails(order)}
-                            className="text-primary"
+                            size="icon"
                           >
-                            <Eye className="h-4 w-4 mr-2" />
-                            Детали
+                            <Eye className="h-4 w-4" />
                           </Button>
                         </TableCell>
                       </TableRow>
@@ -511,7 +442,8 @@ export default function AdminOrders() {
                       <TableCell colSpan={7} className="text-center py-8 text-gray-500">
                         {searchTerm || statusFilter !== 'all' ? 
                           'Заказы не найдены. Попробуйте изменить параметры поиска.' : 
-                          'Заказы не найдены.'}
+                          'Заказов пока нет.'
+                        }
                       </TableCell>
                     </TableRow>
                   )}
@@ -524,113 +456,121 @@ export default function AdminOrders() {
       
       {/* Order details dialog */}
       <Dialog open={isDetailsOpen} onOpenChange={setIsDetailsOpen}>
-        <DialogContent className="max-w-3xl">
+        <DialogContent className="sm:max-w-[600px]">
           <DialogHeader>
-            <DialogTitle>Заказ #{selectedOrder?.id}</DialogTitle>
+            <DialogTitle>Детали заказа #{selectedOrder?.id}</DialogTitle>
             <DialogDescription>
-              от {selectedOrder ? new Date(selectedOrder.createdAt).toLocaleDateString('ru-RU') : ''}
+              От {selectedOrder?.customerName} ({new Date(selectedOrder?.createdAt || '').toLocaleDateString()})
             </DialogDescription>
           </DialogHeader>
           
           {selectedOrder && (
-            <Tabs defaultValue="details">
-              <TabsList className="mb-4">
-                <TabsTrigger value="details">Информация</TabsTrigger>
+            <Tabs defaultValue="info" className="mt-4">
+              <TabsList className="grid w-full grid-cols-3">
+                <TabsTrigger value="info">Информация</TabsTrigger>
                 <TabsTrigger value="items">Товары</TabsTrigger>
+                <TabsTrigger value="status">Статус</TabsTrigger>
               </TabsList>
               
-              <TabsContent value="details">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <TabsContent value="info" className="space-y-4 mt-4">
+                <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <h3 className="text-sm font-medium text-gray-500 mb-2">Информация о клиенте</h3>
-                    <Card>
-                      <CardContent className="p-4">
-                        <p className="font-medium mb-1">{selectedOrder.customerName}</p>
-                        <p className="text-sm mb-1">{selectedOrder.customerEmail}</p>
-                        <p className="text-sm">{selectedOrder.customerPhone}</p>
-                      </CardContent>
-                    </Card>
+                    <h4 className="text-sm font-medium text-gray-500">Клиент</h4>
+                    <p className="mt-1">{selectedOrder.customerName}</p>
                   </div>
-                  
                   <div>
-                    <h3 className="text-sm font-medium text-gray-500 mb-2">Адрес доставки</h3>
-                    <Card>
-                      <CardContent className="p-4">
-                        <p className="text-sm">{selectedOrder.address}</p>
-                      </CardContent>
-                    </Card>
+                    <h4 className="text-sm font-medium text-gray-500">Email</h4>
+                    <p className="mt-1">{selectedOrder.customerEmail}</p>
                   </div>
-                  
-                  <div className="md:col-span-2">
-                    <h3 className="text-sm font-medium text-gray-500 mb-2">Статус заказа</h3>
-                    <Card>
-                      <CardContent className="p-4">
-                        <Select 
-                          value={selectedOrder.status} 
-                          onValueChange={handleStatusChange}
-                          disabled={updateOrderStatusMutation.isPending}
-                        >
-                          <SelectTrigger>
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {orderStatuses.map(status => (
-                              <SelectItem key={status.value} value={status.value}>
-                                {status.label}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        <p className="text-xs text-gray-500 mt-2">Текущий статус: {getStatusBadge(selectedOrder.status)}</p>
-                      </CardContent>
-                    </Card>
+                  <div>
+                    <h4 className="text-sm font-medium text-gray-500">Телефон</h4>
+                    <p className="mt-1">{selectedOrder.customerPhone}</p>
+                  </div>
+                  <div>
+                    <h4 className="text-sm font-medium text-gray-500">Дата заказа</h4>
+                    <p className="mt-1">{new Date(selectedOrder.createdAt).toLocaleString()}</p>
+                  </div>
+                </div>
+                
+                <div>
+                  <h4 className="text-sm font-medium text-gray-500">Адрес доставки</h4>
+                  <p className="mt-1">{selectedOrder.address}</p>
+                </div>
+                
+                <div className="pt-4 border-t">
+                  <div className="flex justify-between mb-2">
+                    <span className="font-medium">Итого:</span>
+                    <span className="font-bold">{formatPrice(selectedOrder.totalAmount)} ₽</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Статус заказа:</span>
+                    {getStatusBadge(selectedOrder.status)}
                   </div>
                 </div>
               </TabsContent>
               
-              <TabsContent value="items">
-                <h3 className="text-sm font-medium text-gray-500 mb-2">Товары в заказе</h3>
-                <Card>
-                  <CardContent className="p-4">
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>Товар</TableHead>
-                          <TableHead className="text-center">Кол-во</TableHead>
-                          <TableHead className="text-right">Цена</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {getOrderItems(selectedOrder).map(item => (
-                          <TableRow key={item.id}>
-                            <TableCell>
-                              <div className="font-medium">{item.productName}</div>
-                              <div className="text-xs text-gray-500">{item.options}</div>
-                            </TableCell>
-                            <TableCell className="text-center">{item.quantity}</TableCell>
-                            <TableCell className="text-right">{formatPrice(Number(item.price))} ₽</TableCell>
-                          </TableRow>
-                        ))}
-                        <TableRow>
-                          <TableCell colSpan={2} className="text-right font-medium">
-                            Итого:
-                          </TableCell>
-                          <TableCell className="text-right font-medium">
-                            {formatPrice(Number(selectedOrder.totalAmount))} ₽
-                          </TableCell>
-                        </TableRow>
-                      </TableBody>
-                    </Table>
-                  </CardContent>
-                </Card>
+              <TabsContent value="items" className="space-y-4 mt-4">
+                <div className="divide-y">
+                  {getOrderItems(selectedOrder).map((item) => (
+                    <div key={item.id} className="py-3">
+                      <div className="flex justify-between">
+                        <span className="font-medium">{item.productName}</span>
+                        <span>{formatPrice(item.price)} ₽</span>
+                      </div>
+                      <div className="text-sm text-gray-500 mt-1">
+                        <div>Количество: {item.quantity}</div>
+                        <div>{item.options}</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                
+                <div className="pt-4 border-t text-right">
+                  <span className="font-bold">{formatPrice(selectedOrder.totalAmount)} ₽</span>
+                </div>
+              </TabsContent>
+              
+              <TabsContent value="status" className="space-y-4 mt-4">
+                <div>
+                  <h4 className="text-sm font-medium mb-3">Изменить статус заказа</h4>
+                  <Select 
+                    defaultValue={selectedOrder.status} 
+                    onValueChange={handleStatusChange}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Выберите статус" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {orderStatuses.map(status => (
+                        <SelectItem key={status.value} value={status.value}>
+                          {status.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                
+                <div className="border rounded-md p-4 bg-gray-50">
+                  <h4 className="text-sm font-medium mb-2">История статусов</h4>
+                  <div className="space-y-2">
+                    <div className="flex items-center text-sm">
+                      <div className="w-4 h-4 rounded-full bg-green-500 mr-2"></div>
+                      <span className="flex-1">Заказ создан</span>
+                      <span className="text-gray-500">{new Date(selectedOrder.createdAt).toLocaleString()}</span>
+                    </div>
+                    <div className="flex items-center text-sm">
+                      <div className="w-4 h-4 rounded-full bg-blue-500 mr-2"></div>
+                      <span className="flex-1">Статус изменен на "{orderStatuses.find(s => s.value === selectedOrder.status)?.label}"</span>
+                      <span className="text-gray-500">{new Date().toLocaleString()}</span>
+                    </div>
+                  </div>
+                </div>
               </TabsContent>
             </Tabs>
           )}
           
           <DialogFooter>
-            <Button variant="outline" onClick={() => setIsDetailsOpen(false)}>
-              Закрыть
-            </Button>
+            <Button onClick={() => setIsDetailsOpen(false)}>Закрыть</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

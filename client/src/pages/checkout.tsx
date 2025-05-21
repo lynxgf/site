@@ -120,10 +120,15 @@ export default function CheckoutPage() {
       
       const orderData = await response.json();
       
+      console.log("Заказ успешно создан:", orderData);
+      
       // Clear cart and show success message
       await clearCart();
       setOrderComplete(true);
       setOrderId(orderData.order.id);
+      
+      // Принудительно остаемся на странице заказа
+      navigate('/checkout', { replace: true });
       
     } catch (error) {
       toast({
