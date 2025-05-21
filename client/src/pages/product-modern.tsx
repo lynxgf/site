@@ -333,6 +333,14 @@ export default function ProductPageModern() {
               </div>
             </div>
             
+            {/* Reviews Section */}
+            <div className="bg-white p-8 border border-gray-200 rounded-sm mb-16">
+              <ProductReviews 
+                productId={productId} 
+                isAdmin={session?.isAdmin} 
+              />
+            </div>
+            
             {/* Related products */}
             <div>
               <div className="flex items-center justify-between mb-6">
