@@ -31,7 +31,11 @@ export default function ProductsPage() {
     } else {
       setCategory(null);
     }
-  }, [location]);
+
+    // Логирование для отладки
+    console.log("Current location:", location);
+    console.log("Set category to:", category);
+  }, [location, category]);
 
   // Filter products by category and price
   const filteredProducts = products
@@ -39,7 +43,9 @@ export default function ProductsPage() {
       // Показывать только товары в наличии
       if (!product.inStock) return false;
       
-      // Filter by category
+      // Filter by category с логированием
+      console.log("Filtering product:", product.name, "Category:", product.category, "Expected:", category);
+      
       if (category && product.category !== category) return false;
       
       // Filter by price
