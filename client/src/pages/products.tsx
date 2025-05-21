@@ -39,10 +39,13 @@ export default function ProductsPage() {
       // Показывать только товары в наличии
       if (!product.inStock) return false;
       
+      // Отладка - все продукты и их категории
+      console.log(`Продукт: ${product.name}, Категория: ${product.category}, ID: ${product.id}`);
+      
       // Filter by category
       if (category) {
         if (category === "bed") {
-          // Проверяем вариации названия категории
+          // Для "bed" принимаем как единственное, так и множественное число
           if (product.category !== "bed" && product.category !== "beds") {
             return false;
           }
