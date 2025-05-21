@@ -335,11 +335,221 @@ export default function ProductPageModern() {
             
             {/* Reviews Section */}
             <div className="bg-white p-8 border border-gray-200 rounded-sm mb-16">
-              <h2 className="text-2xl font-medium text-gray-900 mb-6">Отзывы</h2>
-              <ProductReviews 
-                productId={productId} 
-                isAdmin={session?.isAdmin || false} 
-              />
+              <h2 className="text-2xl font-medium text-gray-900 mb-6">Отзывы клиентов</h2>
+              <div className="my-8">
+                {reviews && reviews.length > 0 ? (
+                  <div className="space-y-6">
+                    {reviews.map((review) => (
+                      <div key={review.id} className="border rounded-lg p-4 bg-white">
+                        <div className="flex justify-between">
+                          <div>
+                            <p className="font-semibold">{review.customerName}</p>
+                            <div className="flex items-center mt-1">
+                              {[...Array(Math.floor(review.rating))].map((_, i) => (
+                                <svg key={`star-${i}`} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="w-5 h-5 fill-yellow-400 text-yellow-400">
+                                  <path fillRule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.007 5.404.433c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.433 2.082-5.006z" clipRule="evenodd" />
+                                </svg>
+                              ))}
+                              {review.rating % 1 >= 0.5 && (
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 text-yellow-400">
+                                  <path strokeLinecap="round" strokeLinejoin="round" d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.563.563 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z" />
+                                </svg>
+                              )}
+                              {[...Array(5 - Math.ceil(review.rating))].map((_, i) => (
+                                <svg key={`empty-${i}`} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 text-gray-300">
+                                  <path strokeLinecap="round" strokeLinejoin="round" d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.563.563 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z" />
+                                </svg>
+                              ))}
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-3">
+                            <div className="text-sm text-gray-500">
+                              {new Date(review.createdAt).toLocaleDateString('ru-RU')}
+                            </div>
+                            {session?.isAdmin && (
+                              <button
+                                onClick={() => {
+                                  fetch(`/api/products/${productId}/reviews/${review.id}`, {
+                                    method: "DELETE",
+                                  }).then(() => {
+                                    // Перезагрузка отзывов
+                                    window.location.reload();
+                                  });
+                                }}
+                                className="text-red-500 hover:text-red-700 transition-colors"
+                                title="Удалить отзыв"
+                                aria-label="Удалить отзыв"
+                              >
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
+                                  <path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+                                </svg>
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                        <p className="mt-2">{review.comment}</p>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-gray-500 italic">Пока нет отзывов. Будьте первым, кто оставит отзыв!</p>
+                )}
+                
+                <button 
+                  className="mt-6 px-4 py-2 bg-[#8e2b85] text-white rounded-md hover:bg-opacity-90 transition-all"
+                  onClick={() => {
+                    const reviewForm = document.getElementById('review-form');
+                    if (reviewForm) {
+                      reviewForm.classList.toggle('hidden');
+                    } else {
+                      const form = document.createElement('div');
+                      form.id = 'review-form';
+                      form.innerHTML = `
+                        <div class="mt-6 border rounded-lg p-4 bg-white">
+                          <h3 class="text-lg font-semibold mb-3">Написать отзыв</h3>
+                          <div>
+                            <div class="mb-4">
+                              <label class="block mb-1">Ваше имя</label>
+                              <input id="review-name" required placeholder="Иван Иванов" class="w-full border p-2 rounded-md" />
+                            </div>
+                            
+                            <div class="mb-4">
+                              <label class="block mb-1">Оценка</label>
+                              <div class="flex space-x-1" id="stars-container">
+                                <button type="button" data-rating="1" class="focus:outline-none star-btn">
+                                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-8 h-8 text-gray-300">
+                                    <path fill-rule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.007 5.404.433c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.433 2.082-5.006z" clip-rule="evenodd" />
+                                  </svg>
+                                </button>
+                                <button type="button" data-rating="2" class="focus:outline-none star-btn">
+                                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-8 h-8 text-gray-300">
+                                    <path fill-rule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.007 5.404.433c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.433 2.082-5.006z" clip-rule="evenodd" />
+                                  </svg>
+                                </button>
+                                <button type="button" data-rating="3" class="focus:outline-none star-btn">
+                                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-8 h-8 text-gray-300">
+                                    <path fill-rule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.007 5.404.433c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.433 2.082-5.006z" clip-rule="evenodd" />
+                                  </svg>
+                                </button>
+                                <button type="button" data-rating="4" class="focus:outline-none star-btn">
+                                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-8 h-8 text-gray-300">
+                                    <path fill-rule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.007 5.404.433c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.433 2.082-5.006z" clip-rule="evenodd" />
+                                  </svg>
+                                </button>
+                                <button type="button" data-rating="5" class="focus:outline-none star-btn">
+                                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-8 h-8 fill-yellow-400 text-yellow-400">
+                                    <path fill-rule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.007 5.404.433c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.433 2.082-5.006z" clip-rule="evenodd" />
+                                  </svg>
+                                </button>
+                              </div>
+                              <input type="hidden" id="review-rating" value="5">
+                            </div>
+                            
+                            <div class="mb-4">
+                              <label class="block mb-1">Ваш отзыв</label>
+                              <textarea 
+                                id="review-comment"
+                                required
+                                placeholder="Расскажите о вашем опыте использования этого товара"
+                                class="w-full border p-2 rounded-md"
+                                rows="4"
+                              ></textarea>
+                            </div>
+                            
+                            <div class="flex space-x-3">
+                              <button 
+                                type="button" 
+                                id="submit-review"
+                                class="px-4 py-2 bg-[#8e2b85] text-white rounded-md hover:bg-opacity-90 transition-all"
+                              >
+                                Отправить отзыв
+                              </button>
+                              <button 
+                                type="button" 
+                                id="cancel-review"
+                                class="px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition-all"
+                              >
+                                Отмена
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      `;
+                      document.querySelector('.reviews-container').appendChild(form);
+                      
+                      // Настраиваем функциональность формы
+                      document.querySelectorAll('.star-btn').forEach(btn => {
+                        btn.addEventListener('click', (e) => {
+                          const rating = e.currentTarget.getAttribute('data-rating');
+                          document.getElementById('review-rating').value = rating;
+                          
+                          // Обновляем отображение звезд
+                          document.querySelectorAll('.star-btn svg').forEach((star, index) => {
+                            if (index < parseInt(rating)) {
+                              star.classList.add('fill-yellow-400');
+                              star.classList.add('text-yellow-400');
+                              star.classList.remove('text-gray-300');
+                            } else {
+                              star.classList.remove('fill-yellow-400');
+                              star.classList.remove('text-yellow-400');
+                              star.classList.add('text-gray-300');
+                            }
+                          });
+                        });
+                      });
+                      
+                      // Обработка отправки формы
+                      document.getElementById('submit-review').addEventListener('click', () => {
+                        const name = document.getElementById('review-name').value;
+                        const rating = document.getElementById('review-rating').value;
+                        const comment = document.getElementById('review-comment').value;
+                        
+                        if (!name.trim()) {
+                          alert('Пожалуйста, укажите ваше имя');
+                          return;
+                        }
+                        
+                        if (!comment.trim()) {
+                          alert('Пожалуйста, напишите текст отзыва');
+                          return;
+                        }
+                        
+                        // Отправляем отзыв на сервер
+                        fetch(`/api/products/${productId}/reviews`, {
+                          method: 'POST',
+                          headers: {
+                            'Content-Type': 'application/json',
+                          },
+                          body: JSON.stringify({
+                            customerName: name,
+                            rating: parseInt(rating),
+                            comment: comment
+                          })
+                        })
+                        .then(response => {
+                          if (response.ok) {
+                            // Перезагружаем страницу для отображения нового отзыва
+                            window.location.reload();
+                          } else {
+                            alert('Произошла ошибка при отправке отзыва');
+                          }
+                        })
+                        .catch(error => {
+                          console.error('Ошибка:', error);
+                          alert('Произошла ошибка при отправке отзыва');
+                        });
+                      });
+                      
+                      // Кнопка отмены
+                      document.getElementById('cancel-review').addEventListener('click', () => {
+                        document.getElementById('review-form').classList.add('hidden');
+                      });
+                    }
+                  }}
+                >
+                  Оставить отзыв
+                </button>
+              </div>
             </div>
             
             {/* Related products */}

@@ -146,8 +146,8 @@ export default function ProductReviews({ productId, isAdmin = false }: ReviewsPr
   }
 
   return (
-    <div className="my-8">
-      <h2 className="text-2xl font-semibold mb-4">Отзывы клиентов</h2>
+    <div className="my-4">
+      {/* Заголовок перенесен в страницу продукта */}
       
       {reviews && reviews.length > 0 ? (
         <div className="space-y-6">
