@@ -316,8 +316,9 @@ export default function CheckoutPage() {
                                   <Card 
                                     className={`border ${field.value === 'courier' ? 'border-[#8e2b85]' : 'border-gray-200'} p-4 cursor-pointer transition-all hover:border-[#8e2b85]`}
                                     onClick={() => {
-                                      field.onChange('courier');
-                                      document.getElementById('courier')?.click();
+                                      if (field.value !== 'courier') {
+                                        field.onChange('courier');
+                                      }
                                     }}
                                   >
                                     <div className="flex items-center gap-4">
@@ -339,8 +340,9 @@ export default function CheckoutPage() {
                                   <Card 
                                     className={`border ${field.value === 'pickup' ? 'border-[#8e2b85]' : 'border-gray-200'} p-4 cursor-pointer transition-all hover:border-[#8e2b85]`}
                                     onClick={() => {
-                                      field.onChange('pickup');
-                                      document.getElementById('pickup')?.click();
+                                      if (field.value !== 'pickup') {
+                                        field.onChange('pickup');
+                                      }
                                     }}
                                   >
                                     <div className="flex items-center gap-4">
@@ -411,8 +413,9 @@ export default function CheckoutPage() {
                                   <Card 
                                     className={`border ${field.value === 'card' ? 'border-[#8e2b85]' : 'border-gray-200'} p-4 cursor-pointer transition-all hover:border-[#8e2b85]`}
                                     onClick={() => {
-                                      field.onChange('card');
-                                      document.getElementById('card')?.click();
+                                      if (field.value !== 'card') {
+                                        field.onChange('card');
+                                      }
                                     }}
                                   >
                                     <div className="flex items-center gap-4">
@@ -434,8 +437,9 @@ export default function CheckoutPage() {
                                   <Card 
                                     className={`border ${field.value === 'cash' ? 'border-[#8e2b85]' : 'border-gray-200'} p-4 cursor-pointer transition-all hover:border-[#8e2b85]`}
                                     onClick={() => {
-                                      field.onChange('cash');
-                                      document.getElementById('cash')?.click();
+                                      if (field.value !== 'cash') {
+                                        field.onChange('cash');
+                                      }
                                     }}
                                   >
                                     <div className="flex items-center gap-4">
